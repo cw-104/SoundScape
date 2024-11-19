@@ -7,12 +7,15 @@ Generative AI Music Detection
 ### Evaluate.py
 ### Class: `SoundScapeModel`
 
+**How to Use**
 
-#### `__init__()` 
-Initializes the model.
+'''
+from Evaluate import SoundScapeModel
 
-**How to import**
-'from Evaluate import SoundScapeModel'
+model = SoundScapeModel
+result = model.EvaluateFile(file_path)
+'''
+
 ---
 
 #### `EvaluateFile(file_path)`
