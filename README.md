@@ -2,6 +2,18 @@
 Generative AI Music Detection
 
 # Documentation
+
+## Command Line Interface
+How to use command line interface
+
+```bash
+py file.py <arg>
+```
+
+arg: what to put
+
+---
+
 ## SoundScapeModel
 
 ### Evaluate.py
@@ -40,14 +52,11 @@ Evaluates a single audio file for deepfake classification.
     *(See `Results.py` for more details.)*
 
 
-## Command Line Interface
-How to use command line interface
-
-
+---
 
 ## RawGAT-ST
 Initial model adapated from RawGAT code
-`py file.py <-arg value>`
+
 
 [RawGAT-ST-code Github](https://github.com/eurecom-asp/RawGAT-ST-antispoofing)
 
