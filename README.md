@@ -1,36 +1,38 @@
-### SoundScape
+# SoundScape
 Generative AI Music Detection
 
-## SoundScape Model
-
 # Documentation
-Evaluate.py
+## SoundScapeModel
 
-'''
-    class SoundScapeModel:
-        def __init__(self):
-            Initializes the model
-    
-        def EvaluateFile(file_path):
-            Method: 
-            Evaluates a single audio file for deepfake classification
-            
-            ------------
-            Parameters:
-            file: {str} file path to audio file
-    
-            ------------
-            Returns:
-            {Result} result of the evaluation 
-            .classification {str} \"DF\" \"Authentic\"
-            .isDF {bool} is the audio file a deepfake
-            .certaintyClass {str} classification name of audio file
-    
-            .rawcertainty {float} raw model results
-            .shiftedcertainty {float} shifted model results according to classification ranges
-            (see Results.py for more information)
+### Evaluate.py
+### Class: `SoundScapeModel`
 
-'''
+
+#### `__init__()`
+Initializes the model.
+'from Evaluate import SoundScapeModel'
+---
+
+#### `EvaluateFile(file_path)`
+**Method**:  
+Evaluates a single audio file for deepfake classification.
+
+##### Parameters:
+- **file_path** `{str}`: Path to the audio file.
+
+##### Returns:
+- **Result**:  
+  - **classification** `{str}`:  
+    "DF" (Deepfake) or "Authentic" (genuine audio).
+  - **isDF** `{bool}`:  
+    Indicates whether the audio file is a deepfake.
+  - **certaintyClass** `{str}`:  
+    Classification label of the audio file.
+  - **rawcertainty** `{float}`:  
+    Raw model evaluation results.
+  - **shiftedcertainty** `{float}`:  
+    Shifted evaluation results based on classification ranges.  
+    *(See `Results.py` for more details.)*
 
 
 ## Command Line Interface
