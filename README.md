@@ -47,7 +47,7 @@ How to use command line interface
 
 ## RawGAT-ST
 Initial model adapated from RawGAT code
-'py file.py <-arg value>'
+`py file.py <-arg value>`
 
 [RawGAT-ST-code Github](https://github.com/eurecom-asp/RawGAT-ST-antispoofing)
 
