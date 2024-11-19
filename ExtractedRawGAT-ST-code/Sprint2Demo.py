@@ -28,33 +28,33 @@ print(f"Loaded model from {model_path}")
 # file_to_evaluate = "/Users/christiankilduff/Deepfake_Detection_Resources/Datasets/ASVspoof/Eval/ASVspoof2021_DF_eval001/flac/DF_E_2000117.flac"  # Set the path to your FLAC file here
 # evaluate_single_file(file_to_evaluate, model, device)
 
+print("Dataset Sample Data: \n")
+
+print("Evaluating Sample Deepfake files: \n")
+fake = "sample_data/generated"
+sample_res_fake = evaluate_folder(fake, model, device)
 
 
+print("\n\nEvaluating Sample Authentic files: \n")
 
+real = "sample_data/Real"
+sample_res_real = evaluate_folder(real, model, device)
+
+
+print("-------------------------")
 print("Our Collected Samples:")
-print("Evaluating Deepfake files: \n")
+print("Evaluating Our Deepfake files: \n")
 
 fakes = "../DeepfakeSoundFiles/"
 our_res_fake = evaluate_folder(fakes, model, device)
 
-print("\n\nEvaluating Authentic files: \n")
+print("\n\nEvaluating Our Authentic files: \n")
 
 real = "../AuthenticSoundFiles/"
 our_res_real = evaluate_folder(real, model, device)
 
 # await keyboard enter
 
-print("Dataset Sample Data: \n")
-
-print("Evaluating Deepfake files: \n")
-fake = "sample_data/generated"
-sample_res_fake = evaluate_folder(fake, model, device)
-
-
-print("\n\nEvaluating Authentic files: \n")
-
-real = "sample_data/Real"
-sample_res_real = evaluate_folder(real, model, device)
 
 # calc success rate
 def success_rate(results, threshold, isReal=True):
@@ -66,25 +66,23 @@ def success_rate(results, threshold, isReal=True):
 from tabulate import tabulate
 
 print("Results:\n")
-print("Our Collected Samples:")
-
 # Prepare data for the table
 headers = [
-    "Certainty Threshold",
-    "Collected Deepfake",
-    "Collected Real",
-    "Sample Deepfake",
-    "Sample Real"
+    "Certainty\nThreshold",
+    "Sample\nDeepfake",
+    "Sample Real DF\nFalse Postive"
+    "Collected\nDeepfake",
+    "Collected Real DF\nFalse Postive",
 ]
 
 data = []
 for i in range(0, 3):
     row = [
         f"{-i}",
-        f"{success_rate(our_res_fake, -i, isReal=False) * 100:.2f}%",
-        f"{(success_rate(our_res_real, -i, isReal=True)) * 100:.2f}%",
         f"{success_rate(sample_res_fake, -i, isReal=False) * 100:.2f}%",
-        f"{(success_rate(sample_res_real, -i,isReal=True))* 100:.2f}%",
+        f"{(1-(success_rate(sample_res_real, -i,isReal=True)))* 100:.2f}%",
+        f"{success_rate(our_res_fake, -i, isReal=False) * 100:.2f}%",
+        f"{(1-(success_rate(our_res_real, -i, isReal=True))) * 100:.2f}%",
     ]
     data.append(row)
 

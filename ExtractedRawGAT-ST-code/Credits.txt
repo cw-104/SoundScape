@@ -1,3 +1,6 @@
+https://github.com/eurecom-asp/RawGAT-ST-antispoofing
+
+
 @inproceedings{tak21_asvspoof,
   author={Hemlata Tak and Jee-weon Jung and Jose Patino and Madhu Kamble and Massimiliano Todisco and Nicholas Evans},
   title={{End-to-end spectro-temporal graph attention networks for speaker verification anti-spoofing and speech deepfake detection}},
