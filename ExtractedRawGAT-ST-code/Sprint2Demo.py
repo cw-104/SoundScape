@@ -47,13 +47,13 @@ our_res_real = evaluate_folder(real, model, device)
 print("Dataset Sample Data: \n")
 
 print("Evaluating Deepfake files: \n")
-fake = "/sample_data/generated"
+fake = "sample_data/generated"
 sample_res_fake = evaluate_folder(fake, model, device)
 
 
 print("\n\nEvaluating Authentic files: \n")
 
-real = "/sample_data/Real"
+real = "sample_data/Real"
 sample_res_real = evaluate_folder(real, model, device)
 
 # calc success rate
@@ -70,7 +70,7 @@ print("Our Collected Samples:")
 
 # Prepare data for the table
 headers = [
-    "Threshold",
+    "Certainty Threshold",
     "Collected Deepfake",
     "Collected Real",
     "Sample Deepfake",
@@ -78,7 +78,7 @@ headers = [
 ]
 
 data = []
-for i in range(0, 6):
+for i in range(0, 3):
     row = [
         f"{-i}",
         f"{success_rate(our_res_fake, -i, isReal=False) * 100:.2f}%",
@@ -89,7 +89,7 @@ for i in range(0, 6):
     data.append(row)
 
 # Output the table
-print("Percent Correctly Classified %")
+print("\t\t\t\tPercent Correctly Classified %")
 print(tabulate(data, headers=headers, tablefmt="grid"))
 
 print("\nAuthentic songs that were correctly classified at a threshold of 0:\n")
