@@ -9,12 +9,12 @@ Generative AI Music Detection
 
 **How to Use**
 
-'''
+```python
 from Evaluate import SoundScapeModel
 
-model = SoundScapeModel
+model = SoundScapeModel()
 result = model.EvaluateFile(file_path)
-'''
+```
 
 ---
 
