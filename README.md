@@ -9,7 +9,9 @@ Generative AI Music Detection
 
 
 #### `__init__()`
+
 Initializes the model.
+**Import**
 'from Evaluate import SoundScapeModel'
 ---
 
