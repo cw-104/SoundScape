@@ -1,0 +1,15 @@
+name: SoundScape
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.9
+  - pytorch=2.1
+  - torchaudio=2.1
+  - transformers=4.33
+  - datasets=2.10
+  - evaluate=0.4
+  - numpy=1.23
+  - pip
+  - pip:
+      - mps
