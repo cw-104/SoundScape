@@ -1,3 +1,9 @@
 SoundFakeModel/processed_train_dataset_wav2vec_SVDD/
 SoundFakeModel/processed_dev_dataset_wav2vec_SVDD/
 SoundFakeModel/sounscape_model/
+
+SoundFakeModel/__pycache__/
+SoundFakeModel/.DS_Store
+.DS_Store
+*/.DS_Store
+.vscode/
