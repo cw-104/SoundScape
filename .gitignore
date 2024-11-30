@@ -1,5 +1,7 @@
 SoundFakeModel/processed_train_dataset_wav2vec_SVDD/
 SoundFakeModel/processed_dev_dataset_wav2vec_SVDD/
+SoundFakeModel/logmel_dev/
+SoundFakeModel/logmel_train/
 SoundFakeModel/sounscape_model/
 
 SoundFakeModel/__pycache__/
