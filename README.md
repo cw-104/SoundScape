@@ -29,7 +29,7 @@ Vocal isolation model to separate backing tracks
 [demucs github](https://github.com/charzy/Demucs-v4-)
 
 
-## Whisper-spectRnet -- primary model
+## Whisper-SpectRnet -- primary model
 The primary model we are using for deepfake detection
 
 [whisper-specRnet Github](https://github.com/piotrkawa/deepfake-whisper-features/tree/main?tab=readme-ov-file)
