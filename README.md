@@ -24,12 +24,16 @@ arg: what to put
 
 
 ## Denucs -- vocal isolation
-https://github.com/charzy/Demucs-v4-
+Vocal isolation model to separate backing tracks
+
+[demucs github](https://github.com/charzy/Demucs-v4-)
 
 
 ## Whisper-spectRnet -- primary model
-[whisper-specRnet Github]: https://github.com/piotrkawa/deepfake-whisper-features/tree/main?tab=readme-ov-file
-[Supporting Paper]: https://www.isca-archive.org/interspeech_2023/kawa23b_interspeech.pdf 
+The primary model we are using for deepfake detection
+
+[whisper-specRnet Github](https://github.com/piotrkawa/deepfake-whisper-features/tree/main?tab=readme-ov-file)
+[Supporting Paper](https://www.isca-archive.org/interspeech_2023/kawa23b_interspeech.pdf )
 
 ## RawGAT-ST -- backup model
 Initial model adapated from RawGAT code
