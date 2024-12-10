@@ -1,37 +1,16 @@
-import io, os
-from pathlib import Path
-import select
-from shutil import rmtree
+from pydub import AudioSegment
+from pydub.silence import detect_nonsilent
+import librosa
+import numpy as np
+import soundfile as sf
 import subprocess as sp
+import os
+import shutil
+import select
+import io
 import sys
 from typing import Dict, Tuple, Optional, IO
 
-from Evaluate import get_best_device
-
-def separate(inp=None, outp=None):
-    inp = inp or in_path
-    outp = outp or out_path
-    cmd = ["python3", "-m", "demucs.separate", "-o", str(outp), "-n", model]
-    if mp3:
-        cmd += ["--mp3", f"--mp3-bitrate={mp3_rate}"]
-    if float32:
-        cmd += ["--float32"]
-    if int24:
-        cmd += ["--int24"]
-    if two_stems is not None:
-        cmd += [f"--two-stems={two_stems}"]
-    files = [str(f) for f in find_files(inp)]
-    if not files:
-        print(f"No valid audio files in {in_path}")
-        return
-    print("Going to separate the files:")
-    print('\n'.join(files))
-    print("With command: ", " ".join(cmd))
-    p = sp.Popen(cmd + files, stdout=sp.PIPE, stderr=sp.PIPE)
-    copy_process_streams(p)
-    p.wait()
-    if p.returncode != 0:
-        print("Command failed, something went wrong.")
 
 def copy_process_streams(process: sp.Popen):
     def raw(stream: Optional[IO[bytes]]) -> IO[bytes]:
@@ -61,36 +40,80 @@ def copy_process_streams(process: sp.Popen):
             std.flush()
 
 
-def find_files(in_path):
-    out = []
-    for file in Path(in_path).iterdir():
-        if file.suffix.lower().lstrip(".") in extensions:
-            out.append(file)
-    return out
 
-model = "htdemucs"
-extensions = ["mp3", "wav", "ogg", "flac"]  # we will look for all those file types.
-two_stems = None   # only separate one stems from the rest, for instance
-# two_stems = "vocals"
+def separate_file(input_file, output_dir, model='htdemucs', mp3=False, mp3_rate=128, float32=False, int24=False, two_stems=None, trim_silence=False):
+    """
+    Separate a single audio file using demucs and save it to the specified output directory.
 
-# Options for the output audio.
-mp3 = True
-mp3_rate = 320
-float32 = False  # output as float 32 wavs, unsused if 'mp3' is True.
-int24 = False    # output as int24 wavs, unused if 'mp3' is True.
-# You cannot set both `float32 = True` and `int24 = True` !!
+    Args:
+        input_file (str): Path to the input audio file.
+        output_dir (str): Path to the output directory.
+        model (str): Demucs model to use.
+        mp3 (bool, optional): Whether to output in MP3 format. Defaults to False.
+        mp3_rate (int, optional): MP3 bitrate. Defaults to 320.
+        float32 (bool, optional): Whether to use float32 output. Defaults to False.
+        int24 (bool, optional): Whether to use int24 output. Defaults to False.
+        two_stems (str, optional): Two-stems model to use. Defaults to None.
 
-in_path = '../ctrsvdd-deepfake'
-out_path = '../ctrsvdd-deepfake/'
+    Returns:
+        str: Full path to the separated file.
+    """
 
-separate(in_path,out_path)
-final_out = os.join(out_path,"separated/htdemucs")
-import shutil
+    # Construct the demucs command
+    cmd = ["python3", "-m", "demucs.separate", "-o", output_dir, "-n", model]
+    if mp3:
+        cmd += ["--mp3", f"--mp3-bitrate={mp3_rate}"]
+    if float32:
+        cmd += ["--float32"]
+    if int24:
+        cmd += ["--int24"]
+    if two_stems is not None:
+        cmd += [f"--two-stems={two_stems}"]
 
-for folder in os.listdir(directory):
-    artist_folder = os.path.join(final_out, folder)
-    if not os.path.isdir(artist_folder): continue
-    shutil.copy(os.join(artist_folder, f"vocals.wav"), os.join(out_path, f"separated/{folder}.wav"))
+    # Run the demucs command
+    p = sp.Popen(cmd + [input_file], stdout=sp.PIPE, stderr=sp.PIPE)    
+    print("Running demucs command... ")
+    copy_process_streams(p)
+    p.wait()
+
+    # Check if the command was successful
+    if p.returncode != 0:
+        print("Command failed, something went wrong.")
+        return None
+
+    # Get the name of the input file without the extension
+    filename = os.path.basename(input_file)
+    filename_no_ext = os.path.splitext(filename)[0]
+
+    # Move the separated file to the output directory
+    separated_file_path = os.path.join(output_dir, filename_no_ext.replace(' ', '') + "-sep.mp3")
+    shutil.move(os.path.join(output_dir, model, filename_no_ext, "vocals.mp3"), separated_file_path)
+    if os.path.exists(os.path.join(output_dir, model)):
+        shutil.rmtree(os.path.join(output_dir, model))
+
+    if not trim_silence:
+        return separated_file_path
+    else:
+        return audio_trim_silence(separated_file_path, os.path.join(output_dir, filename_no_ext.replace(' ', '') + "-sep-sil.mp3"))
 
 
+def audio_trim_silence(file, out_file):
+    # Load the audio
+    audio = AudioSegment.from_file(file)
 
+    # Set more lenient silence detection parameters
+    silence_thresh = -43  # Set a lower threshold if needed (e.g., -40)
+    min_silence_len = 3000  # Shorten the required silence duration (in ms)
+
+    # Detect non-silent chunks
+    non_silent_ranges = detect_nonsilent(audio, min_silence_len=min_silence_len, silence_thresh=silence_thresh)
+
+    # Combine non-silent chunks
+    if non_silent_ranges:
+        non_silent_audio = [audio[start:end] for start, end in non_silent_ranges]
+        trimmed_audio = sum(non_silent_audio)
+        trimmed_audio.export(out_file, format="mp3")
+        return out_file
+    else:
+        print("File is all silence... not changing")
+        return file

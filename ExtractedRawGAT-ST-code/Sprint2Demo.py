@@ -28,24 +28,25 @@ print(f"Loaded model from {model_path}")
 # file_to_evaluate = "/Users/christiankilduff/Deepfake_Detection_Resources/Datasets/ASVspoof/Eval/ASVspoof2021_DF_eval001/flac/DF_E_2000117.flac"  # Set the path to your FLAC file here
 # evaluate_single_file(file_to_evaluate, model, device)
 
-print("Dataset Sample Data: \n")
+# print("Dataset Sample Data: \n")
 
-print("Evaluating Sample Deepfake files: \n")
-fake = "sample_data/generated"
-sample_res_fake = evaluate_folder(fake, model, device)
+# print("Evaluating Sample Deepfake files: \n")
+# fake = "sample_data/generated"
+# sample_res_fake = evaluate_folder(fake, model, device)
 
 
-print("\n\nEvaluating Sample Authentic files: \n")
+# print("\n\nEvaluating Sample Authentic files: \n")
 
-real = "sample_data/Real"
-sample_res_real = evaluate_folder(real, model, device)
+# real = "sample_data/Real"
+# sample_res_real = evaluate_folder(real, model, device)
 
 
 print("-------------------------")
 print("Our Collected Samples:")
 print("Evaluating Our Deepfake files: \n")
 
-fakes = "../DeepfakeSoundFiles/"
+# fakes = "../DeepfakeSoundFiles/"
+fakes = "../../deepfakes"
 our_res_fake = evaluate_folder(fakes, model, device)
 
 print("\n\nEvaluating Our Authentic files: \n")
@@ -65,39 +66,48 @@ def success_rate(results, threshold, isReal=True):
 
 from tabulate import tabulate
 
-print("Results:\n")
-# Prepare data for the table
-headers = [
-    "Certainty\nThreshold",
-    "Sample\nDeepfake",
-    "Sample Real DF\nFalse Postive"
-    "Collected\nDeepfake",
-    "Collected Real DF\nFalse Postive",
-]
+print("Correctly Classified Results")
+print("---")
+print("Results - DF:\n")
+n_df = sum(1 for _, sc in our_res_fake if sc < 0)
+print(f"Percentage of Deepfakes: {n_df/len(our_res_fake) * 100:.2f}%")
 
-data = []
-for i in range(0, 3):
-    row = [
-        f"{-i}",
-        f"{success_rate(sample_res_fake, -i, isReal=False) * 100:.2f}%",
-        f"{(1-(success_rate(sample_res_real, -i,isReal=True)))* 100:.2f}%",
-        f"{success_rate(our_res_fake, -i, isReal=False) * 100:.2f}%",
-        f"{(1-(success_rate(our_res_real, -i, isReal=True))) * 100:.2f}%",
-    ]
-    data.append(row)
+print()
+print("Results - Real")
+n_real = sum(1 for _, sc in our_res_real if sc >= 0)
+print(f"Percentage of Real: {n_real/len(our_res_real) * 100:.2f}%")
+# # Prepare data for the table
+# headers = [
+#     "Certainty\nThreshold",
+#     "Sample\nDeepfake",
+#     "Sample Real DF\nFalse Postive"
+#     "Collected\nDeepfake",
+#     "Collected Real DF\nFalse Postive",
+# ]
+
+# data = []
+# for i in range(0, 3):
+#     row = [
+#         f"{-i}",
+#         f"{success_rate(sample_res_fake, -i, isReal=False) * 100:.2f}%",
+#         f"{(1-(success_rate(sample_res_real, -i,isReal=True)))* 100:.2f}%",
+#         f"{success_rate(our_res_fake, -i, isReal=False) * 100:.2f}%",
+#         f"{(1-(success_rate(our_res_real, -i, isReal=True))) * 100:.2f}%",
+#     ]
+#     data.append(row)
 
 # Output the table
-print("\t\t\t\tPercent Correctly Classified %")
-print(tabulate(data, headers=headers, tablefmt="grid"))
+# print("\t\t\t\tPercent Correctly Classified %")
+# print(tabulate(data, headers=headers, tablefmt="grid"))
 
-print("\nAuthentic songs that were correctly classified at a threshold of 0:\n")
-authentic = [(_,sc) for _, sc in our_res_real if sc >= 0]
-# print
-for file, score in authentic:
-    print(f"{file} => {score}")
+# print("\nAuthentic songs that were correctly classified at a threshold of 0:\n")
+# authentic = [(_,sc) for _, sc in our_res_real if sc >= 0]
+# # print
+# for file, score in authentic:
+#     print(f"{file} => {score}")
 
-print("\nAuthentic songs that were correctly classified at a threshold of -1:\n")
-authentic = [(_,sc) for _, sc in our_res_real if sc >= -1 and sc < 0]
-# print
-for file, score in authentic:
-    print(f"{file} => {score}")
+# print("\nAuthentic songs that were correctly classified at a threshold of -1:\n")
+# authentic = [(_,sc) for _, sc in our_res_real if sc >= -1 and sc < 0]
+# # print
+# for file, score in authentic:
+#     print(f"{file} => {score}")

@@ -29,17 +29,12 @@ def file_paths_in_folder(folderpath):
     return [os.path.join(folderpath, fname) for fname in os.listdir(folderpath) if fname.endswith(('.wav', '.mp3', '.flac'))]
 
     
-def load_audio_ffmpeg(filepath):
-    # Use ffmpeg-python to load FLAC file and convert it to raw waveform (WAV format)
-    out, _ = (
-        ffmpeg.input(filepath)
-        .output('pipe:', format='wav')
-        .run(capture_stdout=True, capture_stderr=True)
-    )
-    # Convert the byte data to a NumPy array
-    waveform = np.frombuffer(out, np.int16).astype(np.float32) / 32768.0
-    waveform = torch.Tensor(waveform).unsqueeze(0)  # Add the channel dimension if it's mono
-    sample_rate = 16000  # Assuming the resampling was done correctly
+import librosa
+import torch
+
+def load_audio_librosa(filepath, target_sr=16000):
+    waveform, sample_rate = librosa.load(filepath, sr=target_sr, mono=True)
+    waveform = torch.tensor(waveform).unsqueeze(0)  # Add channel dimension
     return waveform, sample_rate
 
 def pad(x, max_len=64600):
@@ -141,7 +136,7 @@ class EvalDataset(Dataset):
     
     def __getitem__(self, idx):
         filepath = self.filepaths[idx]
-        waveform, sample_rate = load_audio_ffmpeg(filepath)
+        waveform, sample_rate = load_audio_librosa(filepath)
         
         if sample_rate != 16000:
             resampler = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=16000)
