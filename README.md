@@ -7,54 +7,28 @@ Generative AI Music Detection
 How to use command line interface
 
 ```bash
-py file.py <arg>
+py cli.py -h
+ex:
+py cli.py --sep --fuke path/to/audio
 ```
 
 arg: what to put
 
 ---
 
-## SoundScapeModel
-
-### Evaluate.py
-### Class: `SoundScapeModel`
-
-**How to Use**
-
-```python
-from Evaluate import SoundScapeModel
-
-model = SoundScapeModel()
-result = model.EvaluateFile(file_path)
-```
+# Open source projects utilized
 
 ---
 
-#### `EvaluateFile(file_path)`
-**Method**:  
-Evaluates a single audio file for deepfake classification.
-
-##### Parameters:
-- **file_path** `{str}`: Path to the audio file.
-
-##### Returns:
-- **Result**:  
-  - **classification** `{str}`:  
-    "DF" (Deepfake) or "Authentic" (genuine audio).
-  - **isDF** `{bool}`:  
-    Indicates whether the audio file is a deepfake.
-  - **certaintyClass** `{str}`:  
-    Classification label of the audio file.
-  - **rawcertainty** `{float}`:  
-    Raw model evaluation results.
-  - **shiftedcertainty** `{float}`:  
-    Shifted evaluation results based on classification ranges.  
-    *(See `Results.py` for more details.)*
+## Denucs -- vocal isolation
+https://github.com/charzy/Demucs-v4-
 
 
----
+## Whisper-spectRnet -- primary model
+[whisper-specRnet Github]: https://github.com/piotrkawa/deepfake-whisper-features/tree/main?tab=readme-ov-file
+[Supporting Paper]: https://www.isca-archive.org/interspeech_2023/kawa23b_interspeech.pdf 
 
-## RawGAT-ST
+## RawGAT-ST -- backup model
 Initial model adapated from RawGAT code
 
 
