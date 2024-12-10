@@ -1,5 +1,10 @@
+---
+
 # SoundScape
-Generative AI Music Detection
+
+---
+
+Deepfake detection targetted at detecting deepfake songs and music of popular artists.
 
 # Documentation
 
@@ -14,11 +19,9 @@ py cli.py --sep --fuke path/to/audio
 
 arg: what to put
 
----
 
 # Open source projects utilized
 
----
 
 ## Denucs -- vocal isolation
 https://github.com/charzy/Demucs-v4-
