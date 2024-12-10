@@ -1,0 +1,14 @@
+checkpoint:
+  path: "whisper_specrnet/weights.pth"
+data:
+  seed: 42
+model:
+  name: whisper_specrnet
+  optimizer:
+    lr: 0.0001
+    weight_decay: 0.0001
+  parameters:
+    freeze_encoder: true
+    frontend_algorithm:
+    - lfcc
+    input_channels: 1
