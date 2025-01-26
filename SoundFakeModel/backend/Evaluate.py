@@ -5,8 +5,10 @@ import numpy as np
 from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 from enum import IntEnum
-
-from Results import DfResultHandler
+from backend.Results import DfResultHandler
+from Base_Path import get_path_relative_base
+from backend.whisper_eval import evaluate_nn
+from backend.whisper_specrnet import WhisperSpecRNet, set_seed
 
 class Models(IntEnum):
     SOUNDSCAPE = 0    
@@ -53,7 +55,7 @@ class DeepfakeClassificationModel:
         self.result_handler=result_handler
         self.device = get_best_device()
         if modeltype == Models.RAWGAT:
-            from RawGATmodel import RawGAT_ST
+            from backend.RawGATmodel import RawGAT_ST
             model_path = "pretrained_models/RawGAT/RawGAT.pth"
             with open("pretrained_models/RawGAT/model_config_RawGAT_ST.yaml", 'r') as f_yaml:
                 config = yaml.safe_load(f_yaml)  
@@ -150,3 +152,39 @@ class EvalDataset(Dataset):
 
 
             
+def init_whisper_specrnet(device="", weights_path="", config_path="", threshold=.45, reval_threshold=0, no_sep_threshold=0):
+    if device == "":
+        device = get_best_device()
+    get_best_device()
+    if config_path == "":
+        config_path = get_path_relative_base("pretrained_models/whisper_specrnet/config.yaml")
+    if weights_path == "":
+        weights_path = get_path_relative_base("pretrained_models/whisper_specrnet/weights.pth")
+    config = yaml.safe_load(open(config_path, "r"))
+    model_name, model_parameters = config["model"]["name"], config["model"]["parameters"]
+
+    print(f"loading model...\n")
+    model = WhisperSpecRNet(
+        input_channels=config.get("input_channels", 1),
+        freeze_encoder=config.get("freeze_encoder", False),
+        device=device,
+    )
+    
+    model.load_state_dict(torch.load(weights_path, map_location=device))
+
+
+    seed = config["data"].get("seed", 42)
+    set_seed(seed)
+
+    model_rawgat = DeepfakeClassificationModel(result_handler=DfResultHandler(-3, "Fake", "Real", 3, .95))    
+    return model, model_rawgat, config, device
+def eval_file(f, preloaded_model, config, device):
+
+    # Evaluate a single file
+    pred, label = evaluate_nn(
+        model=preloaded_model,
+        model_config=config["model"],
+        device=device,
+        single_file=f,  # Specify the single file path
+    )
+    return pred, 'spoof' if label == 0 else 'real', f"{('spoof' if label == 0 else 'real'):<10} (raw value: {pred:.4f})"
