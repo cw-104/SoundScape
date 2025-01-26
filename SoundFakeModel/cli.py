@@ -1,15 +1,16 @@
 import torch
 import yaml
 import argparse
-from whisper_eval import evaluate_nn
-from whisper_specrnet import WhisperSpecRNet, set_seed
 import os 
-from Isolate import separate_file
+from backend.whisper_eval import evaluate_nn
+from backend.whisper_specrnet import WhisperSpecRNet, set_seed
+from backend.Isolate import separate_file
 
 
-from Evaluate import DeepfakeClassificationModel
-from Results import DfResultHandler
-from Isolate import separate_file
+from backend.Evaluate import DeepfakeClassificationModel
+from backend.Results import DfResultHandler
+from backend.Isolate import separate_file
+from Base_Path import get_path_relative_base
 def eval_file(f, preloaded_model, config, device):
 
     # Evaluate a single file
@@ -58,12 +59,16 @@ def main():
         "--flip", action="store_true", help="flip to predict DF"
     )
     args = parser.parse_args()
+    if not args.file and not args.folder:
+        print("Please specify a file or folder to evaluate")
+        return
     # Set device
     device = args.device
     threshold = args.threshold
     reval_threshold = args.reval_threshold
     no_sep_threshold = args.no_sep_threshold
-    config = yaml.safe_load(open("pretrained_models/whisper_specrnet/config.yaml", "r"))
+    # config = yaml.safe_load(open("pretrained_models/whisper_specrnet/config.yaml", "r"))
+    config = yaml.safe_load(open(get_path_relative_base("pretrained_models/whisper_specrnet/config.yaml"), "r"))
     model_name, model_parameters = config["model"]["name"], config["model"]["parameters"]
     print(f"loading model...\n")
     model = WhisperSpecRNet(
@@ -71,7 +76,8 @@ def main():
         freeze_encoder=config.get("freeze_encoder", False),
         device=device,
     )
-    model.load_state_dict(torch.load("pretrained_models/whisper_specrnet/weights.pth", map_location=device))
+    # model.load_state_dict(torch.load("pretrained_models/whisper_specrnet/weights.pth", map_location=device))
+    model.load_state_dict(torch.load(get_path_relative_base("pretrained_models/whisper_specrnet/weights.pth"), map_location=device))
         
 
 

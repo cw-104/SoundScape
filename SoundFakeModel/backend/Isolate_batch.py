@@ -4,9 +4,9 @@ import select
 import subprocess as sp
 import sys
 from typing import Dict, Tuple, Optional, IO
-from Isolate import separate_file
+from backend.Isolate import separate_file
 
-from Evaluate import get_best_device
+from backend.Evaluate import get_best_device
 
 def separate(in_path, out_path, model="htdemucs", mp3=False, mp3_rate=128, float32=False, int24=False, two_stems=None):
     files = find_files(in_path)

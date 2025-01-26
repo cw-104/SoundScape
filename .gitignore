@@ -9,3 +9,5 @@ SoundFakeModel/.DS_Store
 */.DS_Store
 */separated
 .vscode/
+*.pyc
+*.DS_Store

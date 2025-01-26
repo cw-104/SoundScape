@@ -427,7 +427,8 @@ def mel_filters(device, n_mels: int = N_MELS) -> torch.Tensor:
     """
     assert n_mels == 80, f"Unsupported n_mels: {n_mels}"
     with np.load(
-        os.path.join(os.path.dirname(__file__), MEL_FILTERS_PATH)
+        MEL_FILTERS_PATH
+        # os.path.join(os.path.dirname(__file__), MEL_FILTERS_PATH)
     ) as f:
         return torch.from_numpy(f[f"mel_{n_mels}"]).to(device)
 
