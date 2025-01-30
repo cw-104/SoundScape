@@ -1,30 +1,25 @@
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
-import os
+import os, uuid
 from Base_Path import get_path_relative_base
-from backend.Evaluate import init_whisper_specrnet, eval_file
+from flask_cors import CORS
+from api.Bindings import ModelBindings
 
 app = Flask(__name__)
 UPLOADS_FOLDER = get_path_relative_base("uploads")
-whisper_model = None
-rawgat_model = None
-config = None
-device = None
+
+model_bindings = ModelBindings()
+
 
 # Configure allowed file extensions (adjust as needed)
-ALLOWED_EXTENSIONS = {'mp3', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+ALLOWED_EXTENSIONS = {'mp3'}
 
 @app.route('/upload', methods=['POST'])
 def recieve_file():
-    if 'file' not in request.files:
+    if not 'audio' in request.files:
         return jsonify({'error': 'No file part'}), 400
 
-    file = request.files['file']
-    print(f"file: {file}")
+    file = request.files['audio']
 
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
@@ -34,25 +29,49 @@ def recieve_file():
         file_path = os.path.join(UPLOADS_FOLDER, filename)  
         file.save(file_path)
         # upload was successful process validity
-        return process_file(file_path)
+        return confirm_upload(file_path)
     else:
         return jsonify({'error': 'Invalid file type'}), 400
 
-def process_file(path):
-    print(">>> do processing with uploaded file")
-    pred, label, str_out = eval_file(path, whisper_model, config, device)
-    result = jsonify({
-        'prediction': pred,
-        'label': label,
-        'output': str_out
-    }), 200
-    return result
+def confirm_upload(file_path):
+    # create unique id to send back to client
+    id = str(uuid.uuid4())
+    print("uploaded id: ", id)
+
+    model_bindings.upload_file(id, file_path)
+    return jsonify({'id': id}), 200
+    
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route('/status', methods=['POST'])
+def get_status():
+    if request.get_data() == b'':
+        return jsonify({'status': 'Error: No id provided'}), 400
+    id = request.get_data().decode('utf-8')
+
+    if not model_bindings.file_ids.exists(id):
+        return jsonify({
+            'status': 'Does not exist',
+            'error': 'Invalid ID'}), 404
+    return jsonify(model_bindings.file_ids.get_status(id)), 200
+
+
+@app.route('/results', methods=['POST'])
+def get_results():
+    if request.get_data() == b'':
+        return jsonify({'status': 'Error: No id provided'}), 400
+    id = request.get_data().decode('utf-8')
+
+    if not model_bindings.file_ids.exists(id):
+        return jsonify({
+            'status': 'Does not exist',
+            'error': 'Invalid ID'}), 404
+    return jsonify(model_bindings.file_ids.get_results(id)), 200
 
 def start_api():
-    global whisper_model, rawgat_model, config, device
-    whisper_model, rawgat_model, config, device = init_whisper_specrnet()
+    global app
+    CORS(app)
     app.run(debug=True, port=8080)
-
-
-if __name__ == '__main__':
-    app.run(debug=True,port=8080)
