@@ -1,16 +1,14 @@
-from backend.Evaluate import init_whisper_specrnet, eval_file
 from backend.Isolate import separate_file
-from backend.Evaluate import DeepfakeClassificationModel
-from backend.Results import DfResultHandler
 import threading
 from queue import Queue
 from json import dumps as to_json
 
+from backend.Models import whisper_specrnet, rawgat
+
 class ModelBindings:
     def __init__(self):
-        self.whisper_model, self.rawgat_model, self.config, self.device = init_whisper_specrnet()
-        self.rawgat_model = DeepfakeClassificationModel(result_handler=DfResultHandler(-3, "Fake", "Real", 10, .45))
-
+        self.whisper_model = whisper_specrnet()
+        self.rawgat_model = rawgat()
         self.file_processing_queue = Queue()
         self.processing_thread = None
 
@@ -43,36 +41,34 @@ class ModelBindings:
         sep_file = path # skip separation for testing
 
         # Eval Whisper
-        pred, label, str_out = eval_file(path, self.whisper_model, self.config, self.device)
-        pred_sep, label_sep, str_out_sep = eval_file(sep_file, self.whisper_model, self.config, self.device)
+        wpred, wlabel = self.whisper_model.evaluate(path)
+        wpred_sep, wlabel_sep = self.whisper_model.evaluate(sep_file)
         
         # Eval RawGAT
-        rawgat_res = self.rawgat_model.evaluate_file(path)
-        rawgat_res_sep= self.rawgat_model.evaluate_file(sep_file)
+        rpred, rlabel = self.rawgat_model.evaluate(path)
+        rpred_sep, rlabel_sep= self.rawgat_model.evaluate(sep_file)
 
         # to json results
         result = to_json({
             'status': 'finished',
             'whisper': {
             'unseparated_results': {
-                'prediction': pred,
-                'label': label,
-                'output': str_out
+                'prediction': wpred,
+                'label': wlabel,
             },
             'separated_results': {
-                'prediction': pred_sep,
-                'label': label_sep,
-                'output': str_out_sep
+                'prediction': wpred_sep,
+                'label': wlabel_sep,
             }
             },
             'rawgat': {
-                'results': {
-                'prediction': rawgat_res.raw_value,
-                'label': rawgat_res.classification,
+            'unseparated_results': {
+                'prediction': rpred,
+                'label': rlabel,
             },
             'separated_results': {
-                'prediction': rawgat_res_sep.raw_value,
-                'label': rawgat_res_sep.classification,
+                'prediction': rpred_sep,
+                'label': rlabel_sep,
             }
             }
         })

@@ -181,6 +181,7 @@ def init_whisper_specrnet(device="", weights_path="", config_path="", threshold=
 def eval_file(f, preloaded_model, config, device):
 
     # Evaluate a single file
+    # LABEL 0 = FAKE 1 = REAL
     pred, label = evaluate_nn(
         model=preloaded_model,
         model_config=config["model"],
