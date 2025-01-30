@@ -322,7 +322,7 @@ class WhisperSpecRNet(SpecRNet):
         super().__init__(input_channels=input_channels, **kwargs)
 
         self.device = kwargs["device"]
-        checkpoint = torch.load(WHISPER_MODEL_WEIGHTS_PATH)
+        checkpoint = torch.load(WHISPER_MODEL_WEIGHTS_PATH, weights_only=False)
         dims = ModelDimensions(**checkpoint["dims"].__dict__)
         model = Whisper(dims)
         model = model.to(self.device)
