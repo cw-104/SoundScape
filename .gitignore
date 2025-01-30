@@ -11,3 +11,4 @@ SoundFakeModel/.DS_Store
 .vscode/
 *.pyc
 *.DS_Store
+*/env/
