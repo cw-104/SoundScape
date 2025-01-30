@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <form id="uploadForm">
+      <input type="file" id="myFile" name="filename" required />
+      <input type="submit" value="Upload File" />
+    </form>
+
+    <div id="status"></div>
+    <div id="result"></div>
+
+    <script>
+      let status = "none";
+      let id = -1;
+
+      function get_results(callback) {
+        if (id === -1) {
+          console.log("id not found");
+          return "Error: id not found";
+        }
+        fetch("https://77a8-149-40-50-27.ngrok-free.app/results", {
+          // ngrok link
+          method: "POST",
+          body: id.toString(),
+        }).then((response) => {
+          response.json().then((body) => {
+            if (response.status !== 200) {
+              console.log("status not 200: " + response.status);
+              return console.log("Unknow Error: " + body.message);
+            }
+            callback(body);
+            return body;
+          });
+        });
+      }
+
+      function await_results(callback) {
+        let _success_state = "finished";
+
+        check_status((success, body, response_code) => {
+          status = "";
+          if (!success) {
+            status = "status request failed";
+          }
+          status = body.state;
+        });
+        console.log("status: " + status);
+        document.getElementById("status").innerHTML = status;
+        if (status === _success_state) {
+          callback();
+        } else {
+          console.log("retrying in 2 seconds...");
+          setTimeout(() => {
+            await_results(callback);
+          }, 2000);
+        }
+      }
+
+      function check_status(callback) {
+        if (id === -1) {
+          console.log("id not found");
+          callback(false, "Upload a file first", 404);
+          return "Error: id not found";
+        }
+        fetch("https://77a8-149-40-50-27.ngrok-free.app/status", {
+          // ngrok link
+          method: "POST",
+          body: id.toString(),
+        }).then((response) => {
+          response.json().then((body) => {
+            if (response.status !== 200) {
+              console.log("status not 200: " + response.status);
+              callback(
+                false,
+                "Unknown Error check console for more info",
+                response.status
+              );
+              return console.log("Unknow Error: " + body.message);
+            }
+            callback(true, body, response.status);
+            return body;
+          });
+        });
+      }
+
+      function update_status() {
+        check_status((success, body, response_code) => {
+          console.log("response code: " + response_code);
+          if (!success) {
+            document.getElementById("status").innerHTML = body;
+            return console.log(
+              "Unknown Error (status: " + response_code + "): " + body
+            );
+          }
+          document.getElementById("status").innerHTML = body.state;
+        });
+
+        return "Error: status not found";
+      }
+
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent the default form submission
+          console.log("uploading file...");
+          var input = document.querySelector('input[type="file"]');
+
+          var data = new FormData();
+          data.append("audio", input.files[0]);
+
+          // fetch("http://127.0.0.1:8080/upload", {
+          fetch("https://77a8-149-40-50-27.ngrok-free.app/upload", {
+            // ngrok link
+            method: "POST",
+            body: data,
+          }).then((response) => {
+            response
+              .json()
+              .then((body) => {
+                if (response.status !== 200) {
+                  return console.log(
+                    "Unknow Error (status: " +
+                      response.status +
+                      "): " +
+                      body.message
+                  );
+                }
+
+                id = body.id;
+                status = "uploaded";
+              })
+              .then(() => {
+                if (id === -1) {
+                  console.log("id not found");
+                  return;
+                }
+                // add id to post json
+                console.log("fetching status...");
+                await_results(() => {
+                  console.log("fetching results...");
+                  get_results((body) => {
+                    console.log(body);
+                    document.getElementById("result").innerHTML = body;
+                  });
+                });
+              });
+          });
+        });
+    </script>
+  </body>
+</html>
