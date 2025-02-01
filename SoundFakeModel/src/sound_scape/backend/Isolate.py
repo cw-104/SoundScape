@@ -96,6 +96,8 @@ def separate_file(input_file, output_dir, model='htdemucs', mp3=False, mp3_rate=
     else:
         return audio_trim_silence(separated_file_path, os.path.join(output_dir, filename_no_ext.replace(' ', '') + "_sep_sil.mp3"))
 
+# alias for separate_file function for better name
+isolate_file = separate_file
 
 def audio_trim_silence(file, out_file):
     # Load the audio

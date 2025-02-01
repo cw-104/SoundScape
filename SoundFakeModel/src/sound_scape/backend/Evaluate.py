@@ -5,10 +5,10 @@ import numpy as np
 from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 from enum import IntEnum
-from backend.Results import DfResultHandler
+from sound_scape.backend.Results import DfResultHandler
 from Base_Path import get_path_relative_base
-from backend.whisper_eval import evaluate_nn
-from backend.whisper_specrnet import WhisperSpecRNet, set_seed
+from sound_scape.backend.whisper_eval import evaluate_nn
+from sound_scape.backend.whisper_specrnet import WhisperSpecRNet, set_seed
 
 class Models(IntEnum):
     SOUNDSCAPE = 0    
@@ -55,7 +55,7 @@ class DeepfakeClassificationModel:
         self.result_handler=result_handler
         self.device = get_best_device()
         if modeltype == Models.RAWGAT:
-            from backend.RawGATmodel import RawGAT_ST
+            from sound_scape.backend.RawGATmodel import RawGAT_ST
             model_path = "pretrained_models/RawGAT/RawGAT.pth"
             with open("pretrained_models/RawGAT/model_config_RawGAT_ST.yaml", 'r') as f_yaml:
                 config = yaml.safe_load(f_yaml)  
