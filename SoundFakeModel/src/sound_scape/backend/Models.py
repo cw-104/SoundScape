@@ -1,14 +1,13 @@
-from sound_scape.backend.Evaluate import get_best_device, evaluate_nn
+from .Evaluate import get_best_device, evaluate_nn
 from sound_scape.backend.Evaluate import DeepfakeClassificationModel
 from sound_scape.backend.Results import DfResultHandler
 from Base_Path import get_path_relative_base
-import Base_Path
 from sound_scape.backend.whisper_specrnet import WhisperSpecRNet, set_seed
 import yaml, torch
 
 
 class whisper_specrnet:
-    def __init__(self, device=None, weights_path="", config_path="", threshold=.45, reval_threshold=0, no_sep_threshold=0):
+    def __init__(self, device="", weights_path="", config_path="", threshold=.45, reval_threshold=0, no_sep_threshold=0):
         self.device = device
         self.weights_path = weights_path
         self.config_path = config_path
@@ -16,14 +15,14 @@ class whisper_specrnet:
         self.reval_threshold = reval_threshold
         self.no_sep_threshold = no_sep_threshold
         
-        if not device:
+        if device == "":
             self.device = get_best_device()
             
         get_best_device()
         if config_path == "":
-            self.config_path = Base_Path.WHISPER_CONFIG_PATH
+            self.config_path = get_path_relative_base("pretrained_models/whisper_specrnet/config.yaml")
         if weights_path == "":
-            self.weights_path = Base_Path.WHISPER_MODEL_WEIGHTS_PATH
+            self.weights_path = get_path_relative_base("pretrained_models/whisper_specrnet/weights.pth")
         
         self.config = yaml.safe_load(open(self.config_path, "r"))
         
@@ -36,7 +35,7 @@ class whisper_specrnet:
             device=self.device,
         )
         
-        self.model.load_state_dict(torch.load(self.weights_path, map_location=self.device, weights_only=False))
+        self.model.load_state_dict(torch.load(self.weights_path, map_location=self.device))
 
 
         self.seed = self.config["data"].get("seed", 42)
@@ -74,3 +73,4 @@ class rawgat:
     
     def evaluate_full_results(self, file_path):
         return self.model.evaluate_file(file_path)
+        

@@ -14,7 +14,7 @@ def get_path_relative_base(path):
   return absolute_path
 
 
-WHISPER_MODEL_WEIGHTS_PATH = get_path_relative_base("pretrained_models/whisper_specrnet/weights.pth")
+WHISPER_MODEL_WEIGHTS_PATH = get_path_relative_base("pretrained_models/whisper_specrnet/tiny_enc.en.pt")
 MEL_FILTERS_PATH = get_path_relative_base("pretrained_models/whisper_specrnet/mel_filters.npz")
 WHISPER_CONFIG_PATH = get_path_relative_base("pretrained_models/whisper_specrnet/config.yaml")
 
