@@ -1,4 +1,4 @@
-from sound_scape.backend.Isolate import isolate_file
+from backend.Isolate import isolate_file
 import pandas as pd
 from typing import Dict, Any
 from functools import partial

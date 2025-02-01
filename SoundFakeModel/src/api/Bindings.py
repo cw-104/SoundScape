@@ -1,9 +1,9 @@
-from sound_scape.backend.Isolate import separate_file
+from backend.Isolate import separate_file
 import threading
 from queue import Queue
 from json import dumps as to_json
 
-from sound_scape.backend.Models import whisper_specrnet, rawgat
+from backend.Models import whisper_specrnet, rawgat
 
 class ModelBindings:
     def __init__(self):

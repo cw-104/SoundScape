@@ -1,5 +1,5 @@
-from sound_scape.backend.Models import rawgat, whisper_specrnet
-from sound_scape.neural_network.preprocessing import PreprocessedData, Classification
+from backend.Models import rawgat, whisper_specrnet
+from neural_network.preprocessing import PreprocessedData, Classification
 import os
 from Base_Path import get_path_relative_base
 model = rawgat()

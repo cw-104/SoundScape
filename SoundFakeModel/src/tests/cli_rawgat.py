@@ -1,6 +1,6 @@
-from sound_scape.backend.Evaluate import DeepfakeClassificationModel
-from sound_scape.backend.Results import DfResultHandler
-from sound_scape.backend.Isolate import separate_file
+from backend.Evaluate import DeepfakeClassificationModel
+from backend.Results import DfResultHandler
+from backend.Isolate import separate_file
 import argparse
 
 

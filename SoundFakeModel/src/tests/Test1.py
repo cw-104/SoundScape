@@ -1,6 +1,6 @@
 import os
-from sound_scape.backend.Evaluate import DeepfakeClassificationModel
-from sound_scape.backend.Results import DfResultHandler
+from backend.Evaluate import DeepfakeClassificationModel
+from backend.Results import DfResultHandler
 
 
 def print_res(res1, res2, str, lower : bool):

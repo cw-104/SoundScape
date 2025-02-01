@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 import os, uuid
 from Base_Path import get_path_relative_base
 from flask_cors import CORS
-from sound_scape.api.Bindings import ModelBindings
+from api.Bindings import ModelBindings
 
 app = Flask(__name__)
 UPLOADS_FOLDER = get_path_relative_base("uploads")
