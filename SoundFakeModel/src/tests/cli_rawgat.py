@@ -1,7 +1,9 @@
-from Evaluate import DeepfakeClassificationModel
-from Results import DfResultHandler
-from Isolate import separate_file
+from sound_scape.backend.Evaluate import DeepfakeClassificationModel
+from sound_scape.backend.Results import DfResultHandler
+from sound_scape.backend.Isolate import separate_file
 import argparse
+
+
 def main():
     # Argument parser setup
     parser = argparse.ArgumentParser(description="Evaluate a model on a single file")
