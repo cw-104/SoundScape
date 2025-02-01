@@ -1,8 +1,8 @@
 from .Evaluate import get_best_device, evaluate_nn
-from backend.Evaluate import DeepfakeClassificationModel
-from backend.Results import DfResultHandler
+from sound_scape.backend.Evaluate import DeepfakeClassificationModel
+from sound_scape.backend.Results import DfResultHandler
 from Base_Path import get_path_relative_base
-from backend.whisper_specrnet import WhisperSpecRNet, set_seed
+from sound_scape.backend.whisper_specrnet import WhisperSpecRNet, set_seed
 import yaml, torch
 
 

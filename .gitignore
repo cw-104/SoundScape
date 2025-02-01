@@ -5,10 +5,12 @@ SoundFakeModel/logmel_train/
 
 SoundFakeModel/__pycache__/
 SoundFakeModel/.DS_Store
-.DS_Store
+*.DS_Store
 */.DS_Store
 */separated
 .vscode/
 *.pyc
 *.DS_Store
-*/env/
+*env
+
+*__pycache__

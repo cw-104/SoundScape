@@ -2,14 +2,14 @@ import torch
 import yaml
 import argparse
 import os 
-from backend.whisper_eval import evaluate_nn
-from backend.whisper_specrnet import WhisperSpecRNet, set_seed
-from backend.Isolate import separate_file
+from sound_scape.backend.whisper_eval import evaluate_nn
+from sound_scape.backend.whisper_specrnet import WhisperSpecRNet, set_seed
+from sound_scape.backend.Isolate import separate_file
 
 
-from backend.Evaluate import DeepfakeClassificationModel
-from backend.Results import DfResultHandler
-from backend.Isolate import separate_file
+from sound_scape.backend.Evaluate import DeepfakeClassificationModel
+from sound_scape.backend.Results import DfResultHandler
+from sound_scape.backend.Isolate import separate_file
 from Base_Path import get_path_relative_base
 def eval_file(f, preloaded_model, config, device):
 
