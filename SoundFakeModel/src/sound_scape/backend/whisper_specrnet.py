@@ -3,14 +3,13 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import Iterable, Optional, List, Union, Callable, Dict
 import numpy as np
+from Base_Path import WHISPER_MODEL_WEIGHTS_PATH, MEL_FILTERS_PATH
 
 
 import torch, torchaudio
 import torch.nn.functional as F
 from torch import Tensor, nn
 
-WHISPER_MODEL_WEIGHTS_PATH = "pretrained_models/whisper_specrnet/tiny_enc.en.pt"
-MEL_FILTERS_PATH = "pretrained_models/whisper_specrnet/mel_filters.npz"
 """
 This file contains implementation of SpecRNet architecture.
 We base our codebase on the implementation of RawNet2 by Hemlata Tak (tak@eurecom.fr).
@@ -321,8 +320,8 @@ class WhisperSpecRNet(SpecRNet):
     def __init__(self, input_channels, freeze_encoder, **kwargs):
         super().__init__(input_channels=input_channels, **kwargs)
 
-        self.device = kwargs["device"]
-        checkpoint = torch.load(WHISPER_MODEL_WEIGHTS_PATH, weights_only=False)
+        self.device = torch.device(kwargs.get("device"))
+        checkpoint = torch.load(WHISPER_MODEL_WEIGHTS_PATH, weights_only=False, map_location=self.device)
         dims = ModelDimensions(**checkpoint["dims"].__dict__)
         model = Whisper(dims)
         model = model.to(self.device)
@@ -684,5 +683,4 @@ class Whisper(nn.Module):
     @property
     def device(self):
         return next(self.parameters()).device
-
 

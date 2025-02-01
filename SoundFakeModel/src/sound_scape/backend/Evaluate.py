@@ -6,10 +6,9 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 from enum import IntEnum
 from sound_scape.backend.Results import DfResultHandler
-from Base_Path import get_path_relative_base
 from sound_scape.backend.whisper_eval import evaluate_nn
 from sound_scape.backend.whisper_specrnet import WhisperSpecRNet, set_seed
-
+from Base_Path import WHISPER_MODEL_WEIGHTS_PATH, WHISPER_CONFIG_PATH, RAWGAT_MODEL_WEIGHTS_PATH, RAWGAT_CONFIG_PATH
 class Models(IntEnum):
     SOUNDSCAPE = 0    
     RAWGAT = 1
@@ -56,8 +55,8 @@ class DeepfakeClassificationModel:
         self.device = get_best_device()
         if modeltype == Models.RAWGAT:
             from sound_scape.backend.RawGATmodel import RawGAT_ST
-            model_path = "pretrained_models/RawGAT/RawGAT.pth"
-            with open("pretrained_models/RawGAT/model_config_RawGAT_ST.yaml", 'r') as f_yaml:
+            model_path = RAWGAT_MODEL_WEIGHTS_PATH
+            with open(RAWGAT_CONFIG_PATH, 'r') as f_yaml:
                 config = yaml.safe_load(f_yaml)  
         
             # Extract only the model-related part of the configuration
@@ -157,9 +156,9 @@ def init_whisper_specrnet(device="", weights_path="", config_path="", threshold=
         device = get_best_device()
     get_best_device()
     if config_path == "":
-        config_path = get_path_relative_base("pretrained_models/whisper_specrnet/config.yaml")
+        config_path = WHISPER_CONFIG_PATH
     if weights_path == "":
-        weights_path = get_path_relative_base("pretrained_models/whisper_specrnet/weights.pth")
+        weights_path = WHISPER_MODEL_WEIGHTS_PATH
     config = yaml.safe_load(open(config_path, "r"))
     model_name, model_parameters = config["model"]["name"], config["model"]["parameters"]
 
