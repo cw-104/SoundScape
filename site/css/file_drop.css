@@ -1,0 +1,36 @@
+
+/* Additional styles for the drop area */
+.drop-area {
+    border: 2px dashed #007bff;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 100px;
+    height: 300px;
+    background-color: #343a40;
+    /* Dark background */
+    color: white;
+    /* White text */
+    transition: background-color 0.3s;
+    /* center */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.drop-area.hover {
+    background-color: #495057;
+    /* Lighter background on hover */
+}
+
+.file-label {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
