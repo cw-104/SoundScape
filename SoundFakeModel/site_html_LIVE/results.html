@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/slate/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #272b30;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 30px;
+            border-radius: 8px;
+            background: #343a40;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
+            margin-top: 50px;
+            width: 80%;
+            max-width: 700px;
+        }
+        .progress-container {
+            width: 100%;
+            background-color: #454d55;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 20px;
+            height: 20px;
+            display: block;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #007bff;
+            transition: width 0.2s linear;
+        }
+        .results-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            display: none;
+        }
+        .result-box {
+            padding: 15px;
+            border-radius: 8px;
+            background: #454d55;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
+            text-align: left;
+        }
+        .result-box h3 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Analysis Results</h1>
+        <div class="nav">
+            <a href="home.html" class="btn btn-primary">Home</a>
+        </div>
+
+        <div id="loading-message" class="alert alert-info mt-3">Processing... Please wait.</div>
+
+        <div class="progress-container">
+            <div id="progress-bar" class="progress-bar"></div>
+        </div>
+
+        <div id="result-container" class="results-container">
+            <div class="result-box">
+                <h3>Whisper Model</h3>
+                <p><strong>Unseparated Prediction:</strong> <span id="whisper-unsep-pred"></span></p>
+                <p><strong>Unseparated Label:</strong> <span id="whisper-unsep-label"></span></p>
+                <p><strong>Separated Prediction:</strong> <span id="whisper-sep-pred"></span></p>
+                <p><strong>Separated Label:</strong> <span id="whisper-sep-label"></span></p>
+            </div>
+            <div class="result-box">
+                <h3>RawGAT Model</h3>
+                <p><strong>Unseparated Prediction:</strong> <span id="rawgat-unsep-pred"></span></p>
+                <p><strong>Unseparated Label:</strong> <span id="rawgat-unsep-label"></span></p>
+                <p><strong>Separated Prediction:</strong> <span id="rawgat-sep-pred"></span></p>
+                <p><strong>Separated Label:</strong> <span id="rawgat-sep-label"></span></p>
+            </div>
+        </div>
+    </div>
+
+<script>
+    let fileId = sessionStorage.getItem("fileId");
+    let progress = 0;
+    let resultsReady = false;
+    let progressComplete = false;
+    let progressInterval;
+    let fetchInterval = 3000;
+
+    let whisperUnsep = {};
+    let whisperSep = {};
+    let rawgatUnsep = {};
+    let rawgatSep = {};
+
+    if (!fileId) {
+        document.getElementById("loading-message").innerText = "No file uploaded.";
+    } else {
+        function startProgressBar() {
+            progressInterval = setInterval(() => {
+                if (progress < 100) {
+                    progress += 2;
+                    document.getElementById("progress-bar").style.width = progress + "%";
+                }
+
+                if (progress >= 100) {
+                    progressComplete = true;
+                    clearInterval(progressInterval);
+                    if (resultsReady) {
+                        showResults();
+                    }
+                }
+            }, 200);
+        }
+
+        async function fetchResults(id) {
+            console.log(`Fetching results for ID: ${id}`);
+
+            let response = await fetch("https://ab92-162-221-8-214.ngrok-free.app/results", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: id })
+            });
+
+            let body = await response.json();
+            console.log("DEBUG: Response Body from API:", body);
+
+            if (typeof body === "string") {
+                try {
+                    body = JSON.parse(body);
+                } catch (error) {
+                    console.error("Error parsing JSON response:", error);
+                    document.getElementById("loading-message").innerText = "Error: Invalid response format.";
+                    return;
+                }
+            }
+
+            if (body.status === "error: not finished") {
+                document.getElementById("loading-message").innerText = "Processing... Please wait.";
+                setTimeout(() => fetchResults(id), fetchInterval);
+                return;
+            }
+
+            resultsReady = true;
+            whisperUnsep = body.whisper.unseparated_results || { prediction: "N/A", label: "N/A" };
+            whisperSep = body.whisper.separated_results || { prediction: "N/A", label: "N/A" };
+            rawgatUnsep = body.rawgat.unseparated_results || { prediction: "N/A", label: "N/A" };
+            rawgatSep = body.rawgat.separated_results || { prediction: "N/A", label: "N/A" };
+
+            if (progressComplete) {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById("loading-message").style.display = "none";
+            document.querySelector(".progress-container").style.display = "none";
+            document.getElementById("result-container").style.display = "block";
+
+            document.getElementById("whisper-unsep-pred").innerText = whisperUnsep.prediction;
+            document.getElementById("whisper-unsep-label").innerText = whisperUnsep.label;
+            document.getElementById("whisper-sep-pred").innerText = whisperSep.prediction;
+            document.getElementById("whisper-sep-label").innerText = whisperSep.label;
+
+            document.getElementById("rawgat-unsep-pred").innerText = rawgatUnsep.prediction;
+            document.getElementById("rawgat-unsep-label").innerText = rawgatUnsep.label;
+            document.getElementById("rawgat-sep-pred").innerText = rawgatSep.prediction;
+            document.getElementById("rawgat-sep-label").innerText = rawgatSep.label;
+        }
+
+        startProgressBar();
+        fetchResults(fileId);
+    }
+</script>
+</body>
+</html>
