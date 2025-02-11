@@ -1,12 +1,117 @@
-// Example of changing the URL without reloading
-function navigateTo(page) {
-  history.pushState(null, "", page);
-  // Load the content dynamically (e.g., using fetch)
-}
-
 // Fetch navbar
-fetch("navbar.html") // Assuming your navbar code is in navbar.html
+fetch("html-elements/navbar.html")
   .then((response) => response.text())
   .then((data) => {
-    document.getElementById("navbar-container").innerHTML = data;
+    document.body.insertAdjacentHTML("afterbegin", data);
+    const path = window.location.pathname;
+    const homeLink = document.getElementById("home-link");
+
+    // @ts-ignore
+    homeLink.href = "home";
+    // @ts-ignore
+    document.getElementById("nav-brand").href = "home";
+    const aboutLink = document.getElementById("about-link");
+    // @ts-ignore
+    aboutLink.href = "about";
+    const creditsLink = document.getElementById("credits-link");
+    // @ts-ignore
+    creditsLink.href = "credits";
+
+    if (path.includes("home")) {
+      homeLink.classList.add("active");
+      // @ts-ignore
+      document.getElementById("nav-brand").href = "#";
+      // @ts-ignore
+      homeLink.href = "#";
+    } else if (path.includes("about")) {
+      aboutLink.classList.add("active");
+      // @ts-ignore
+      aboutLink.href = "#";
+    } else if (path.includes("credits")) {
+      creditsLink.classList.add("active");
+      // @ts-ignore
+      creditsLink.href = "#";
+    }
   });
+
+// let url = "https://8afe-162-221-8-218.ngrok-free.app";
+let url = "http://127.0.0.1";
+let port = 8080;
+
+function getURL() {
+  return url + ":" + port;
+}
+
+const STATES = {
+  NONE: 0,
+  UPLOADED: 1,
+  PROCESSING: 2,
+  FINISHED: 3,
+  ERROR: -1,
+};
+
+async function fetchStatus(id) {
+  let response = await fetch(getURL() + "/statusv2", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: id }),
+  });
+  if (!response.ok) {
+    console.log("Error");
+    return;
+  }
+  let data = await response.json();
+  return data;
+}
+
+function parseState(data) {
+  if (!data.state) {
+    console.log("Error: No state received");
+    return STATES.NONE;
+  }
+  let state = data.state.toLowerCase();
+  if (state === "uploaded") {
+    return STATES.UPLOADED;
+  } else if (state === "processing") {
+    return STATES.PROCESSING;
+  } else if (state === "finished") {
+    return STATES.FINISHED;
+  } else {
+    return STATES.ERROR;
+  }
+}
+async function fetchResults(id) {
+  console.log(`Fetching results for ID: ${id}`);
+
+  let response = await fetch(getURL() + "/resultsv2", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: id }),
+  });
+  if (!response.ok) {
+    console.log("Error");
+    return;
+  }
+  let data = await response.json();
+  return data;
+}
+
+class ModelResultsSet {
+  constructor(json) {
+    this.whisper = new ModelResults(json.whisper, "Whisper");
+    this.rawgat = new ModelResults(json.rawgat, "Rawgat");
+  }
+}
+class ModelResults {
+  constructor(model_json, str_name) {
+    this.name = str_name;
+    this.separated = new Prediction(model_json.unseparated_results);
+    this.unseparated = new Prediction(model_json.separated_results);
+  }
+}
+class Prediction {
+  constructor(res_json) {
+    this.label = res_json.label;
+    this.pred = res_json.prediction;
+  }
+}

@@ -1,0 +1,22 @@
+
+.navbar-brand {
+    margin-left: 20px;
+}
+
+#results-button {
+    width: 100%;
+    height: 50px;
+    margin-bottom: 20px;
+}
+
+.tab-content {
+    margin-top: 10px;
+}
+
+.form-control {
+    color:#3f597c;
+}
+
+.form-control:focus {
+    color:#3f597c;
+}
