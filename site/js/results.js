@@ -35,13 +35,12 @@ function displayResults(json) {
   let resultSet = new ModelResultsSet(json);
   console.log(resultSet);
 
-  let success = resultSet.rawgat.separated.label === "Real";
-  let confidence = resultSet.rawgat.separated.pred;
   //   trim to 2 dec
-  confidence = Math.round(confidence * 10000) / 100;
 
-  let str = "Our system is " + confidence + "% confident that this is ";
-  if (success) {
+  let finalPrediction = interperateFinalResult(resultSet);
+  let str =
+    "Our system is " + finalPrediction.pred + "% confident that this is ";
+  if (finalPrediction.label === "Real") {
     resultCard.classList.add("border-success");
     cardTitle.innerHTML = "Real";
     cardBody.innerHTML = str + " not a deepfake.";
@@ -103,4 +102,53 @@ function fillAdvancedResults(resultSet) {
   html += "</table>";
 
   advancedResultsBody.innerHTML = html;
+}
+
+/**
+ *
+ * @param {ModelResultsSet} resultSet
+ * @returns {Prediction}
+ */
+function interperateFinalResult(resultSet) {
+  // count real labels
+  let realCount = 0;
+  let realSumConf = 0;
+  let fakeCount = 0;
+  let fakeSumConf = 0;
+
+  const models = [resultSet.whisper, resultSet.rawgat];
+  for (let model of models) {
+    if (model.separated.label === "Real") {
+      realCount++;
+      realSumConf += model.separated.pred;
+    } else {
+      fakeCount++;
+      fakeSumConf += model.separated.pred;
+    }
+
+    if (model.unseparated.label === "Real") {
+      realCount++;
+      realSumConf += model.unseparated.pred;
+    } else {
+      fakeCount++;
+      fakeSumConf += model.unseparated.pred;
+    }
+  }
+  // whichever has more of labels
+  let finalLabel = realCount >= fakeCount ? "Real" : "Fake";
+  let finalConfSum = finalLabel === "Real" ? realSumConf : fakeSumConf;
+  let finalConf = finalConfSum / (realCount + fakeCount);
+  let prettyConf = Math.round(finalConf * 10000) / 100;
+
+  console.log(`
+    realCount: ${realCount}
+    realSumConf: ${realSumConf}
+    fakeCount: ${fakeCount}
+    fakeSumConf: ${fakeSumConf}
+    finalLabel: ${finalLabel}
+    finalConfSum: ${finalConfSum}
+    finalConf: ${finalConf}
+    prettyConf: ${prettyConf}
+  `);
+  return new Prediction({ label: finalLabel, prediction: prettyConf });
 }

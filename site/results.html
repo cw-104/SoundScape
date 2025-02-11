@@ -48,16 +48,7 @@
             aria-labelledby="headingOne"
             data-bs-parent="#accordionExample"
           >
-            <div class="accordion-body" , id="advanced-results-body">
-              <strong>This is the first item's accordion body.</strong> It is
-              shown by default, until the collapse plugin adds the appropriate
-              classes that we use to style each element. These classes control
-              the overall appearance, as well as the showing and hiding via CSS
-              transitions. You can modify any of this with custom CSS or
-              overriding our default variables. It's also worth noting that just
-              about any HTML can go within the <code>.accordion-body</code>,
-              though the transition does limit overflow.
-            </div>
+            <div class="accordion-body" , id="advanced-results-body"></div>
           </div>
         </div>
         <div class="accordion-item">
@@ -79,15 +70,17 @@
             aria-labelledby="headingTwo"
             data-bs-parent="#accordionExample"
           >
-            <div class="accordion-body">
-              <strong>This is the second item's accordion body.</strong> It is
-              hidden by default, until the collapse plugin adds the appropriate
-              classes that we use to style each element. These classes control
-              the overall appearance, as well as the showing and hiding via CSS
-              transitions. You can modify any of this with custom CSS or
-              overriding our default variables. It's also worth noting that just
-              about any HTML can go within the <code>.accordion-body</code>,
-              though the transition does limit overflow.
+            <div class="accordion-body text-light-emphasis">
+              <strong>Methods</strong>
+              <br />
+              <br />
+
+              Debug method of interpretting: Label is whichever label appears
+              more
+              <br />
+              <br />
+              Confidence is the average of the confidence of labels that match
+              the conclusion
             </div>
           </div>
         </div>
@@ -111,21 +104,18 @@
             data-bs-parent="#accordionExample"
           >
             <div class="accordion-body">
-              <strong>This is the third item's accordion body.</strong> It is
-              hidden by default, until the collapse plugin adds the appropriate
-              classes that we use to style each element. These classes control
-              the overall appearance, as well as the showing and hiding via CSS
-              transitions. You can modify any of this with custom CSS or
-              overriding our default variables. It's also worth noting that just
-              about any HTML can go within the <code>.accordion-body</code>,
-              though the transition does limit overflow.
+              <a href="about" class="btn btn-primary">About</a>
+              <a href="credits" class="btn btn-primary">Credits</a>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <button id="back-button" class="btn btn-primary">Upload New File</button>
+    <!-- link button -->
+    <div class="container mt-4">
+      <a href="home" class="btn btn-secondary">Upload New File</a>
+    </div>
 
     <script src="js/results.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
