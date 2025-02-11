@@ -1,5 +1,14 @@
+#file-select {
+    min-width: 200px;
+}
+
+#file-form {
+    padding: 20px;
+}
+
 #upload-container {
     max-width: 800px;
+    min-width: 300px;
 }
 #insert-progress-container {
     min-height: 200px;

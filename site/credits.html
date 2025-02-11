@@ -14,7 +14,6 @@
     />
 
     <link rel="stylesheet" href="css/global.css" />
-    <script src="js/global.js" defer></script>
   </head>
 
   <body>
@@ -24,6 +23,9 @@
         <div class="card-body">
           <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item" role="presentation">
+              <!-- defining tabs -->
+
+              <!-- models tab -->
               <a
                 class="nav-link active"
                 data-bs-toggle="tab"
@@ -33,96 +35,76 @@
                 >Models</a
               >
             </li>
+            <!-- isolation tab -->
             <li class="nav-item" role="presentation">
               <a
                 class="nav-link"
                 data-bs-toggle="tab"
-                href="#acknowledgements"
+                href="#isolation"
                 aria-selected="false"
                 role="tab"
                 tabindex="-1"
-                >Acknowledgements</a
+                >Vocal Isolation</a
+              >
+            </li>
+            <!-- aixplain tab -->
+            <li class="nav-item" role="presentation">
+              <a
+                class="nav-link"
+                data-bs-toggle="tab"
+                href="#aixplain"
+                aria-selected="false"
+                role="tab"
+                tabindex="-1"
+                >aiXplain</a
+              >
+            </li>
+
+            <!-- official citations tab -->
+            <li class="nav-item" role="presentation">
+              <a
+                class="nav-link"
+                data-bs-toggle="tab"
+                href="#official-citations"
+                aria-selected="false"
+                role="tab"
+                tabindex="-1"
+                >Official Citations</a
               >
             </li>
           </ul>
+
+          <!-- pages -->
+
+          <!-- models  -->
           <div id="tabs" class="tab-content">
             <div class="tab-pane fade active show" id="models" role="tabpanel">
               <div id="model-card-container"></div>
             </div>
-            <div class="tab-pane fade" id="acknowledgements" role="tabpanel">
-              <p class="card-text text-body-secondary">
-                if necessary, add any aknowledgements here
-              </p>
+            <!-- isolation -->
+            <div class="tab-pane fade" id="isolation" role="tabpanel">
+              <div id="isolation-card-container"></div>
+            </div>
+            <!-- aixplain -->
+            <div class="tab-pane fade" id="aixplain" role="tabpanel">
+              <div id="aixplain-container"></div>
+            </div>
+
+            <!-- official citations -->
+
+            <div class="tab-pane fade" id="official-citations" role="tabpanel">
+              <div id="official-citations-container"></div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-      function init() {
-        const model_card_container = document.getElementById(
-          "model-card-container"
-        );
-        function add_model_card(
-          model_name,
-          authors,
-          paper_link,
-          source_link,
-          body,
-          paper_abstract
-        ) {
-          let card_html = `
-            <div class="card border-secondary mb-3">
-              <div class="card-body">
-                  <h4 class="card-title">${model_name}</h4>
-                  <h6 class="card-subtitle mb-2 text-muted">
-                    ${authors}
-                    <br>
-                  </h6>
-                  <p class="card-text text-body-secondary">
-                    ${body}
-                    </p>
-              <h6>Abstract</h6>
-              <p class="card-text text-primary-emphasis">
-                ${paper_abstract}
-              </p>
-
-              </div>
-                <div class="card-footer text-muted">
-                  <a href="${paper_link}" class="card-link">Paper</a>
-                  <a href="${source_link}" class="card-link">Source</a>
-              </div>
-            </div>
-                    `;
-          model_card_container.appendChild(
-            new DOMParser().parseFromString(card_html, "text/html").body
-              .firstChild
-          );
-        }
-
-        add_model_card(
-          "Whisper SpecRNet",
-          "Piotr Kawa, Marcin Plata, Michał Czuba, Piotr Szymański, Piotr Syga",
-          "https://www.isca-speech.org/archive/interspeech_2023/kawa23b_interspeech.html",
-          "https://www.github.com/piotrkawa/deepfake-whisper-features/tree/main",
-          "",
-          // ` A model trained using features extracted from <a href="https://openai.com/index/whisper/">Whisper</a>`,
-          `With a recent influx of voice generation methods, the threat introduced by audio DeepFake (DF) is ever-increasing. Several different detection methods have been presented as a countermeasure. Many methods are based on so-called front-ends, which, by transforming the raw audio, emphasize features crucial for assessing the genuineness of the audio sample. Our contribution contains investigating the influence of the state-of-the-art <a href="https://openai.com/index/whisper/">Whisper</a> automatic speech recognition model as a DF detection front-end. We compare various combinations of Whisper and well-established front-ends by training 3 detection models (LCNN, SpecRNet, and MesoNet) on a widely used ASVspoof 2021 DF dataset and later evaluating them on the DF In-The-Wild dataset. We show that using Whisper-based features improves the detection for each model and outperforms recent results on the In-The-Wild dataset by reducing Equal Error Rate by 21%.`
-        );
-
-        add_model_card(
-          "RawGAT-ST",
-          "Hemlata Tak, Jee-weon Jung, Jose Patino, Madhu Kamble, Massimiliano Todisco, Nicholas Evans",
-          "https://arxiv.org/abs/2107.12710",
-          "https://github.com/eurecom-asp/RawGAT-ST-antispoofing/tree/main",
-          "",
-          `Artefacts that serve to distinguish bona fide speech from spoofed or deepfake speech are known to reside in specific subbands and temporal segments. Various approaches can be used to capture and model such artefacts, however, none works well across a spectrum of diverse spoofing attacks. Reliable detection then often depends upon the fusion of multiple detection systems, each tuned to detect different forms of attack. In this paper we show that better performance can be achieved when the fusion is performed within the model itself and when the representation is learned automatically from raw waveform inputs. The principal contribution is a spectro-temporal graph attention network (GAT) which learns the relationship between cues spanning different sub-bands and temporal intervals. Using a model-level graph fusion of spectral (S) and temporal (T) sub-graphs and a graph pooling strategy to improve discrimination, the proposed RawGAT-ST model achieves an equal error rate of 1.06 % for the ASVspoof 2019 logical access database. This is one of the best results reported to date and is reproducible using an open source implementation.`
-        );
-      }
-      init();
-    </script>
   </body>
+  <script src="js/global.js" defer></script>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    defer
+  ></script>
+  <script src="js/credits.js" defer></script>
 </html>

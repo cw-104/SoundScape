@@ -1,4 +1,14 @@
 
+.bibtex {
+    white-space: pre-wrap;
+    /* Preserve whitespace and wrap text */
+    text-indent: -1em;
+    /* Negative indent to pull the first line back */
+    padding-left: 1em;
+    /* Indent the entire block */
+    font-family: monospace;
+    /* Use a monospace font for better alignment */
+}
 .navbar-brand {
     margin-left: 20px;
 }

@@ -34,12 +34,11 @@ fetch("html-elements/navbar.html")
     }
   });
 
-// let url = "https://8afe-162-221-8-218.ngrok-free.app";
-let url = "http://127.0.0.1";
-let port = 8080;
+let url = " https://aa92-162-221-8-218.ngrok-free.app";
+// let url = "http://127.0.0.1:8080";
 
 function getURL() {
-  return url + ":" + port;
+  return url;
 }
 
 const STATES = {
@@ -113,5 +112,6 @@ class Prediction {
   constructor(res_json) {
     this.label = res_json.label;
     this.pred = res_json.prediction;
+    this.pretty_pred = Math.round(this.pred * 10000) / 100; // 2 dec places as percentage not float
   }
 }

@@ -85,7 +85,7 @@ function fillAdvancedResults(resultSet) {
        <tr class="table-dark">
             <th scope="row" class="text-body-secondary">${model.name}</th>
             <td class="text-body-secondary">${model.separated.label}</td>
-            <td class="text-body-secondary">${model.separated.pred}%</td>
+            <td class="text-body-secondary">${model.separated.pretty_pred}%</td>
         </tr>
         `;
   }
@@ -95,7 +95,7 @@ function fillAdvancedResults(resultSet) {
         <tr class="table-dark">
             <th scope="row" class="text-body-secondary">${model.name}</th>
             <td class="text-body-secondary">${model.unseparated.label}</td>
-            <td class="text-body-secondary">${model.unseparated.pred}%</td>
+            <td class="text-body-secondary">${model.unseparated.pretty_pred}%</td>
         </tr>
             `;
   }
