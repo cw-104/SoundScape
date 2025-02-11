@@ -23,7 +23,7 @@ arg: what to put
 # Open source projects utilized
 
 
-## Denucs -- vocal isolation
+## Demucs -- vocal isolation
 Vocal isolation model to separate backing tracks
 
 [demucs github](https://github.com/charzy/Demucs-v4-)
