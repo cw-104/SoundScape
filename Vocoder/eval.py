@@ -12,6 +12,10 @@ import librosa
 import json
 from datetime import datetime
 
+from sound_scape.backend.Evaluate import DeepfakeClassificationModel
+from sound_scape.backend.Isolate import separate_file
+from sound_scape.backend.Results import DfResultHandler
+
 def pad(x, max_len=96000):
     x_len = x.shape[0]
     if x_len >= max_len:
@@ -94,5 +98,21 @@ if __name__ == '__main__':
     result_multi = np.average(out_list_multi, axis=0).tolist()
     result_binary = np.average(out_list_binary, axis=0).tolist()
 
-    print('Multi classification result : gt:{}, wavegrad:{}, diffwave:{}, parallel wave gan:{}, wavernn:{}, wavenet:{}, melgan:{}'.format(result_multi[0], result_multi[1], result_multi[2], result_multi[3], result_multi[4], result_multi[5], result_multi[6]))
-    print('Binary classification result : fake:{}, real:{}'.format(result_binary[0], result_binary[1]))
+    #print('Multi classification result : gt:{}, wavegrad:{}, diffwave:{}, parallel wave gan:{}, wavernn:{}, wavenet:{}, melgan:{}'.format(result_multi[0], result_multi[1], result_multi[2], result_multi[3], result_multi[4], result_multi[5], result_multi[6]))
+    #print('Binary classification result : fake:{}, real:{}'.format(result_binary[0], result_binary[1]))
+    
+    args = parser.parse_args()
+    model = DeepfakeClassificationModel(result_handler=DfResultHandler(args.threshold, "Fake", "Real", 10, .95))
+
+    if args.file:
+        file = args.file
+        if args.sep:
+            file = separate_file(file, "separated")
+        print(model.evaluate_file(file))
+    elif args.folder:
+        results = model.evaluate_folder(args.folder,progress_bar=True)
+        n_rl = 0
+        for r in results:
+            if not r.is_lower_class: n_rl += 1
+            print(r)
+        print(f"percent real: {((n_rl/len(results)) * 100):.2f}%")
