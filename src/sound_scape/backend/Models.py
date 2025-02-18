@@ -4,7 +4,16 @@ from sound_scape.backend.Results import DfResultHandler
 from Base_Path import get_path_relative_base
 from sound_scape.backend.whisper_specrnet import WhisperSpecRNet, set_seed
 import yaml, torch
+from .xlsr_model import xlsr_model_eval
 
+class xlsr:
+    def __init__(self, device=""):
+        if device == "":
+            self.device = get_best_device()
+        self.model = xlsr_model_eval(device=self.device)
+        
+    def evaluate(self, file_path):
+        return self.model.eval_file(file_path)
 
 class whisper_specrnet:
     def __init__(self, device="", weights_path="", config_path="", threshold=.45, reval_threshold=0, no_sep_threshold=0):
