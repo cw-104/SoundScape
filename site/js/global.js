@@ -4,15 +4,26 @@ fetch("html-elements/navbar.html")
   .then((data) => {
     document.body.insertAdjacentHTML("afterbegin", data);
     const path = window.location.pathname;
+
+    // ----- upload -----
+    const uploadLink = document.getElementById("upload-link");
+    // @ts-ignore
+    uploadLink.href = "upload";
+
     const homeLink = document.getElementById("home-link");
 
+    // ----- home -----
     // @ts-ignore
     homeLink.href = "home";
     // @ts-ignore
     document.getElementById("nav-brand").href = "home";
+
+    // ----- about -----
     const aboutLink = document.getElementById("about-link");
     // @ts-ignore
     aboutLink.href = "about";
+
+    // ----- credits -----
     const creditsLink = document.getElementById("credits-link");
     // @ts-ignore
     creditsLink.href = "credits";
@@ -31,6 +42,10 @@ fetch("html-elements/navbar.html")
       creditsLink.classList.add("active");
       // @ts-ignore
       creditsLink.href = "#";
+    } else if (path.includes("upload")) {
+      uploadLink.classList.add("active");
+      // @ts-ignore
+      uploadLink.href = "#";
     }
   });
 
