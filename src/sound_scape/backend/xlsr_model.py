@@ -236,6 +236,5 @@ class xlsr_model_eval():
     def eval_file(self, file):
         eval_set = File_Dataset([file])
         res = eval_dataset(eval_set, self.model, self.device)
-        print(f"Results: {res[1]}")
         return res[1]
 
