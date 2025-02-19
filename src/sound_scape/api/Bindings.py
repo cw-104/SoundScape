@@ -32,37 +32,25 @@ class ModelBindings:
             self.processing_thread = threading.Thread(target=self.run_processing_thread)
             self.processing_thread.start()
 
-
-    def process_file(self, id):
-        if not self.file_ids.exists(id):
-            self.file_ids.update_state(id, 'Does not exist')
-            return
-        # set to processing state
-        self.file_ids.update_state(id, 'processing')
-        # get path
-        path = self.file_ids.get_path(id)
-
-        # Separate the file
-        sep_file = separate_file(path, os.path.join(UPLOADS_FOLDER, "separated-uploads"), mp3=True)
-
+    def get_model_results(self, original_path, sep_path):
         # Eval Whisper
-        wpred, wlabel = self.whisper_model.evaluate(path)
-        wpred_sep, wlabel_sep = self.whisper_model.evaluate(sep_file)
+        wpred, wlabel = self.whisper_model.evaluate(original_path)
+        wpred_sep, wlabel_sep = self.whisper_model.evaluate(sep_path)
         
         # Eval RawGAT
-        rpred, rlabel = self.rawgat_model.evaluate(path)
-        rpred_sep, rlabel_sep= self.rawgat_model.evaluate(sep_file)
+        rpred, rlabel = self.rawgat_model.evaluate(original_path)
+        rpred_sep, rlabel_sep= self.rawgat_model.evaluate(sep_path)
 
         # Eval Vocoder
-        vpred, vlabel = self.vocoder_model.evaluate(path)
-        vpred_sep, vlabel_sep = self.vocoder_model.evaluate(sep_file)
+        vpred, vlabel = self.vocoder_model.evaluate(original_path)
+        vpred_sep, vlabel_sep = self.vocoder_model.evaluate(sep_path)
 
         # Eval XLSR
-        xpred, xlabel = self.xlsr_model.evaluate(path)
-        xpred_sep, xlabel_sep = self.xlsr_model.evaluate(sep_file)
+        xpred, xlabel = self.xlsr_model.evaluate(original_path)
+        xpred_sep, xlabel_sep = self.xlsr_model.evaluate(sep_path)
 
         # to json results
-        result = to_json({
+        return to_json({
             'status': 'finished',
             'whisper': {
             'unseparated_results': {
@@ -103,7 +91,42 @@ class ModelBindings:
                 'prediction': vpred_sep,
                 'label': vlabel_sep
             }}})
-        self.file_ids.set_results(id, result)
+
+    def append_explain_results(self, json):
+        json['explaination'] = "(placeholder) We are using 5 models to predict the results..."
+
+        return json
+
+    def append_identification_results(self, json):
+        # pass vocal to match
+        artist = "(placeholder) Taylor Swift"
+
+        json['identified-artist'] = artist
+        return json
+
+    def process_file(self, id):
+        if not self.file_ids.exists(id):
+            self.file_ids.update_state(id, 'Does not exist')
+            return
+        # set to processing state
+        self.file_ids.update_state(id, 'processing')
+        # get path
+        path = self.file_ids.get_path(id)
+
+        # Separate the file
+        sep_file = separate_file(path, os.path.join(UPLOADS_FOLDER, "separated-uploads"), mp3=True)
+
+        # get model eval results
+        result_json = self.get_model_results(path, sep_file)
+
+        # add ai explaination
+        result_json = self.explain_results(result_json)
+
+        # match the vocals to an artist
+        result_json = self.identify_artist(result_json)
+
+
+        self.file_ids.set_results(id, result_json)
 
 
 class FileIds:
