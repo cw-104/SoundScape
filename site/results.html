@@ -19,11 +19,54 @@
   <body>
     <div id="navbar-container"></div>
     <div class="container mt-4">
-      <div class="card mb-3" id="result-card">
-        <div class="card-header">Results</div>
-        <div class="card-body">
-          <h4 class="card-title" id="result-title">Processing...</h4>
-          <p class="card-text" id="result-body">Waiting for final results</p>
+      <!-- Dismissiable alert about AI accuracy -->
+      <div class="alert alert-dismissible alert-warning">
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+        ></button>
+        <p class="mb-0">
+          Results are never perfect, we provide an estimate of our certainty.
+          Our service is a tool to aid in detection, not a guarentee.
+          <a href="about" class="alert-link">Learn More</a>.
+        </p>
+      </div>
+      <!--  result card -->
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card mb-3" id="result-card">
+            <div class="card-header">Results</div>
+            <div class="card-body">
+              <h4 class="card-title" id="result-title">Processing...</h4>
+              <p class="card-text" id="result-body">
+                Waiting for final results
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card mb-3" id="explaination-card">
+            <div class="card-header">Explaination</div>
+            <div class="card-body">
+              <h4 class="card-title" id="result-title">How Do We Know This?</h4>
+              <div id="explaination-body">Processing...</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card mb-3" id="identity-card">
+            <div class="card-header">Identification</div>
+            <div class="card-body">
+              <h4 class="card-title" id="result-title">
+                This Artist is Most Likely:
+              </h4>
+              <div id="identification-body">Processing...</div>
+            </div>
+          </div>
         </div>
       </div>
 

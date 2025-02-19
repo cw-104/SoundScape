@@ -1,8 +1,18 @@
+const StatusEnum = Object.freeze({
+  DISABLED: 0,
+  READY: 1,
+  UPLOADING: 2,
+  IN_PROGRESS: 3,
+});
+const file_hint_initial_color = "text-warning";
+
 // Drag and Drop File Upload Functionality
 const dropArea = document.getElementById("drop-area");
 const fileHint = document.getElementById("file-hint");
 const fileInput = document.getElementById("file-select");
 const submitButton = document.getElementById("analyze-button");
+setButtonState(StatusEnum.DISABLED);
+fileHint.classList.add(file_hint_initial_color);
 
 submitButton.addEventListener("click", function (event) {
   event.preventDefault();
@@ -19,16 +29,56 @@ submitButton.addEventListener("click", function (event) {
       // window.location.href = "progress.html";
       insertProgress();
     } else {
-      displayFileOrMessage("Upload failed. Try again.");
+      displayFileOrMessage("Upload failed. Try again.", true);
     }
   });
 });
+
+function setButtonState(status) {
+  console.log(status);
+  submitButton.disabled = status !== StatusEnum.READY;
+  success_class = "btn-success";
+  disabled_class = "btn-dark";
+  uploading_class = "btn-outline-warning";
+  in_progress_class = "btn-outline-success";
+
+  switch (status) {
+    case StatusEnum.DISABLED:
+      submitButton.innerHTML = "Waiting for File";
+      submitButton.classList.remove(success_class);
+      submitButton.classList.remove(in_progress_class);
+      submitButton.classList.remove(uploading_class);
+      submitButton.classList.add(disabled_class);
+      break;
+    case StatusEnum.READY:
+      submitButton.innerHTML = "Upload";
+      submitButton.classList.remove(disabled_class);
+      submitButton.classList.remove(in_progress_class);
+      submitButton.classList.remove(uploading_class);
+      submitButton.classList.add(success_class);
+      break;
+    case StatusEnum.UPLOADING:
+      submitButton.innerHTML = "Uploading...";
+      submitButton.classList.remove(disabled_class);
+      submitButton.classList.remove(success_class);
+      submitButton.classList.remove(in_progress_class);
+      submitButton.classList.add(uploading_class);
+      break;
+    case StatusEnum.IN_PROGRESS:
+      submitButton.innerHTML = "Analyzing...";
+      submitButton.classList.remove(disabled_class);
+      submitButton.classList.remove(success_class);
+      submitButton.classList.remove(uploading_class);
+      submitButton.classList.add(in_progress_class);
+      break;
+  }
+}
+
 function insertProgress() {
-  displayFileOrMessage("File uploaded!");
+  displayFileOrMessage("File uploaded!", false);
   // disable submit button
   // @ts-ignore
-  submitButton.disabled = true;
-  submitButton.innerHTML = "Analyzing...";
+  setButtonState(StatusEnum.IN_PROGRESS);
   fetch("html-elements/progress_bar.html")
     .then((response) => response.text())
     .then((data) => {
@@ -47,8 +97,6 @@ fileInput.addEventListener("change", function (event) {
 
   // @ts-ignore
   if (!checkFiles(event.target.files)) {
-    // @ts-ignore
-    fileInput.value = "";
     return;
   }
 
@@ -107,20 +155,26 @@ function preventDefaults(e) {
 defFileDropEvents();
 
 function checkFiles(files) {
+  setButtonState(StatusEnum.DISABLED);
+
   if (files.length > 1) {
-    displayFileOrMessage("Please only upload one file at a time.");
+    displayFileOrMessage("Please only upload one file at a time.", true);
+    fileInput.value = "";
     return false;
   } else if (files.length === 0) {
-    displayFileOrMessage("Please upload an mp3 file.");
+    displayFileOrMessage("Please upload an mp3 file.", true);
+    fileInput.value = "";
     return false;
   }
   let file = files[0];
 
   if (file.type !== "audio/mpeg") {
-    displayFileOrMessage("Uploads must be in mp3 format.");
+    displayFileOrMessage("Uploads must be in mp3 format.", true);
+    fileInput.value = "";
     return false;
   }
-  displayFileOrMessage("File ready to analyze!");
+  displayFileOrMessage("File ready to analyze!", false);
+  setButtonState(StatusEnum.READY);
   return true;
 }
 
@@ -133,7 +187,15 @@ function handleDrop(e) {
   fileInput.files = files; // pass to the file input form
 }
 
-function displayFileOrMessage(message) {
+function displayFileOrMessage(message, is_error) {
+  fileHint.classList.remove(file_hint_initial_color);
+  if (!is_error) {
+    fileHint.classList.remove("text-danger");
+    fileHint.classList.add("text-success");
+  } else {
+    fileHint.classList.add("text-danger");
+    fileHint.classList.remove("text-success");
+  }
   fileHint.innerHTML = message;
 }
 
@@ -144,7 +206,8 @@ function displayFileOrMessage(message) {
 async function uploadToAPI(file) {
   let data = new FormData();
   data.append("audio", file);
-  displayFileOrMessage("Uploading...");
+  displayFileOrMessage("Uploading...", false);
+  setButtonState(StatusEnum.UPLOADING);
 
   return await fetch(getURL() + "/upload", { method: "POST", body: data })
     .then((response) => response.json())
@@ -153,13 +216,13 @@ async function uploadToAPI(file) {
         return body.id;
       } else {
         console.error("body.id not found");
-        displayFileOrMessage("Upload failed. Try again.");
+        displayFileOrMessage("Upload failed. Try again.", true);
         return;
       }
     })
     .catch((error) => {
       console.error("Upload Error:", error);
-      displayFileOrMessage("Upload failed. Try again.");
+      displayFileOrMessage("Upload failed. Try again.", true);
       return;
     });
 }

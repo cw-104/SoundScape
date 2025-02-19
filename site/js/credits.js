@@ -2,7 +2,6 @@ function init() {
   function add_model_card(
     container,
     model_name,
-    paper_title,
     authors,
     paper_link,
     source_link,
@@ -14,13 +13,7 @@ function init() {
             <div class="card border-secondary mb-3">
               <div class="card-body">
                   <h4 class="card-title">${model_name}</h4>
-                  <h5 class="card-subtitle mb-2 text-muted">
-                  <a href="${paper_link}" class="btn">View Paper</a>
-                  </h5>
-                  <h6 class="lead mb-2 text-muted">
-                  ${paper_title}
-                  </h6>
-                  <h6 class="card-sub-subtitle mb-2 text-muted">
+                  <h6 class="card-subtitle mb-2 text-muted">
                     ${authors}
                     <br>
                   </h6>
@@ -49,7 +42,6 @@ function init() {
   add_model_card(
     model_card_container,
     "Whisper SpecRNet",
-    "Improved DeepFake Detection Using Whisper Features",
     "Piotr Kawa, Marcin Plata, Michał Czuba, Piotr Szymański, Piotr Syga",
     "https://www.isca-speech.org/archive/interspeech_2023/kawa23b_interspeech.html",
     "https://www.github.com/piotrkawa/deepfake-whisper-features/tree/main",
@@ -61,45 +53,11 @@ function init() {
   add_model_card(
     model_card_container,
     "RawGAT-ST",
-    "End-to-End Spectro-Temporal Graph Attention Networks for Speaker Verification Anti-Spoofing and Speech Deepfake Detection",
     "Hemlata Tak, Jee-weon Jung, Jose Patino, Madhu Kamble, Massimiliano Todisco, Nicholas Evans",
     "https://arxiv.org/abs/2107.12710",
     "https://github.com/eurecom-asp/RawGAT-ST-antispoofing/tree/main",
     "",
     `Artefacts that serve to distinguish bona fide speech from spoofed or deepfake speech are known to reside in specific subbands and temporal segments. Various approaches can be used to capture and model such artefacts, however, none works well across a spectrum of diverse spoofing attacks. Reliable detection then often depends upon the fusion of multiple detection systems, each tuned to detect different forms of attack. In this paper we show that better performance can be achieved when the fusion is performed within the model itself and when the representation is learned automatically from raw waveform inputs. The principal contribution is a spectro-temporal graph attention network (GAT) which learns the relationship between cues spanning different sub-bands and temporal intervals. Using a model-level graph fusion of spectral (S) and temporal (T) sub-graphs and a graph pooling strategy to improve discrimination, the proposed RawGAT-ST model achieves an equal error rate of 1.06 % for the ASVspoof 2019 logical access database. This is one of the best results reported to date and is reproducible using an open source implementation.`
-  );
-
-  add_model_card(
-    model_card_container,
-    "XLSR-WavLM",
-    "Audio Deepfake Detection with Self-Supervised XLS-R and SLS Classifier",
-    "Hemlata Tak, Jee-weon Jung, Jose Patino, Madhu Kamble, Massimiliano Todisco, Nicholas Evans",
-    "https://openreview.net/forum?id=acJMIXJg2u",
-    "https://github.com/QiShanZhang/SLSforASVspoof-2021-DF/tree/main",
-    "",
-    `Generative AI technologies, including text-to-speech (TTS) and voice conversion (VC), frequently become indistinguishable from genuine samples, posing challenges for individuals in discerning between real and synthetic content. This indistinguishability undermines trust in media, and the arbitrary cloning of personal voice signals presents significant challenges to privacy and security. In the field of deepfake audio detection, the majority of models achieving higher detection accuracy currently employ self-supervised pre-trained models. However, with the ongoing development of deepfake audio generation algorithms, maintaining high discrimination accuracy against new algorithms grows more challenging. To enhance the sensitivity of deepfake audio features, we propose a deepfake audio detection model that incorporates an SLS (Sensitive Layer Selection) module. Specifically, utilizing the pre-trained XLS-R enables our model to extract diverse audio features from its various layers, each providing distinct discriminative information. Utilizing the SLS classifier, our model captures sensitive contextual information across different layer levels of audio features, effectively employing this information for fake audio detection. Experimental results show that our method achieves state-of-the-art (SOTA) performance on both the ASVspoof 2021 DF and In-the-Wild datasets, with a specific Equal Error Rate (EER) of 1.92% on the ASVspoof 2021 DF dataset and 7.46% on the In-the-Wild dataset. Codes and data can be found at https://github.com/QiShanZhang/SLSforADD.`
-  );
-
-  add_model_card(
-    model_card_container,
-    "CLAD",
-    "CLAD: Robust Audio Deepfake Detection Against Manipulation Attacks with Contrastive Learning",
-    "Hemlata Tak, Jee-weon Jung, Jose Patino, Madhu Kamble, Massimiliano Todisco, Nicholas Evans",
-    "https://arxiv.org/abs/2404.15854",
-    "https://github.com/CLAD23/CLAD",
-    "",
-    `The increasing prevalence of audio deepfakes poses significant security threats, necessitating robust detection methods. While existing detection systems exhibit promise, their robustness against malicious audio manipulations remains underexplored. To bridge the gap, we undertake the first comprehensive study of the susceptibility of the most widely adopted audio deepfake detectors to manipulation attacks. Surprisingly, even manipulations like volume control can significantly bypass detection without affecting human perception. To address this, we propose CLAD (Contrastive Learning-based Audio deepfake Detector) to enhance the robustness against manipulation attacks. The key idea is to incorporate contrastive learning to minimize the variations introduced by manipulations, therefore enhancing detection robustness. Additionally, we incorporate a length loss, aiming to improve the detection accuracy by clustering real audios more closely in the feature space. We comprehensively evaluated the most widely adopted audio deepfake detection models and our proposed CLAD against various manipulation attacks. The detection models exhibited vulnerabilities, with FAR rising to 36.69%, 31.23%, and 51.28% under volume control, fading, and noise injection, respectively. CLAD enhanced robustness, reducing the FAR to 0.81% under noise injection and consistently maintaining an FAR below 1.63% across all tests.`
-  );
-
-  add_model_card(
-    model_card_container,
-    "raw pc darts",
-    "Raw Differentiable Architecture Search for Speech Deepfake and Spoofing Detection",
-    "Hemlata Tak, Jee-weon Jung, Jose Patino, Madhu Kamble, Massimiliano Todisco, Nicholas Evans",
-    "https://arxiv.org/abs/2107.12212",
-    "https://github.com/eurecom-asp/raw-pc-darts-anti-spoofing",
-    "",
-    `End-to-end approaches to anti-spoofing, especially those which operate directly upon the raw signal, are starting to be competitive with their more traditional counterparts. Until recently, all such approaches consider only the learning of network parameters; the network architecture is still hand crafted. This too, however, can also be learned. Described in this paper is our attempt to learn automatically the network architecture of a speech deepfake and spoofing detection solution, while jointly optimising other network components and parameters, such as the first convolutional layer which operates on raw signal inputs. The resulting raw differentiable architecture search system delivers a tandem detection cost function score of 0.0517 for the ASVspoof 2019 logical access database, a result which is among the best single-system results reported to date. `
   );
 
   const isolation_card_container = document.getElementById(
@@ -109,7 +67,6 @@ function init() {
   add_model_card(
     isolation_card_container,
     "Demucs",
-    "title",
     "Simon Rouard, Francisco Massa, Alexandre Défossez",
     "https://arxiv.org/abs/2211.08553",
     "https://github.com/adefossez/demucs?tab=readme-ov-file",

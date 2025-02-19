@@ -4,9 +4,13 @@ if (id === null) {
 }
 
 const resultCard = document.getElementById("result-card");
+const explainationCard = document.getElementById("explaination-card");
+const identifiedArtistCard = document.getElementById("identity-card");
 const cardTitle = document.getElementById("result-title");
 const cardBody = document.getElementById("result-body");
 const advancedResultsBody = document.getElementById("advanced-results-body");
+const explainationBody = document.getElementById("explaination-body");
+const identifiedArtistBody = document.getElementById("identification-body");
 prep();
 
 async function prep() {
@@ -27,13 +31,19 @@ async function prep() {
   if (data.status !== "finished") {
     console.log("Error: Results returned finished even after status check");
   }
-
   displayResults(data);
 }
 
 function displayResults(json) {
   let resultSet = new ModelResultsSet(json);
   console.log(resultSet);
+  console.log(json.explaination);
+  console.log(json["identified-artist"]);
+
+  explainationBody.innerHTML = json.explaination;
+  explainationCard.classList.add("border-primary");
+  identifiedArtistBody.innerHTML = json["identified-artist"];
+  identifiedArtistCard.classList.add("border-primary");
 
   //   trim to 2 dec
 
@@ -63,7 +73,12 @@ function fillAdvancedResults(resultSet) {
   /**
    * @type {ModelResults[]} models
    */
-  let models = [resultSet.whisper, resultSet.rawgat];
+  let models = [
+    resultSet.whisper,
+    resultSet.rawgat,
+    resultSet.xlsr,
+    resultSet.vocoder,
+  ];
 
   let html = `
 <table class="table table-hover">
@@ -116,7 +131,12 @@ function interperateFinalResult(resultSet) {
   let fakeCount = 0;
   let fakeSumConf = 0;
 
-  const models = [resultSet.whisper, resultSet.rawgat];
+  const models = [
+    resultSet.whisper,
+    resultSet.rawgat,
+    resultSet.xlsr,
+    resultSet.vocoder,
+  ];
   for (let model of models) {
     if (model.separated.label === "Real") {
       realCount++;
@@ -138,7 +158,10 @@ function interperateFinalResult(resultSet) {
   let finalLabel = realCount >= fakeCount ? "Real" : "Fake";
   let finalConfSum = finalLabel === "Real" ? realSumConf : fakeSumConf;
   let finalConf = finalConfSum / (realCount + fakeCount);
-  let prettyConf = Math.round(finalConf * 10000) / 100;
+  let prettyConf = Math.round(finalConf * 1000) / 4;
+  if (prettyConf < 0) {
+    prettyConf = prettyConf * -1;
+  }
 
   console.log(`
     realCount: ${realCount}
