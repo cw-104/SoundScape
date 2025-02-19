@@ -128,18 +128,14 @@ class rawgat:
 
 
 if __name__ == '__main__':
-    print("\n\n\n")
-    print("evaluating...")
-    print()
-    model = vocoder(device="mps")
-    rest_voc = model.evaluate("/Users/christiankilduff/Downloads/MarioDeepfake.mp3")
+    num_df_found = 0
+    num_rl_found = 0
 
-    model = xlsr(device="mps")
-    res_xlsr = model.evaluate("/Users/christiankilduff/Downloads/MarioDeepfake.mp3")
+    df_folder = ""
+    rl_folder = ""
 
-    print("\n\n\n")
-    print("results")
-    print("------------\n")
-    print("Vocoder: ", rest_voc)
-    print("XLSR: ", res_xlsr)
+    df_files = []
+    rl_files = []
 
+    real_num_df = len(df_files)
+    real_num_rl = len(rl_files)

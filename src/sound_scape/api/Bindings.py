@@ -1,7 +1,10 @@
 from sound_scape.backend.Isolate import separate_file
-import threading
+import threading, os
 from queue import Queue
 from json import dumps as to_json
+from Base_Path import get_path_relative_base
+UPLOADS_FOLDER = get_path_relative_base("uploads")
+
 
 from sound_scape.backend.Models import whisper_specrnet, rawgat, xlsr, vocoder
 
