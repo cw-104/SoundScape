@@ -40,8 +40,7 @@ class ModelBindings:
         path = self.file_ids.get_path(id)
 
         # Separate the file
-        # sep_file = separate_file(path, os.path.join(UPLOADS_FOLDER, "separated-uploads"), mp3=True)
-        sep_file = path # skip separation for testing
+        sep_file = separate_file(path, os.path.join(UPLOADS_FOLDER, "separated-uploads"), mp3=True)
 
         # Eval Whisper
         wpred, wlabel = self.whisper_model.evaluate(path)
