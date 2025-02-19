@@ -3,12 +3,14 @@ import threading
 from queue import Queue
 from json import dumps as to_json
 
-from sound_scape.backend.Models import whisper_specrnet, rawgat
+from sound_scape.backend.Models import whisper_specrnet, rawgat, xlsr, vocoder
 
 class ModelBindings:
     def __init__(self):
         self.whisper_model = whisper_specrnet()
         self.rawgat_model = rawgat()
+        self.vocoder_model = vocoder(device='mps')
+        self.xlsr_model = xlsr(device='mps')
         self.file_processing_queue = Queue()
         self.processing_thread = None
 
@@ -26,6 +28,7 @@ class ModelBindings:
             print("running processing thread")
             self.processing_thread = threading.Thread(target=self.run_processing_thread)
             self.processing_thread.start()
+
 
     def process_file(self, id):
         if not self.file_ids.exists(id):
@@ -48,6 +51,14 @@ class ModelBindings:
         rpred, rlabel = self.rawgat_model.evaluate(path)
         rpred_sep, rlabel_sep= self.rawgat_model.evaluate(sep_file)
 
+        # Eval Vocoder
+        vpred, vlabel = self.vocoder_model.evaluate(path)
+        vpred_sep, vlabel_sep = self.vocoder_model.evaluate(sep_file)
+
+        # Eval XLSR
+        xpred, xlabel = self.xlsr_model.evaluate(path)
+        xpred_sep, xlabel_sep = self.xlsr_model.evaluate(sep_file)
+
         # to json results
         result = to_json({
             'status': 'finished',
@@ -69,9 +80,27 @@ class ModelBindings:
             'separated_results': {
                 'prediction': rpred_sep,
                 'label': rlabel_sep,
-            }
-            }
-        })
+            },
+            },
+            'xlsr': {
+            'unseparated_results': {
+                'prediction': xpred,
+                'label': xlabel,
+            },
+            'separated_results': {
+                'prediction': xpred_sep,
+                'label': xlabel_sep,
+            },
+            },
+            'vocoder': {
+            'unseparated_results': {
+                'prediction': vpred,
+                'label': vlabel,
+            },
+            'separated_results': {
+                'prediction': vpred_sep,
+                'label': vlabel_sep
+            }}})
         self.file_ids.set_results(id, result)
 
 

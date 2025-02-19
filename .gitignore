@@ -19,3 +19,5 @@ fairseq
 
 *MMpaper_model.pth
 *xlsr2_300m.pt
+
+*/uploads/*

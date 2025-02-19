@@ -33,6 +33,25 @@ def recieve_file():
     else:
         return jsonify({'error': 'Invalid file type'}), 400
 
+@app.route('/uploadv2', methods=['POST'])
+def recieve_file2():
+    if not 'audio' in request.files:
+        return jsonify({'error': 'No file part'}), 400
+
+    file = request.files['audio']
+
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(UPLOADS_FOLDER, filename)  
+        file.save(file_path)
+        # upload was successful process validity
+        return confirm_upload(file_path)
+    else:
+        return jsonify({'error': 'Invalid file type'}), 400
+
 def confirm_upload(file_path):
     # create unique id to send back to client
     id = str(uuid.uuid4())
@@ -58,6 +77,21 @@ def get_status():
             'error': 'Invalid ID'}), 404
     return jsonify(model_bindings.file_ids.get_status(id)), 200
 
+@app.route('/statusv2', methods=['POST'])
+def get_status2():
+    data = request.json
+
+    if data is None or 'id' not in data:
+        return jsonify({'status': 'Error: No id provided'}), 400
+
+    id = data['id']
+
+    if not model_bindings.file_ids.exists(id):
+        return jsonify({
+            'status': 'Does not exist',
+            'error': 'Invalid ID'}), 404
+
+    return jsonify(model_bindings.file_ids.get_status(id)), 200
 
 @app.route('/results', methods=['POST'])
 def get_results():
@@ -71,7 +105,34 @@ def get_results():
             'error': 'Invalid ID'}), 404
     return jsonify(model_bindings.file_ids.get_results(id)), 200
 
+@app.route('/resultsv2', methods=['POST'])
+def get_results2():
+    data = request.json
+
+    if data is None or 'id' not in data:
+        return jsonify({'status': 'Error: No id provided'}), 400
+
+    id = data['id']
+
+    if not model_bindings.file_ids.exists(id):
+        print("invalid id")
+        return jsonify({
+            'status': 'Does not exist',
+            'error': 'Invalid ID'}), 404
+    return jsonify(model_bindings.file_ids.get_results(id)), 200
+
+import logging
+from numba import config
+
 def start_api():
+    if not os.path.exists(UPLOADS_FOLDER):
+        os.makedirs(UPLOADS_FOLDER)
+        
+    # Set the logging level for Numba to WARNING
+    logging.getLogger('numba').setLevel(logging.WARNING)
+
+    # Alternatively, you can set the logging level for all loggers
+    logging.basicConfig(level=logging.WARNING)
     global app
     CORS(app)
     app.run(debug=True, port=8080)
