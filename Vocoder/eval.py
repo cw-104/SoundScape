@@ -102,7 +102,7 @@ if __name__ == '__main__':
     #print('Binary classification result : fake:{}, real:{}'.format(result_binary[0], result_binary[1]))
     
     args = parser.parse_args()
-    model = DeepfakeClassificationModel(result_handler=DfResultHandler(args.threshold, "Fake", "Real", 10, .95))
+    model = DeepfakeClassificationModel(result_handler=DfResultHandler(args.threshold, "Real", "Fake", 10, .95))
 
     if args.file:
         file = args.file
