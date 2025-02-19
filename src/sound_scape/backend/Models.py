@@ -5,15 +5,57 @@ from Base_Path import get_path_relative_base
 from sound_scape.backend.whisper_specrnet import WhisperSpecRNet, set_seed
 import yaml, torch
 from .xlsr_model import xlsr_model_eval
+from .vocoder_eval import vocoder_model
+import logging
+from numba import config
+
+logging.getLogger('numba').setLevel(logging.WARNING)
+
+
+logging.basicConfig(level=logging.WARNING)
+
+class vocoder:
+    def __init__(self, device=None):
+        self.device = device
+        if device is None:
+            self.device = get_best_device()
+        self.model_path = get_path_relative_base("pretrained_models/vocoder/librifake_pretrained_lambda0.5_epoch_25.pth")
+        self.yaml_path = get_path_relative_base("pretrained_models/vocoder/model_config_RawNet.yaml")
+        self.model = vocoder_model(self.model_path, device=device, yaml_path=self.yaml_path)
+
+    def evaluate(self, file_path):
+        multi, binary = self.model.eval(file_path)
+
+        label = None
+        pred = None
+        if(binary[0] > binary[1]):
+            print("fake")
+            label = "Fake"
+            pred = binary[0]
+        else:
+            print("real")
+            label = "Real"
+            pred = binary[1]
+        
+        print('Multi classification result : gt:{}, wavegrad:{}, diffwave:{}, parallel wave gan:{}, wavernn:{}, wavenet:{}, melgan:{}'.format(multi[0], multi[1], multi[2], multi[3], multi[4], multi[5], multi[6]))
+        # sum all the multi classification results
+        sum_multi = sum(multi)
+        print('Binary classification result : fake:{}, real:{}'.format(binary[0], binary[1]))
+        
+        print(multi, binary)
+        return pred, label
+
 
 class xlsr:
-    def __init__(self, device=""):
-        if device == "":
+    def __init__(self, device=None):
+        self.device = device
+        if not device:
             self.device = get_best_device()
         self.model = xlsr_model_eval(device=self.device)
         
     def evaluate(self, file_path):
-        return self.model.eval_file(file_path)
+        pred = self.model.eval_file(file_path)[0]
+        return abs(pred/100), "Real" if pred > 0 else "Fake"
 
 class whisper_specrnet:
     def __init__(self, device="", weights_path="", config_path="", threshold=.45, reval_threshold=0, no_sep_threshold=0):
@@ -82,3 +124,22 @@ class rawgat:
     
     def evaluate_full_results(self, file_path):
         return self.model.evaluate_file(file_path)
+
+
+
+if __name__ == '__main__':
+    print("\n\n\n")
+    print("evaluating...")
+    print()
+    model = vocoder(device="mps")
+    rest_voc = model.evaluate("/Users/christiankilduff/Downloads/MarioDeepfake.mp3")
+
+    model = xlsr(device="mps")
+    res_xlsr = model.evaluate("/Users/christiankilduff/Downloads/MarioDeepfake.mp3")
+
+    print("\n\n\n")
+    print("results")
+    print("------------\n")
+    print("Vocoder: ", rest_voc)
+    print("XLSR: ", res_xlsr)
+
