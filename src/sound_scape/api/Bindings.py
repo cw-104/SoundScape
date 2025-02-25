@@ -154,6 +154,7 @@ class ModelBindings:
         # get model eval results
         result_json = self.get_model_results(path, sep_file)
 
+
         # add ai explaination
         result_json = self.append_explain_results(result_json)
 
