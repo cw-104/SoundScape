@@ -104,9 +104,9 @@ class ModelBindings:
             }}})
 
 
-    def append_explain_results(self, json):
+    def append_explain_results(self, json, original_path, sep_path):
         data = {
-        "query": "We are using 5 models to predict the results of an audio file based on if it is a deepfake or authentic voice. We need you to explain to the user of our site the results of the model and what they mean."
+        "query": "We are using 5 models to predict the results of an audio file based on if it is a deepfake or authentic voice. We need you to explain to the user of our site the results of the model and what they mean. We are giving you the results and then want you to give a short explanation to the user as to why the answer is what it is based on the results. Here is the data: original_path: " + original_path + " sep_path: " + sep_path
 	    # "sessionId": "<SESSIONID_TEXT_DATA>",  # Optional: Specify sessionId from the previous message
         }
 
