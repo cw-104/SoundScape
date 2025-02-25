@@ -40,7 +40,7 @@ class vocoder:
         print('Multi classification result : gt:{}, wavegrad:{}, diffwave:{}, parallel wave gan:{}, wavernn:{}, wavenet:{}, melgan:{}'.format(multi[0], multi[1], multi[2], multi[3], multi[4], multi[5], multi[6]))
         # sum all the multi classification results
         sum_multi = sum(multi)
-        print('Binary classification result : fake:{}, real:{}'.format(binary[0], binary[1]))
+        print('Binary classification result : real:{}, fake:{}'.format(binary[0], binary[1]))
         
         print(multi, binary)
         return pred, label
