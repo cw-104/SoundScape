@@ -55,7 +55,7 @@ class xlsr:
         
     def evaluate(self, file_path):
         pred = self.model.eval_file(file_path)[0]
-        return abs(pred/100), "Real" if pred > 0 else "Fake"
+        return abs(pred/100), "Fake" if pred > 0 else "Real"
 
 class whisper_specrnet:
     def __init__(self, device="", weights_path="", config_path="", threshold=.45, reval_threshold=0, no_sep_threshold=0):
@@ -108,14 +108,14 @@ class whisper_specrnet:
 
     def _label_to_str(self, label):
         # LABEL 0 = FAKE 1 = REAL
-        return "Fake" if label == 0 else "Real"
+        return "Real" if label == 0 else "Fake"
 
 
 class rawgat:
     def __init__(self, result_handler=None):
         self.result_handler = result_handler
         if result_handler is None:
-            self.result_handler = DfResultHandler(-3, "Fake", "Real", 10, .45)
+            self.result_handler = DfResultHandler(-3, "Real", "Fake", 10, .45)
         self.model = DeepfakeClassificationModel(result_handler=self.result_handler)
         
     def evaluate(self, file_path):
