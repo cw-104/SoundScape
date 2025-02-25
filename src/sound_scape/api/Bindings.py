@@ -61,7 +61,7 @@ class ModelBindings:
         xpred_sep, xlabel_sep = self.xlsr_model.evaluate(sep_path)
 
         # to json results
-        return to_json({
+        return {
             'status': 'finished',
             'whisper': {
             'unseparated_results': {
@@ -101,12 +101,12 @@ class ModelBindings:
             'separated_results': {
                 'prediction': vpred_sep,
                 'label': vlabel_sep
-            }}})
+            }}}
 
 
-    def append_explain_results(self, json, original_path, sep_path):
+    def append_explain_results(self, json):
         data = {
-        "query": "We are using 5 models to predict the results of an audio file based on if it is a deepfake or authentic voice. We need you to explain to the user of our site the results of the model and what they mean. We are giving you the results and then want you to give a short explanation to the user as to why the answer is what it is based on the results. Here is the data: original_path: " + original_path + " sep_path: " + sep_path
+        "query": "We are using 5 models to predict the results of an audio file based on if it is a deepfake or authentic voice. We need you to explain to the user of our site the results of the model and what they mean. We are giving you the results and then want you to give a short explanation to the user as to why the answer is what it is based on the results. Here is the data: " + to_json(json),
 	    # "sessionId": "<SESSIONID_TEXT_DATA>",  # Optional: Specify sessionId from the previous message
         }
 
@@ -127,10 +127,10 @@ class ModelBindings:
                 print(result)
                 break
             else:
+                print("results not arrived")
                 time.sleep(5) # Wait for 5 seconds before checking the result again
-                
-            json['explaination'] = result
-            return json
+        json['explaination'] = result['data']['output']
+        return json
 
     def append_identification_results(self, json):
         # pass vocal to match
@@ -155,13 +155,13 @@ class ModelBindings:
         result_json = self.get_model_results(path, sep_file)
 
         # add ai explaination
-        result_json = self.explain_results(result_json)
+        result_json = self.append_explain_results(result_json)
 
         # match the vocals to an artist
-        result_json = self.identify_artist(result_json)
+        result_json = self.append_identification_results(result_json)
 
 
-        self.file_ids.set_results(id, result_json)
+        self.file_ids.set_results(id, to_json(result_json))
 
 
 class FileIds:
