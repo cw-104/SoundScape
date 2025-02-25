@@ -29,12 +29,12 @@ class vocoder:
         label = None
         pred = None
         if(binary[0] > binary[1]):
-            print("fake")
-            label = "Fake"
+            print("real")
+            label = "real"
             pred = binary[0]
         else:
-            print("real")
-            label = "Real"
+            print("fake")
+            label = "fake"
             pred = binary[1]
         
         print('Multi classification result : gt:{}, wavegrad:{}, diffwave:{}, parallel wave gan:{}, wavernn:{}, wavenet:{}, melgan:{}'.format(multi[0], multi[1], multi[2], multi[3], multi[4], multi[5], multi[6]))
