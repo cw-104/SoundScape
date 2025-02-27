@@ -22,6 +22,7 @@ class vocoder:
         self.model_path = get_path_relative_base("pretrained_models/vocoder/librifake_pretrained_lambda0.5_epoch_25.pth")
         self.yaml_path = get_path_relative_base("pretrained_models/vocoder/model_config_RawNet.yaml")
         self.model = vocoder_model(self.model_path, device=device, yaml_path=self.yaml_path)
+        self.name = "vocoder"
 
     def evaluate(self, file_path):
         multi, binary = self.model.eval(file_path)
@@ -53,6 +54,7 @@ class xlsr:
         if not device:
             self.device = get_best_device()
         self.model = xlsr_model_eval(device=self.device)
+        self.name = "xlsr"
         
     def evaluate(self, file_path):
         pred = self.model.eval_file(file_path)[0]
@@ -66,6 +68,7 @@ class whisper_specrnet:
         self.threshold = threshold
         self.reval_threshold = reval_threshold
         self.no_sep_threshold = no_sep_threshold
+        self.name = "whisper_specrnet"
         
         if device == "":
             self.device = get_best_device()
@@ -113,11 +116,12 @@ class whisper_specrnet:
 
 
 class rawgat:
-    def __init__(self, result_handler=None):
+    def __init__(self, result_handler=None, device=None):
         self.result_handler = result_handler
         if result_handler is None:
             self.result_handler = DfResultHandler(-3, "Fake", "Real", 10, .45)
         self.model = DeepfakeClassificationModel(result_handler=self.result_handler)
+        self.name = "rawgat"
         
     def evaluate(self, file_path):
         res = self.model.evaluate_file(file_path)

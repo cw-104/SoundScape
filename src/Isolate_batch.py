@@ -10,7 +10,11 @@ from sound_scape.backend.Evaluate import get_best_device
 
 def separate(in_path, out_path, model="htdemucs", mp3=False, mp3_rate=128, float32=False, int24=False, two_stems=None):
     files = find_files(in_path)
+    num_files = len(files)
+    i = 0
     for file in files:
+        i+=1
+        print(f"Separating file {i} of {num_files}")
         separate_file(file, out_path, model=model, mp3=mp3, mp3_rate=mp3_rate, float32=float32, int24=int24, two_stems=two_stems)
 
 def find_files(in_path):
@@ -44,6 +48,8 @@ int24 = False    # output as int24 wavs, unused if 'mp3' is True.
 
 in_path = os.path.abspath(args.in_path)
 out_path = os.path.abspath(args.out_path)
+
+# count num_files
 
 separate(in_path,out_path, model=model, mp3=mp3, mp3_rate=mp3_rate, float32=float32, int24=int24, two_stems=two_stems)
 
