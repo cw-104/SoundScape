@@ -214,7 +214,9 @@ class Model(nn.Module):
 
 
 class xlsr_model_eval():
-    def __init__(self, device):        
+    def __init__(self, device,path=None):
+        if path is not None:
+            model_path = path
         logging.getLogger('numba').setLevel(logging.WARNING)
 
         print('setting seed...')

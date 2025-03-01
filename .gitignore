@@ -17,7 +17,11 @@ SoundFakeModel/.DS_Store
 
 fairseq
 
-*MMpaper_model.pth
-*xlsr2_300m.pt
 
 */uploads/*
+.DS_Store
+# src/pretrained_models/vocoder/*.pth
+# *MMpaper_model.pth
+src/pretrained_models/XLS-R/*.pth
+# src/pretrained_models/XLS-R/*.pt
+*xlsr2_300m.pt

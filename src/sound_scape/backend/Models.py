@@ -15,11 +15,14 @@ logging.getLogger('numba').setLevel(logging.WARNING)
 logging.basicConfig(level=logging.WARNING)
 
 class vocoder:
-    def __init__(self, device=None):
+    def __init__(self, device=None, model_path=None):
         self.device = device
         if device is None:
             self.device = get_best_device()
-        self.model_path = get_path_relative_base("pretrained_models/vocoder/librifake_pretrained_lambda0.5_epoch_25.pth")
+        self.model_path = model_path
+        if model_path is None:
+            self.model_path = get_path_relative_base("pretrained_models/vocoder/librifake_pretrained_lambda0.5_epoch_25.pth")
+       
         self.yaml_path = get_path_relative_base("pretrained_models/vocoder/model_config_RawNet.yaml")
         self.model = vocoder_model(self.model_path, device=device, yaml_path=self.yaml_path)
         self.name = "vocoder"
@@ -49,11 +52,11 @@ class vocoder:
 
 
 class xlsr:
-    def __init__(self, device=None):
+    def __init__(self, device=None,model_path=None):
         self.device = device
         if not device:
             self.device = get_best_device()
-        self.model = xlsr_model_eval(device=self.device)
+        self.model = xlsr_model_eval(device=self.device, path=model_path)
         self.name = "xlsr"
         
     def evaluate(self, file_path):
