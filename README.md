@@ -5,3 +5,5 @@
 Deepfake detection targetted at detecting deepfake songs and music of popular artists.
 
 website frontend
+
+website automatic updating branch
