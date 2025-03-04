@@ -30,26 +30,54 @@ class vocoder:
     def evaluate(self, file_path):
         multi, binary = self.model.eval(file_path)
 
-        label = None
-        pred = None
-        # Flipped
-        if(binary[0] > binary[1]):
-            print("Real")
-            label = "Real"
-            pred = binary[0]
-        else:
-            print("Fake")
-            label = "Fake"
-            pred = binary[1]
-        
-        print('Multi classification result : gt:{}, wavegrad:{}, diffwave:{}, parallel wave gan:{}, wavernn:{}, wavenet:{}, melgan:{}'.format(multi[0], multi[1], multi[2], multi[3], multi[4], multi[5], multi[6]))
-        # sum all the multi classification results
-        sum_multi = sum(multi)
-        print('Binary classification result : real:{}, fake:{}'.format(binary[0], binary[1]))
-        
-        print(multi, binary)
-        return pred, label
+        # multi[0] = gt multi[1] = wavegrad
+        # found better results if u replace gt => real cert and wavegrad => fake cert
 
+        pred_real = multi[0]
+        pred_fake = multi[1]
+
+        # print('Multi classification result : gt:{}, wavegrad:{}, diffwave:{}, parallel wave gan:{}, wavernn:{}, wavenet:{}, melgan:{}'.format(multi[0], multi[1], multi[2], multi[3], multi[4], multi[5], multi[6]))
+        # sum all the multi classification results
+        # print('Binary classification result : real:{}, fake:{}'.format(binary[0], binary[1]))
+        # print(multi, binary)
+        final_label = "Real" if pred_real > pred_fake else "Fake"
+        final_pred = pred_real if pred_real > pred_fake else pred_fake
+
+        return final_pred, final_label
+
+    def evaluate_full_res(self, file_path):
+        """
+        Evaluate the file and return both fake and real cert
+
+        returns: real_pred, fake_pred, label
+        """
+
+        multi, binary = self.model.eval(file_path)
+
+        # real_pred = multi[0]
+        # fake_pred = multi[1]
+
+        fake_pred = binary[0]
+        real_pred = binary[1]
+        return real_pred, fake_pred, "Real" if real_pred > fake_pred else "Fake"
+
+    def eval_multi_and_binary(self, file_path):
+        """
+        return: real, fake, gt, wavegrad, diffwave, parallel wave gan, wavernn, wavenet, melgan
+
+        Returns the multi and binary classification results
+
+
+        """
+        multi, binary = self.model.eval(file_path)
+
+        # print('Multi classification result : gt:{}, wavegrad:{}, diffwave:{}, parallel wave gan:{}, wavernn:{}, wavenet:{}, melgan:{}'.format(multi[0], multi[1], multi[2], multi[3], multi[4], multi[5], multi[6]))
+        # sum all the multi classification results
+        # print('Binary classification result : real:{}, fake:{}'.format(binary[0], binary[1]))
+        # print(multi, binary)
+
+        # gt, wavegrad, diffwave, parallel wave gan, wavernn, wavenet, melgan, real, fake
+        return binary[1], binary[0], multi[0], multi[1], multi[2], multi[3], multi[4], multi[5], multi[6]
 
 class xlsr:
     def __init__(self, device=None,model_path=None):
@@ -62,6 +90,9 @@ class xlsr:
     def evaluate(self, file_path):
         pred = self.model.eval_file(file_path)[0]
         return abs(pred/100), "Real" if pred > 0 else "Fake"
+    
+    def evaluate_raw_pred(self, file_path):
+        return self.model.eval_file(file_path)[0]
 
 class whisper_specrnet:
     def __init__(self, device="", weights_path="", config_path="", threshold=.45, reval_threshold=0, no_sep_threshold=0):
