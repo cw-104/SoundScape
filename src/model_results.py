@@ -152,10 +152,14 @@ class ModelResultTracker:
         return len([r for r in self.results if r.predicted_label == "Fake" and r.isCorrect()])
 
     def get_accuracy_real(self):
+        if self.total_defined_real() == 0:
+            return 0
         return self.get_correct_real() / self.total_defined_real()
 
 
     def get_accuracy_fake(self):
+        if self.total_defined_fake() == 0:
+            return 0
         return self.get_correct_fake() / self.total_defined_fake()
 
     def get_num_incorrectly_classified_as_fake(self):
@@ -174,7 +178,13 @@ class ModelResultTracker:
         return len(self.results)
 
     def get_eer(self):
-        return 1 - (self.get_correct_real() / self.total_defined_real() + self.get_correct_fake() / self.total_defined_fake())/2
+        p_r = 0
+        if  self.total_defined_real() > 0:
+            p_r = self.get_correct_real() / self.total_defined_real()
+        p_f = 0
+        if self.total_defined_fake() > 0:
+            p_f = self.get_correct_fake()  / self.total_defined_fake()
+        return 1 - (p_r + p_f)/2
 
     
     def print(self):
@@ -439,9 +449,9 @@ def algo_result(isolated=False, model_names = None):
 
                     results[i].add(label, float(row[index_cert]), row[index_real_label])
 
-        print(f"Results for {name}: ")
+        # print(f"Results for {name}: ")
         res = results[i]
-        res.print()
+        # res.print()
 
         print("---")
 
@@ -684,33 +694,59 @@ if __name__ == "__main__":
     models.extend(["57_xlsr_epoch20", "xlsr_epoch_86.pth", "xlsr_epoch_85.pth"])
     _, _, iso_res = algo_result(isolated=True, model_names=models)
 
-    _, _, res = algo_result(isolated=False)
+    # _, _, res = algo_result(isolated=False)
 
     print("\n\n\n\n")
     print("--Isolated Results: ")
-    iso_res.print()
+    # iso_res.print()
 
-    print("--Original Results: ")
-    res.print()
+    num_fake = iso_res.total_defined_fake()
+    num_real = iso_res.total_defined_real()
 
-    print("Combining...")
+    iso_real_res = ModelResultTracker()
+    iso_fake_res = ModelResultTracker()
 
-    final_results = ModelResultTracker()
-    for i in range(iso_res.get_total()):
-        correct_label = res.results[i].correct_label
-        iso_label = iso_res.results[i].predicted_label
-        iso_cert = iso_res.results[i].certainty
+    # split iso results into correct label = real vs fake
+    # for r in iso_res.results:
+    #     if r.correct_label == "Real":
+    #         iso_real_res.add(r.predicted_label, r.certainty, r.correct_label)
 
-        og_label = res.results[i].predicted_label
-        og_cert = res.results[i].certainty
+    #         if iso_real_res.total_defined_real() == 5 or iso_real_res.total_defined_real() == 12 or iso_real_res.total_defined_real() == 25:
+    #             print(f"{iso_real_res.total_defined_real()} real results:")
+    #             iso_real_res.print()
 
-        if iso_cert < -2:
-            final_results.add(iso_label, iso_cert, correct_label)
-        else:
-            final_results.add(og_label, og_cert, correct_label)
+    #     else:
+    #         iso_fake_res.add(r.predicted_label, r.certainty, r.correct_label)
+    #         if iso_fake_res.total_defined_fake() == 5 or iso_fake_res.total_defined_fake() == 12 or iso_fake_res.total_defined_fake() == 25:
+    #             print(f"{iso_real_res.total_defined_fake()} fake results:")
+    #             iso_fake_res.print()
+    
+    # print("100 files")
+    # iso_res.print()
 
-    print("--Final Results: ")
-    final_results.print()
+
+    # print("--Original Results: ")
+    # res.print()
+
+    # print("Combining...")
+
+
+    # final_results = ModelResultTracker()
+    # for i in range(iso_res.get_total()):
+    #     correct_label = res.results[i].correct_label
+    #     iso_label = iso_res.results[i].predicted_label
+    #     iso_cert = iso_res.results[i].certainty
+
+    #     og_label = res.results[i].predicted_label
+    #     og_cert = res.results[i].certainty
+
+    #     if iso_cert < -2:
+    #         final_results.add(iso_label, iso_cert, correct_label)
+    #     else:
+    #         final_results.add(og_label, og_cert, correct_label)
+
+    # print("--Final Results: ")
+    # final_results.print()
 
 
     # vocoder_trains_folder = "/Users/christiankilduff/Deepfake_Detection_Resources/Training/vocoder_trains_run2/"
