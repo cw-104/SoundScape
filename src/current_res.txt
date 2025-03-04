@@ -1,0 +1,8 @@
+
+Combined results: 
+Correct Real: 40/57 | 70.18%
+Correct DF: 24/40 | 60.00%
+Real misclassified as Fake: 16/57
+Fake misclassified as Real: 17/40
+===
+EER: 34.91%

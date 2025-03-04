@@ -21,3 +21,4 @@ fairseq
 *xlsr2_300m.pt
 
 */uploads/*
+src/pretrained_models/XLS-R/epoch_1_58.pth
