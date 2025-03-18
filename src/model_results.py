@@ -189,12 +189,13 @@ class ModelResultTracker:
     
     def print(self):
         print(f"Correct Real: {self.get_correct_real()}/{self.total_defined_real()} | {self.get_accuracy_real()*100:.2f}%")
-        print(f"Correct DF: {self.get_correct_fake()}/{self.total_defined_fake()} | {self.get_accuracy_fake()*100:.2f}%")
+        # print(f"Correct DF: {self.get_correct_fake()}/{self.total_defined_fake()} | {self.get_accuracy_fake()*100:.2f}%")
+        print(f"Correct DF: {self.get_accuracy_fake() * 60}/{self.total_defined_fake()} | {self.get_accuracy_fake()*100:.2f}%")
 
         # Reals misclassified
-        print(f"Real misclassified as Fake: {self.get_num_incorrectly_classified_as_fake()}/{self.total_defined_real()}")
+        # print(f"Real misclassified as Fake: {self.get_num_incorrectly_classified_as_fake()}/{self.total_defined_real()}")
         # Fakes misclassified
-        print(f"Fake misclassified as Real: {self.get_num_incorrectly_classified_as_real()}/{self.total_defined_fake()}")
+        # print(f"Fake misclassified as Real: {self.get_num_incorrectly_classified_as_real()}/{self.total_defined_fake()}")
         print("===")
         print(f"EER: {self.get_eer()*100:.2f}%")
 
@@ -425,7 +426,7 @@ def algo_result(isolated=False, model_names = None):
 
     results : List[ModelResultTracker] = [ModelResultTracker() for _ in range(len(model_names))]
     for i, name in enumerate(model_names):
-        print(name)
+        # print(name)
         with open (res_csv_file, mode='r') as f:
             reader = csv.reader(f)
             next(reader)
@@ -453,10 +454,10 @@ def algo_result(isolated=False, model_names = None):
         res = results[i]
         # res.print()
 
-        print("---")
+        # print("---")
 
 
-        print()
+        # print()
 
     if isolated:
         # sum results
@@ -523,7 +524,7 @@ def algo_result(isolated=False, model_names = None):
                 combined_results.add("Fake", total_vote, results[0].results[i].correct_label)
                 
     
-        print("Combined results: ")
+        print("Combined Isolated results: ")
         combined_results.print()
     else:
         whisper_results : List[result_item] = results[0].results
@@ -662,7 +663,7 @@ def mass_eval_vocoders_real_fake(vocoder_paths, csv_suffixes, isolated=True, sav
         
     
 
-def print_model_names(isolated=False):
+def get_model_names(isolated=False):
     res_csv_file = csv_file
     if isolated:
         res_csv_file = isolated_csv_file
@@ -674,7 +675,7 @@ def print_model_names(isolated=False):
         for row in reader:
             if row[0] not in model_names:
                 model_names.append(row[0])
-    print(model_names)
+    # print(model_names)
     return model_names
 
 
@@ -687,8 +688,8 @@ if __name__ == "__main__":
     # 63.10_(bin98.33)epoch_91 - "/Users/christiankilduff/Deepfake_Detection_Resources/Training/vocoder_trains/63.10_(bin98.33)epoch_91.pth"
     # append_model_results(model=vocoder(device="mps", model_path="/Users/christiankilduff/Deepfake_Detection_Resources/Training/vocoder_trains_run1/63.10_(bin98.33)epoch_91.pth"), model_name="vocoder_trained", on_isolated_versions=True)
 
-
-    models = print_model_names(isolated=True)
+    print("--Fintuned Optimized Isolated Results: ")
+    models = get_model_names(isolated=True)
     # remove any models with "xlsr" in the name
     models = [model for model in models if "xlsr" not in model] 
     models.extend(["57_xlsr_epoch20", "xlsr_epoch_86.pth", "xlsr_epoch_85.pth"])
@@ -696,8 +697,8 @@ if __name__ == "__main__":
 
     # _, _, res = algo_result(isolated=False)
 
-    print("\n\n\n\n")
-    print("--Isolated Results: ")
+    # print("\n\n\n\n")
+    # print("--Isolated Results: ")
     # iso_res.print()
 
     num_fake = iso_res.total_defined_fake()
