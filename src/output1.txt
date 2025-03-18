@@ -1,0 +1,84 @@
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_71.pth
+Loaded model from /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_71.pth
+starting eval '(isolated)'...
+Real Average Certainty: 0 | Correct: 32/57 | Accuracy: 0.5614035087719298
+Fake Average Certainty: 0 | Correct: 17/40 | Accuracy: 0.425 | EER: 0.5067982456140351
+/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_71.pth	True	0.5614035087719298	0	0.5067982456140351
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_79.pth
+Loaded model from /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_79.pth
+starting eval '(isolated)'...
+Real Average Certainty: 0 | Correct: 26/57 | Accuracy: 0.45614035087719296
+Fake Average Certainty: 0 | Correct: 23/40 | Accuracy: 0.575 | EER: 0.4844298245614036
+/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_79.pth	True	0.45614035087719296	0	0.4844298245614036
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_133.pth
+Loaded model from /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_133.pth
+starting eval '(isolated)'...
+Real Average Certainty: 0 | Correct: 17/57 | Accuracy: 0.2982456140350877
+Fake Average Certainty: 0 | Correct: 28/40 | Accuracy: 0.7 | EER: 0.5008771929824561
+/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_133.pth	True	0.2982456140350877	0	0.5008771929824561
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_569.pth
+Loaded model from /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_569.pth
+starting eval '(isolated)'...
+Real Average Certainty: 0 | Correct: 39/57 | Accuracy: 0.6842105263157895
+Fake Average Certainty: 0 | Correct: 15/40 | Accuracy: 0.375 | EER: 0.4703947368421053
+/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_569.pth	True	0.6842105263157895	0	0.4703947368421053
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_647.pth
+Loaded model from /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_647.pth
+starting eval '(isolated)'...
+Real Average Certainty: 0 | Correct: 23/57 | Accuracy: 0.40350877192982454
+Fake Average Certainty: 0 | Correct: 24/40 | Accuracy: 0.6 | EER: 0.4982456140350877
+/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_647.pth	True	0.40350877192982454	0	0.4982456140350877
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_885.pth
+Loaded model from /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_885.pth
+starting eval '(isolated)'...
+Real Average Certainty: 0 | Correct: 17/57 | Accuracy: 0.2982456140350877
+Fake Average Certainty: 0 | Correct: 34/40 | Accuracy: 0.85 | EER: 0.4258771929824562
+/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_885.pth	True	0.2982456140350877	0	0.4258771929824562
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_886.pth
+Loaded model from /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_886.pth
+starting eval '(isolated)'...
+Real Average Certainty: 0 | Correct: 13/57 | Accuracy: 0.22807017543859648
+Fake Average Certainty: 0 | Correct: 35/40 | Accuracy: 0.875 | EER: 0.44846491228070173
+/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_886.pth	True	0.22807017543859648	0	0.44846491228070173
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_887.pth
+Loaded model from /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_887.pth
+starting eval '(isolated)'...
+Real Average Certainty: 0 | Correct: 15/57 | Accuracy: 0.2631578947368421
+Fake Average Certainty: 0 | Correct: 35/40 | Accuracy: 0.875 | EER: 0.430921052631579
+/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_887.pth	True	0.2631578947368421	0	0.430921052631579
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_779.pth
+Loaded model from /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_779.pth
+starting eval '(isolated)'...
+Real Average Certainty: 0 | Correct: 19/57 | Accuracy: 0.3333333333333333
+Fake Average Certainty: 0 | Correct: 26/40 | Accuracy: 0.65 | EER: 0.5083333333333333
+/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_779.pth	True	0.3333333333333333	0	0.5083333333333333
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_1.pth
+Loaded model from /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_1.pth
+starting eval '(isolated)'...
+Real Average Certainty: 0 | Correct: 18/57 | Accuracy: 0.3157894736842105
+Fake Average Certainty: 0 | Correct: 23/40 | Accuracy: 0.575 | EER: 0.5546052631578948
+/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_1.pth	True	0.3157894736842105	0	0.5546052631578948
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_14.pth
+Loaded model from /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_14.pth
+starting eval '(isolated)'...
+Real Average Certainty: 0 | Correct: 30/57 | Accuracy: 0.5263157894736842
+Fake Average Certainty: 0 | Correct: 18/40 | Accuracy: 0.45 | EER: 0.5118421052631579
+/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_14.pth	True	0.5263157894736842	0	0.5118421052631579
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_23.pth
+Loaded model from /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_23.pth
+starting eval '(isolated)'...
+Real Average Certainty: 0 | Correct: 29/57 | Accuracy: 0.5087719298245614
+Fake Average Certainty: 0 | Correct: 17/40 | Accuracy: 0.425 | EER: 0.5331140350877193
+/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_23.pth	True	0.5087719298245614	0	0.5331140350877193
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_29.pth
+Loaded model from /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_29.pth
+starting eval '(isolated)'...
+Real Average Certainty: 0 | Correct: 32/57 | Accuracy: 0.5614035087719298
+Fake Average Certainty: 0 | Correct: 19/40 | Accuracy: 0.475 | EER: 0.48179824561403506
+/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_29.pth	True	0.5614035087719298	0	0.48179824561403506
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_53.pth
+Loaded model from /Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_53.pth
+starting eval '(isolated)'...
+Real Average Certainty: 0 | Correct: 30/57 | Accuracy: 0.5263157894736842
+Fake Average Certainty: 0 | Correct: 18/40 | Accuracy: 0.45 | EER: 0.5118421052631579
+/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_53.pth	True	0.5263157894736842	0	0.5118421052631579

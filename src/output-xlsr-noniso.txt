@@ -1,0 +1,36 @@
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_10.pth
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_10.pth
+setting seed...
+Model loaded : /Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_10.pth
+starting eval '(not isolated)'...
+Real Average Certainty: 0 | Correct: 0/64 | Accuracy: 0.0
+Fake Average Certainty: 0 | Correct: 45/45 | Accuracy: 1.0 | EER: 0.5
+/Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_10.pth	False	0.0	0	0.5
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_11.pth
+setting seed...
+Model loaded : /Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_11.pth
+starting eval '(not isolated)'...
+Real Average Certainty: 0 | Correct: 0/64 | Accuracy: 0.0
+Fake Average Certainty: 0 | Correct: 45/45 | Accuracy: 1.0 | EER: 0.5
+/Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_11.pth	False	0.0	0	0.5
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_26.pth
+setting seed...
+Model loaded : /Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_26.pth
+starting eval '(not isolated)'...
+Real Average Certainty: 0 | Correct: 0/64 | Accuracy: 0.0
+Fake Average Certainty: 0 | Correct: 45/45 | Accuracy: 1.0 | EER: 0.5
+/Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_26.pth	False	0.0	1.0	0.5
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_56.pth
+setting seed...
+Model loaded : /Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_56.pth
+starting eval '(not isolated)'...
+Real Average Certainty: 0 | Correct: 0/64 | Accuracy: 0.0
+Fake Average Certainty: 0 | Correct: 45/45 | Accuracy: 1.0 | EER: 0.5
+/Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_56.pth	False	0.0	1.0	0.5
+evaluating model: /Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_23.pth
+setting seed...
+Model loaded : /Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_23.pth
+starting eval '(not isolated)'...
+Real Average Certainty: 0 | Correct: 0/64 | Accuracy: 0.0
+Fake Average Certainty: 0 | Correct: 45/45 | Accuracy: 1.0 | EER: 0.5
+/Users/christiankilduff/Downloads/Training/model_trains/SLS/epoch_23.pth	False	0.0	1.0	0.5

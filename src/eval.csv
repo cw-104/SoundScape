@@ -1,0 +1,7 @@
+model,isolated,path,real_acc,fake_acc,eer
+whisper,True,/Users/christiankilduff/Downloads/Training/model_trains/whisper/isog_ckpt.pth,.386,.575,0.492025
+whisper,False,/Users/christiankilduff/Downloads/Training/model_trains/whisper/isog_ckpt-1.pth,0.453," 0.5111",0.5179
+rawgat,True,/Users/christiankilduff/Downloads/Training/model_trains/whisper/isog_ckpt-1.pth,0.298,0.65,0.5258
+rawgat,True,/Users/christiankilduff/Downloads/Training/model_trains/whisper/isog_ckpt-1.pth,0.59375,0.4222,0.492025
+/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_5.pth,False,0.765625,0.4838541666666667
+

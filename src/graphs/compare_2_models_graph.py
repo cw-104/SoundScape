@@ -5,18 +5,16 @@ from matplotlib.backend_bases import NavigationToolbar2
 
 # Load the CSV file (adjust the path as needed)
 csv_path = "../csvs/model_results_isolated.csv"
+# csv_path = "../csvs/model_results.csv"
 df = pd.read_csv(csv_path, on_bad_lines='skip')
 df['certainty'] = df['certainty'].astype(float)
 
-# Fixed main model and list of comparison models
-# main_model = "xlsr_epoch_86.pth"
-main_model = "vocoder_trained_certain_fake"
-
-comparison_models = ["vocoder_trained"]
+main_model = "xlsr"
+comparison_models = ['xlsr_epoch_86.pth', '57_xlsr_epoch20', 'other_xlsr_76', 'other_xlsr_12']
 
 # Scaling factors (if you want to adjust the certainty values)
-sc_main = 1
-sc_comp = 1
+sc_main = 200
+sc_comp = 100
 
 # Global index for the current comparison model
 i = 0

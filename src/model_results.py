@@ -76,16 +76,20 @@ def append_model_results(model, model_name, on_isolated_versions=False):
         writer.writerows(rows_real)
 
 
-def interpret():
-    model_names = ["whisper_specrnet", "rawgat", "xlsr", "vocoder", "xlsr", "vocoder-finetuned", "xlsr-finetuned", "xlsr-finetuned2"]
+def interpret(model_names=None, isolated=False, pred_algo=None):
+    if model_names is None:
+        model_names = ["whisper_specrnet", "rawgat", "xlsr", "vocoder", "xlsr", "vocoder-finetuned", "xlsr-finetuned", "xlsr-finetuned2"]
     model_col = header.index("model")
     correct_label_col = header.index("correct-label")
     pred_label_col = header.index("pred-label")
+    cert_col = header.index("certainty")
     
-    import csv
-    print("\n\n")
+    csvf = csv_file
+    if isolated:
+        csvf = isolated_csv_file
+    print("\n")
     for name in model_names:
-        with open(csv_file, mode='r') as f:
+        with open(csvf, mode='r') as f:
             reader = csv.reader(f)
             next(reader)
             correct_real = 0
@@ -98,12 +102,16 @@ def interpret():
             sum_cert_wrong_real = 0
             for row in reader:
                 if row[model_col] == name:
+                    pred_label = row[pred_label_col]
+                    if pred_algo:
+                        pred_label = pred_algo(row[correct_label_col], pred_label, float(row[cert_col]))
                     if row[correct_label_col] == "Real":
                         total_real += 1
-                        if row[correct_label_col] == row[pred_label_col]:
+                        if row[correct_label_col] == pred_label:
                             correct_real += 1
+                    else:
                         total_fake += 1
-                        if row[correct_label_col] == row[pred_label_col]:
+                        if row[correct_label_col] == pred_label:
                             correct_fake += 1
 
             if total_real == 0: continue
@@ -189,13 +197,12 @@ class ModelResultTracker:
     
     def print(self):
         print(f"Correct Real: {self.get_correct_real()}/{self.total_defined_real()} | {self.get_accuracy_real()*100:.2f}%")
-        # print(f"Correct DF: {self.get_correct_fake()}/{self.total_defined_fake()} | {self.get_accuracy_fake()*100:.2f}%")
-        print(f"Correct DF: {self.get_accuracy_fake() * 60}/{self.total_defined_fake()} | {self.get_accuracy_fake()*100:.2f}%")
+        print(f"Correct DF: {self.get_correct_fake()}/{self.total_defined_fake()} | {self.get_accuracy_fake()*100:.2f}%")
 
         # Reals misclassified
-        # print(f"Real misclassified as Fake: {self.get_num_incorrectly_classified_as_fake()}/{self.total_defined_real()}")
+        print(f"Real misclassified as Fake: {self.get_num_incorrectly_classified_as_fake()}/{self.total_defined_real()}")
         # Fakes misclassified
-        # print(f"Fake misclassified as Real: {self.get_num_incorrectly_classified_as_real()}/{self.total_defined_fake()}")
+        print(f"Fake misclassified as Real: {self.get_num_incorrectly_classified_as_real()}/{self.total_defined_fake()}")
         print("===")
         print(f"EER: {self.get_eer()*100:.2f}%")
 
@@ -681,83 +688,73 @@ def get_model_names(isolated=False):
 
 
 if __name__ == "__main__":
+    model_names = []
+    isolated = True
+    csvf = csv_file if not isolated else isolated_csv_file
+    with open (csvf, mode='r') as f:
+        reader = csv.reader(f)
+        next(reader)
+        # find all unique models that have XLSR in name
+        for row in reader:
+            if "xlsr" in row[0]:
+                if row[0] not in model_names:
+                    model_names.append(row[0])
+    print("ISOLATED" if isolated else "NON ISOLATED")
+    print(model_names)
+    interpret(model_names=model_names, isolated=isolated)
+    exit()
 
-    # 61.9_(bin94.33)epoch_60 - "/Users/christiankilduff/Deepfake_Detection_Resources/Training/vocoder_trains/61.9_(bin94.33)epoch_60.pth"
-    # append_model_results(model=vocoder(device="mps",model_path="/Users/christiankilduff/Deepfake_Detection_Resources/Training/vocoder_trains_run1/61.9_(bin94.33)epoch_60.pth"), model_name="vocoder_trained_certain_fake", on_isolated_versions=True)
 
-    # 63.10_(bin98.33)epoch_91 - "/Users/christiankilduff/Deepfake_Detection_Resources/Training/vocoder_trains/63.10_(bin98.33)epoch_91.pth"
-    # append_model_results(model=vocoder(device="mps", model_path="/Users/christiankilduff/Deepfake_Detection_Resources/Training/vocoder_trains_run1/63.10_(bin98.33)epoch_91.pth"), model_name="vocoder_trained", on_isolated_versions=True)
 
-    print("--Fintuned Optimized Isolated Results: ")
-    models = get_model_names(isolated=True)
-    # remove any models with "xlsr" in the name
-    models = [model for model in models if "xlsr" not in model] 
-    models.extend(["57_xlsr_epoch20", "xlsr_epoch_86.pth", "xlsr_epoch_85.pth"])
-    _, _, iso_res = algo_result(isolated=True, model_names=models)
-
-    # _, _, res = algo_result(isolated=False)
-
-    # print("\n\n\n\n")
-    # print("--Isolated Results: ")
-    # iso_res.print()
-
-    num_fake = iso_res.total_defined_fake()
-    num_real = iso_res.total_defined_real()
-
-    iso_real_res = ModelResultTracker()
-    iso_fake_res = ModelResultTracker()
-
-    # split iso results into correct label = real vs fake
-    # for r in iso_res.results:
-    #     if r.correct_label == "Real":
-    #         iso_real_res.add(r.predicted_label, r.certainty, r.correct_label)
-
-    #         if iso_real_res.total_defined_real() == 5 or iso_real_res.total_defined_real() == 12 or iso_real_res.total_defined_real() == 25:
-    #             print(f"{iso_real_res.total_defined_real()} real results:")
-    #             iso_real_res.print()
-
-    #     else:
-    #         iso_fake_res.add(r.predicted_label, r.certainty, r.correct_label)
-    #         if iso_fake_res.total_defined_fake() == 5 or iso_fake_res.total_defined_fake() == 12 or iso_fake_res.total_defined_fake() == 25:
-    #             print(f"{iso_real_res.total_defined_fake()} fake results:")
-    #             iso_fake_res.print()
+    def pred_algo(correct_label, pred_label, certainty):
+        return "Real" if certainty < .2 else pred_label
+        # return pred_label
+    # isolated
+    isoalted_epochs = [8,10,26,32,33,89,99,102,326,490,898]
+    isolated_names = []
+    for epoch in isoalted_epochs:
+        path = f"/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/isolated-runs-1/models/model_WCE_3000_12_0.0001-isolated/epoch_{epoch}.pth"
+        name = f"new_rawgat{epoch}"
+        isolated_names.append(name)
+        # append_model_results(on_isolated_versions=True, model_name=name, model=rawgat.of_path(device="mps", weights_path=path))
     
-    # print("100 files")
-    # iso_res.print()
+    print("-- Isolated --")
+    print(isolated_names)
+    interpret(isolated=True, model_names=isolated_names, pred_algo=pred_algo)
+    print()
+    
+    # non isolated
+    # new_rawgat99 on 97 files: accuracy real: 61.40%, accuracy fake: 55.00%, total accuracy: 58.76%
+    non_isolated_epochs = [0,1,2,3,4,5,14,21,29,43,71,92,205,450,566,873,885,993]
+    non_isolated_names = []
+    for epoch in non_isolated_epochs:
+        path = f"/Users/christiankilduff/Downloads/Training/model_trains/Rawgat/og-runs1/models/model_WCE_1000_12_0.0001/epoch_{epoch}.pth"
+        name = f"new_rawgat{epoch}"
+        non_isolated_names.append(name)
+        # append_model_results(on_isolated_versions=False, model_name=name, model=rawgat.of_path(device="mps", weights_path=path))
 
 
-    # print("--Original Results: ")
-    # res.print()
 
-    # print("Combining...")
-
-
-    # final_results = ModelResultTracker()
-    # for i in range(iso_res.get_total()):
-    #     correct_label = res.results[i].correct_label
-    #     iso_label = iso_res.results[i].predicted_label
-    #     iso_cert = iso_res.results[i].certainty
-
-    #     og_label = res.results[i].predicted_label
-    #     og_cert = res.results[i].certainty
-
-    #     if iso_cert < -2:
-    #         final_results.add(iso_label, iso_cert, correct_label)
-    #     else:
-    #         final_results.add(og_label, og_cert, correct_label)
-
-    # print("--Final Results: ")
-    # final_results.print()
+    print("-- Non Isolated --")
+    print(non_isolated_names)
+    interpret(isolated=False, model_names=non_isolated_names, pred_algo=pred_algo)
+    
 
 
-    # vocoder_trains_folder = "/Users/christiankilduff/Deepfake_Detection_Resources/Training/vocoder_trains_run2/"
-    # # only .pth
-    # base_paths = [path for path in os.listdir(vocoder_trains_folder) if path.endswith(".pth")]
-    # # suffix "f"_{path}"
-    # suffixes = [f"_{path}" for path in base_paths]
+"""
+XLSR
+isolated with formula: {'Fake' if certainty * 200 < .20 else 'Real'}
+other_xlsr_76 on 97 files: accuracy real: 75.44%, accuracy fake: 52.50%, total accuracy: 65.98%
+real: 43 / 57, fake: 21 / 40
 
-    # paths = [os.path.join(vocoder_trains_folder, path) for path in base_paths]
-    # mass_eval_vocoders_real_fake(vocoder_paths=paths, csv_suffixes=suffixes, isolated=True, save_folder="vocoder_csvs", max_worker=3)
+NON ISOLATED
+formula: {"Fake" if certainty *200 < .15 else "Real"}
+new-xlsr-noniso-56 on 109 files: accuracy real: 71.88%, accuracy fake: 51.11%, total accuracy: 63.30%
 
 
-    # mass_eval_xlsr_hard_coded()
+RAWGAT
+isolated with formula: {'Fake' if certainty < .2 else pred_label}
+new_rawgat898 on 97 files: accuracy real: 84.21%, accuracy fake: 35.00%, total accuracy: 63.92%
+new_rawgat490 on 97 files: accuracy real: 98.25%, accuracy fake: 5.00%, total accuracy: 59.79%
+new_rawgat326 on 97 files: accuracy real: 77.19%, accuracy fake: 22.50%, total accuracy: 54.64%
+"""

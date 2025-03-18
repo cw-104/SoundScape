@@ -12,7 +12,7 @@ df = pd.read_csv(csv, on_bad_lines='skip')
 
 df['certainty'] = df['certainty'].astype(float)
 
-model = "vocoder_trained_certain_fake" 
+model = "new_rawgat898"
 
 
 if model == "xlsr_trained":
@@ -39,7 +39,19 @@ if model == "xlsr-finetuned":
 
 
 plot_data = pd.DataFrame()
-plot_data['certainty'] = filtered_df['certainty']
+plot_data['certainty'] = filtered_df['certainty'] 
+scalar = 1
+plot_data['certainty'] = np.clip(plot_data['certainty'] * scalar, 0, 1)
+# multiply certainty by 100, limit 1
+
+# if cert > .4 set pred real
+# for i in plot_data.index:
+#     if plot_data.loc[i, 'certainty'] > .4:
+#         plot_data.loc[i, 'pred-label'] = "Real"
+#         plot_data.loc[i, 'certainty'] = .5
+#     else:
+#         plot_data.loc[i, 'pred-label'] = "Fake"
+#         # plot_data.loc[i, 'certainty'] = .5
 
 # Adjust x-coordinates based on the conditions
 plot_data['x'] = 0  # Default x-coordinate

@@ -48,17 +48,21 @@ def pad(x, max_len=64600):
         return padded_x
 class DeepfakeClassificationModel:
 
-    def __init__(self, modeltype=Models.RAWGAT, result_handler=DfResultHandler(-1.72, "DeepFake", "Real", 10, .90)):
+    def __init__(self, modeltype=Models.RAWGAT, device = None, model_path=None, result_handler=DfResultHandler(-1.72, "DeepFake", "Real", 10, .90)):
         '''
         Initializes the model
         '''
         self.result_handler=result_handler
-        self.device = get_best_device()
+        self.device = device
+        if device is None:
+            self.device = get_best_device()
         if modeltype == Models.RAWGAT:
             from sound_scape.backend.RawGATmodel import RawGAT_ST
-            model_path = "pretrained_models/RawGAT/RawGAT.pth"
+            if model_path is None:
+                model_path = "pretrained_models/RawGAT/RawGAT.pth"
+
             with open("pretrained_models/RawGAT/model_config_RawGAT_ST.yaml", 'r') as f_yaml:
-                config = yaml.safe_load(f_yaml)  
+                config = yaml.safe_load(f_yaml)
         
             # Extract only the model-related part of the configuration
             model_config = config['model']
@@ -96,7 +100,7 @@ class DeepfakeClassificationModel:
 
     def evaluate_multi_files(self, filepaths, print_r=False, progress_bar=False):
         transform = transforms.Compose([
-            lambda x: pad(x),  
+            lambda x: pad(x),
             lambda x: torch.Tensor(x)
         ])
         dataset = EvalDataset(filepaths, transform=transform)

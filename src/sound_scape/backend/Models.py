@@ -150,11 +150,19 @@ class whisper_specrnet:
 
 
 class rawgat:
-    def __init__(self, result_handler=None, device=None):
+    def of_path(device=None, weights_path=None):
+        model = DeepfakeClassificationModel(model_path=weights_path, device=device, result_handler=DfResultHandler(0, "Fake", "Real", 10, .99))
+        return rawgat(model=model, device=device)
+
+
+
+    def __init__(self, result_handler=None, device=None, model=None):
         self.result_handler = result_handler
         if result_handler is None:
             self.result_handler = DfResultHandler(-3, "Fake", "Real", 10, .45)
-        self.model = DeepfakeClassificationModel(result_handler=self.result_handler)
+        self.model = model
+        if model is None:
+            self.model = DeepfakeClassificationModel(result_handler=self.result_handler)
         self.name = "rawgat"
         
     def evaluate(self, file_path):
