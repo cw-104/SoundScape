@@ -79,19 +79,22 @@ def get_status():
 
 @app.route('/statusv2', methods=['POST'])
 def get_status2():
-    data = request.json
+    # Try JSON first
+    data = request.get_json(silent=True)
+    if data and 'id' in data:
+        file_id = data['id']
+    else:
+        # Fallback to form or raw data
+        file_id = request.form.get('id') or request.get_data(as_text=True).strip()
 
-    if data is None or 'id' not in data:
+    if not file_id:
         return jsonify({'status': 'Error: No id provided'}), 400
 
-    id = data['id']
+    if not model_bindings.file_ids.exists(file_id):
+        return jsonify({'status': 'Does not exist', 'error': 'Invalid ID'}), 404
 
-    if not model_bindings.file_ids.exists(id):
-        return jsonify({
-            'status': 'Does not exist',
-            'error': 'Invalid ID'}), 404
+    return jsonify(model_bindings.file_ids.get_status(file_id)), 200
 
-    return jsonify(model_bindings.file_ids.get_status(id)), 200
 
 @app.route('/results', methods=['POST'])
 def get_results():
@@ -118,8 +121,14 @@ def get_results2():
         print("invalid id")
         return jsonify({
             'status': 'Does not exist',
-            'error': 'Invalid ID'}), 404
-    return jsonify(model_bindings.file_ids.get_results(id)), 200
+            'error': 'Invalid ID'
+        }), 404
+    
+    results = model_bindings.file_ids.get_results(id)
+    return jsonify({
+        'status': 'finished', 
+        'results': results
+    }), 200
 
 import logging
 from numba import config
@@ -134,5 +143,5 @@ def start_api():
     # Alternatively, you can set the logging level for all loggers
     logging.basicConfig(level=logging.WARNING)
     global app
-    CORS(app)
+    CORS(app, resources={r"/*": {"origins": ["https://projectsoundscape.net", "*"]}})
     app.run(debug=True, port=8080)

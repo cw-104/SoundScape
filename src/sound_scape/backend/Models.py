@@ -17,8 +17,14 @@ logging.basicConfig(level=logging.WARNING)
 class vocoder:
     def __init__(self, device=None):
         self.device = device
-        if device is None:
-            self.device = get_best_device()
+        #if device is None:
+            #self.device = get_best_device()
+        # detect mps, use cpu as fallback if needed
+        if not device:
+            device = 'mps' if torch.backends.mps.is_available() else get_best_device()
+        self.device = device
+        #debug check
+        print(f"Vocoder initializing on device: {self.device}")
         self.model_path = get_path_relative_base("pretrained_models/vocoder/librifake_pretrained_lambda0.5_epoch_25.pth")
         self.yaml_path = get_path_relative_base("pretrained_models/vocoder/model_config_RawNet.yaml")
         self.model = vocoder_model(self.model_path, device=device, yaml_path=self.yaml_path)

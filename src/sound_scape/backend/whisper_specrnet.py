@@ -9,8 +9,10 @@ import torch, torchaudio
 import torch.nn.functional as F
 from torch import Tensor, nn
 
-WHISPER_MODEL_WEIGHTS_PATH = "pretrained_models/whisper_specrnet/tiny_enc.en.pt"
-MEL_FILTERS_PATH = "pretrained_models/whisper_specrnet/mel_filters.npz"
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
+WHISPER_MODEL_WEIGHTS_PATH = os.path.join(BASE_DIR, "pretrained_models/whisper_specrnet/tiny_enc.en.pt")
+MEL_FILTERS_PATH = os.path.join(BASE_DIR, "pretrained_models/whisper_specrnet/mel_filters.npz")
 """
 This file contains implementation of SpecRNet architecture.
 We base our codebase on the implementation of RawNet2 by Hemlata Tak (tak@eurecom.fr).

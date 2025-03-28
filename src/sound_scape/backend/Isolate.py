@@ -87,9 +87,15 @@ def separate_file(input_file, output_dir, model='htdemucs', mp3=False, mp3_rate=
 
     # Move the separated file to the output directory
     separated_file_path = os.path.join(output_dir, filename_no_ext.replace(' ', '') + "_sep.mp3")
-    shutil.move(os.path.join(output_dir, model, filename_no_ext, "vocals.mp3"), separated_file_path)
-    if os.path.exists(os.path.join(output_dir, model)):
-        shutil.rmtree(os.path.join(output_dir, model))
+    vocals_mp3 = os.path.join(output_dir, model, filename_no_ext, "vocals.mp3")
+    vocals_wav = os.path.join(output_dir, model, filename_no_ext, "vocals.wav")
+
+    if os.path.exists(vocals_mp3):
+        shutil.move(vocals_mp3, separated_file_path)
+    elif os.path.exists(vocals_wav):
+        shutil.move(vocals_wav, separated_file_path)
+    else:
+        raise FileNotFoundError(f"Could not find vocals at {vocals_mp3} or {vocals_wav}")
 
     if not trim_silence:
         return separated_file_path
