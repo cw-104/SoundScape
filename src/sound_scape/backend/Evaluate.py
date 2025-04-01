@@ -10,6 +10,8 @@ from Base_Path import get_path_relative_base
 from sound_scape.backend.whisper_eval import evaluate_nn
 from sound_scape.backend.whisper_specrnet import WhisperSpecRNet, set_seed
 
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
+
 class Models(IntEnum):
     SOUNDSCAPE = 0    
     RAWGAT = 1
@@ -56,8 +58,9 @@ class DeepfakeClassificationModel:
         self.device = get_best_device()
         if modeltype == Models.RAWGAT:
             from sound_scape.backend.RawGATmodel import RawGAT_ST
-            model_path = "pretrained_models/RawGAT/RawGAT.pth"
-            with open("pretrained_models/RawGAT/model_config_RawGAT_ST.yaml", 'r') as f_yaml:
+            model_path = os.path.join(BASE_DIR, "pretrained_models/RawGAT/RawGAT.pth")
+            rawgat_config_path=os.path.join(BASE_DIR, "pretrained_models/RawGAT/model_config_RawGAT_ST.yaml")
+            with open(rawgat_config_path, 'r') as f_yaml:
                 config = yaml.safe_load(f_yaml)  
         
             # Extract only the model-related part of the configuration

@@ -1,13 +1,15 @@
+import yaml, torch, json, logging
+
 from .Evaluate import get_best_device, evaluate_nn
 from sound_scape.backend.Evaluate import DeepfakeClassificationModel
 from sound_scape.backend.Results import DfResultHandler
 from Base_Path import get_path_relative_base
 from sound_scape.backend.whisper_specrnet import WhisperSpecRNet, set_seed
-import yaml, torch
 from .xlsr_model import xlsr_model_eval
 from .vocoder_eval import vocoder_model
-import logging
 from numba import config
+from .CladModel import CladModel
+
 
 logging.getLogger('numba').setLevel(logging.WARNING)
 
@@ -17,8 +19,14 @@ logging.basicConfig(level=logging.WARNING)
 class vocoder:
     def __init__(self, device=None):
         self.device = device
-        if device is None:
-            self.device = get_best_device()
+        #if device is None:
+            #self.device = get_best_device()
+        # detect mps, use cpu as fallback if needed
+        if not device:
+            device = 'mps' if torch.backends.mps.is_available() else get_best_device()
+        self.device = device
+        #debug check
+        print(f"Vocoder initializing on device: {self.device}")
         self.model_path = get_path_relative_base("pretrained_models/vocoder/librifake_pretrained_lambda0.5_epoch_25.pth")
         self.yaml_path = get_path_relative_base("pretrained_models/vocoder/model_config_RawNet.yaml")
         self.model = vocoder_model(self.model_path, device=device, yaml_path=self.yaml_path)
@@ -126,17 +134,37 @@ class rawgat:
     def evaluate_full_results(self, file_path):
         return self.model.evaluate_file(file_path)
 
+class CLAD:
+    def __init__(self, model_path=None, device=None):
+        self.model = CladModel()
 
+    def evaluate(self, file_path, debug_print=False):
+        try:
+            raw_output = self.model.predict(file_path)
+
+            if not raw_output:
+                logging.error("CLAD subprocess returned no output.")
+                return [ 0, "Error"]
+
+            # Extract only the JSON part (last non-empty line)
+            json_str = [line for line in raw_output.strip().splitlines() if line][-1]
+            result = json.loads(json_str)
+
+            if result.get("status") == "success":
+                return [result["certainty"], result["label"]]
+            else:
+                return 0, "Error"
+
+        except Exception as e:
+            logging.exception(f"Failed running CLAD model: {e}")
+            return 0, "Error"
 
 if __name__ == '__main__':
-    num_df_found = 0
-    num_rl_found = 0
-
-    df_folder = ""
-    rl_folder = ""
-
-    df_files = []
-    rl_files = []
-
-    real_num_df = len(df_files)
-    real_num_rl = len(rl_files)
+    # print("Creating CLAD")
+    print()
+    print()
+    clad = CLAD()
+    path = "/Users/christiankilduff/Deepfake_Detection_Resources/SoundScape/src/DrakeDeepfake.mp3"
+    # print("Evaluating CLAD")
+    print(clad.evaluate(path))
+    print(clad.evaluate("/Users/christiankilduff/Deepfake_Detection_Resources/SoundScape/src/uploads/MarioDeepfake.mp3"))

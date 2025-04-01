@@ -22,3 +22,8 @@ fairseq
 
 */uploads/*
 src/pretrained_models/XLS-R/epoch_1_58.pth
+
+mvenv
+venv
+ClAD/venv
+src.zip 
