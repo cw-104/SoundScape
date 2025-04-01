@@ -3,6 +3,7 @@ const StatusEnum = Object.freeze({
   READY: 1,
   UPLOADING: 2,
   IN_PROGRESS: 3,
+  FAILED: -1,
 });
 const file_hint_initial_color = "text-warning";
 
@@ -36,18 +37,20 @@ submitButton.addEventListener("click", function (event) {
 
 function setButtonState(status) {
   console.log(status);
-  submitButton.disabled = status !== StatusEnum.READY;
+  submitButton.disabled = status !== StatusEnum.READY && status !== StatusEnum.FAILED;
   success_class = "btn-success";
   disabled_class = "btn-dark";
   uploading_class = "btn-outline-warning";
   in_progress_class = "btn-outline-success";
 
+  failed_class = "btn-warning";
   switch (status) {
     case StatusEnum.DISABLED:
       submitButton.innerHTML = "Waiting for File";
       submitButton.classList.remove(success_class);
       submitButton.classList.remove(in_progress_class);
       submitButton.classList.remove(uploading_class);
+      submitButton.classList.remove(failed_class);
       submitButton.classList.add(disabled_class);
       break;
     case StatusEnum.READY:
@@ -55,6 +58,7 @@ function setButtonState(status) {
       submitButton.classList.remove(disabled_class);
       submitButton.classList.remove(in_progress_class);
       submitButton.classList.remove(uploading_class);
+      submitButton.classList.remove(failed_class);
       submitButton.classList.add(success_class);
       break;
     case StatusEnum.UPLOADING:
@@ -62,6 +66,7 @@ function setButtonState(status) {
       submitButton.classList.remove(disabled_class);
       submitButton.classList.remove(success_class);
       submitButton.classList.remove(in_progress_class);
+      submitButton.classList.remove(failed_class);
       submitButton.classList.add(uploading_class);
       break;
     case StatusEnum.IN_PROGRESS:
@@ -69,8 +74,15 @@ function setButtonState(status) {
       submitButton.classList.remove(disabled_class);
       submitButton.classList.remove(success_class);
       submitButton.classList.remove(uploading_class);
+      submitButton.classList.remove(failed_class);
       submitButton.classList.add(in_progress_class);
       break;
+    case StatusEnum.FAILED:
+      submitButton.innerHTML = "Upload Again";
+      submitButton.classList.remove(disabled_class);
+      submitButton.classList.remove(in_progress_class);
+      submitButton.classList.remove(uploading_class);
+      submitButton.classList.add(failed_class);
   }
 }
 
@@ -217,12 +229,14 @@ async function uploadToAPI(file) {
       } else {
         console.error("body.id not found");
         displayFileOrMessage("Upload failed. Try again.", true);
-        return;
+        setButtonState(StatusEnum.FAILED);
+        return false;
       }
     })
     .catch((error) => {
       console.error("Upload Error:", error);
       displayFileOrMessage("Upload failed. Try again.", true);
-      return;
+      setButtonState(StatusEnum.FAILED);
+      return false;
     });
 }

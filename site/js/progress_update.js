@@ -1,6 +1,7 @@
 let progressLabel = null;
 let seeResultsButton = null;
 let id = null;
+substate = null;
 function redirectIfNoID() {
   let id = sessionStorage.getItem("uploadID");
   if (id === null) {
@@ -27,6 +28,13 @@ function initProgress() {
 
 function displayProgressHint(str) {
   progressLabel.innerHTML = str;
+  if (substate) {
+    progressLabel.innerHTML += ` (${substate})`;
+  }
+}
+
+function getProgressHint() {
+  return progressLabel.innerHTML;
 }
 
 let prevState = -1;
@@ -36,10 +44,15 @@ async function update() {
   console.log(`Fetching state for ID: ${id}`);
   await fetchStatus(id).then(async (data) => {
     if (!data) {
-      console.log("Error: Status not received");
+      console.log("Error: data not received");
       return;
     }
-    console.log(`State: ${data.state}`);
+
+    if (data.substate) {
+      console.log("Substate: " + data.substate);
+      substate = data.substate
+    } else substate = null;
+
     let state = parseState(data);
     if (state != prevState) {
       times_checked = 1;
@@ -87,6 +100,8 @@ async function update() {
       console.log("not updating progress");
       displayProgressHint("Error try again");
     }
+
+
 
     new Promise((r) =>
       setTimeout(r, Math.max(10, update_wait - (performance.now() - start)))

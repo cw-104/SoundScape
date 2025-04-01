@@ -23,33 +23,30 @@ async function prep() {
   data = await fetchResults(id);
   console.log(data);
   data = JSON.parse(data);
-  if (!data || !data.status) {
+  if (!data) {
     console.log("Error: Results not received");
     console.log(data);
     return;
   }
-  if (data.status !== "finished") {
-    console.log("Error: Results returned finished even after status check");
-  }
   displayResults(data);
 }
 
-function displayResults(json) {
-  let resultSet = new ModelResultsSet(json);
-  console.log(resultSet);
-  console.log(json.explaination);
-  console.log(json["identified-artist"]);
+function displayResults(results) {
+  console.log(results);
+  console.log(results.explaination);
+  console.log(results.artist_id);
 
-  explainationBody.innerHTML = json.explaination;
+  explainationBody.innerHTML = results.explaination;
   explainationCard.classList.add("border-primary");
-  identifiedArtistBody.innerHTML = json["identified-artist"];
+  identifiedArtistBody.innerHTML = results.artist_id;
   identifiedArtistCard.classList.add("border-primary");
 
   //   trim to 2 dec
 
-  let finalPrediction = interperateFinalResult(resultSet);
+  let finalPrediction = results.combined.final;
+  let pretty_pred = Math.min(Math.round(finalPrediction.prediction * 10000) / 100); // 2 dec places as percentage not float
   let str =
-    "Our system is " + finalPrediction.pred + "% confident that this is ";
+    "Our system is " + pretty_pred + "% confident that this is ";
   if (finalPrediction.label === "Real") {
     resultCard.classList.add("border-success");
     cardTitle.innerHTML = "Real";
@@ -59,57 +56,77 @@ function displayResults(json) {
     cardTitle.innerHTML = "Fake";
     cardBody.innerHTML = str + "a deepfake.";
   }
-  fillAdvancedResults(resultSet);
+  fillAdvancedResults(results['model_results']);
 }
 
 /**
- * @param {ModelResultsSet} resultSet - The name of the user.
+ * @param {Map} results - results json
  */
-function fillAdvancedResults(resultSet) {
+function fillAdvancedResults(results) {
   /*
-        html to insert into advanced-results-body  
-    */
+    html to insert into advanced-results-body
+  */
+  model_names = Object.keys(results)
+  console.log(model_names)
 
-  /**
-   * @type {ModelResults[]} models
-   */
-  let models = [
-    resultSet.whisper,
-    resultSet.rawgat,
-    resultSet.xlsr,
-    resultSet.vocoder,
-  ];
+
 
   let html = `
-<table class="table table-hover">
-  <thead>
+  <table class="table table-hover">
+    <thead>
       <tr>
       <th scope="col">Model</th>
       <th scope="col">Label</th>
       <th scope="col">Certainty</th>
     </tr>
-  </thead>
+    </thead>
   <tbody>
   </tbody>
     `;
 
   html += `<tr class="table-active"><th class="text-info" colspan="3">Vocals Only</th></tr>`;
-  for (let model of models) {
+
+  for (let model_name of model_names) {
+    let model = results[model_name];
+    separated = {
+      "label": model["separated_results"]["label"],
+      "prediction": model["separated_results"]["prediction"],
+      "pretty_pred": Math.min(Math.round(model["separated_results"]["prediction"] * 10000) / 100), // 2 dec places as percentage not float
+    }
+    unseparated = {
+      "label": model["unseparated_results"]["label"],
+      "prediction": model["unseparated_results"]["prediction"],
+      "pretty_pred": Math.min(Math.round(model["unseparated_results"]["prediction"] * 10000) / 100), // 2 dec places as percentage not float
+    }
+
     html += `
        <tr class="table-dark">
-            <th scope="row" class="text-body-secondary">${model.name}</th>
-            <td class="text-body-secondary">${model.separated.label}</td>
-            <td class="text-body-secondary">${model.separated.pretty_pred}%</td>
+            <th scope="row" class="text-body-secondary">${model_name}</th>
+            <td class="text-body-secondary">${separated.label}</td>
+            <td class="text-body-secondary">${separated.pretty_pred}%</td>
         </tr>
         `;
   }
   html += `<tr class="table-active"><th class="text-info" colspan="3">Original</th></tr>`;
-  for (let model of models) {
+
+  for (let model_name of model_names) {
+    let model = results[model_name];
+    separated = {
+      "label": model.separated_results.label,
+      "prediction": model.separated_results.prediction,
+      "pretty_pred": Math.min(Math.round(model.separated_results.prediction * 10000) / 100), // 2 dec places as percentage not float
+    }
+    unseparated = {
+      "label": model.unseparated_results.label,
+      "prediction": model.unseparated_results.prediction,
+      "pretty_pred": Math.min(Math.round(model.unseparated_results.prediction * 10000) / 100), // 2 dec places as percentage not float
+    }
+
     html += `
         <tr class="table-dark">
-            <th scope="row" class="text-body-secondary">${model.name}</th>
-            <td class="text-body-secondary">${model.unseparated.label}</td>
-            <td class="text-body-secondary">${model.unseparated.pretty_pred}%</td>
+            <th scope="row" class="text-body-secondary">${model_name}</th>
+            <td class="text-body-secondary">${unseparated.label}</td>
+            <td class="text-body-secondary">${unseparated.pretty_pred}%</td>
         </tr>
             `;
   }
@@ -117,61 +134,4 @@ function fillAdvancedResults(resultSet) {
   html += "</table>";
 
   advancedResultsBody.innerHTML = html;
-}
-
-/**
- *
- * @param {ModelResultsSet} resultSet
- * @returns {Prediction}
- */
-function interperateFinalResult(resultSet) {
-  // count real labels
-  let realCount = 0;
-  let realSumConf = 0;
-  let fakeCount = 0;
-  let fakeSumConf = 0;
-
-  const models = [
-    resultSet.whisper,
-    resultSet.rawgat,
-    resultSet.xlsr,
-    resultSet.vocoder,
-  ];
-  for (let model of models) {
-    if (model.separated.label === "Real") {
-      realCount++;
-      realSumConf += model.separated.pred;
-    } else {
-      fakeCount++;
-      fakeSumConf += model.separated.pred;
-    }
-
-    if (model.unseparated.label === "Real") {
-      realCount++;
-      realSumConf += model.unseparated.pred;
-    } else {
-      fakeCount++;
-      fakeSumConf += model.unseparated.pred;
-    }
-  }
-  // whichever has more of labels
-  let finalLabel = realCount >= fakeCount ? "Real" : "Fake";
-  let finalConfSum = finalLabel === "Real" ? realSumConf : fakeSumConf;
-  let finalConf = finalConfSum / (realCount + fakeCount);
-  let prettyConf = Math.round(finalConf * 1000) / 4;
-  if (prettyConf < 0) {
-    prettyConf = prettyConf * -1;
-  }
-
-  console.log(`
-    realCount: ${realCount}
-    realSumConf: ${realSumConf}
-    fakeCount: ${fakeCount}
-    fakeSumConf: ${fakeSumConf}
-    finalLabel: ${finalLabel}
-    finalConfSum: ${finalConfSum}
-    finalConf: ${finalConf}
-    prettyConf: ${prettyConf}
-  `);
-  return new Prediction({ label: finalLabel, prediction: prettyConf });
 }

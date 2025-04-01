@@ -1,4 +1,5 @@
-let url = "https://bc53-181-214-167-177.ngrok-free.app";
+// let url = "https://soundscape.loca.lt";
+let url = "https://5b68-102-165-16-33.ngrok-free.app";
 
 // Fetch navbar
 fetch("html-elements/navbar.html")
@@ -66,7 +67,7 @@ const STATES = {
 };
 
 async function fetchStatus(id) {
-  let response = await fetch(getURL() + "/statusv2", {
+  let response = await fetch(getURL() + "/status", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id: id }),
@@ -81,7 +82,7 @@ async function fetchStatus(id) {
 
 function parseState(data) {
   if (!data.state) {
-    console.log("Error: No state received");
+    console.log("Data: " +  data);
     return STATES.NONE;
   }
   let state = data.state.toLowerCase();
@@ -115,10 +116,8 @@ class ModelResultsSet {
   constructor(json) {
     this.whisper = new ModelResults(json.whisper, "Whisper");
     this.rawgat = new ModelResults(json.rawgat, "Rawgat");
-    console.log(json.xlsr);
     this.xlsr = new ModelResults(json.xlsr, "xlsr");
     this.vocoder = new ModelResults(json.vocoder, "Vocoder");
-    console.log(json.vocoder);
   }
 }
 class ModelResults {
