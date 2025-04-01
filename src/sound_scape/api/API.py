@@ -105,5 +105,7 @@ def start_api():
     # Alternatively, you can set the logging level for all loggers
     logging.basicConfig(level=logging.WARNING)
     global app
-    CORS(app, resources={r"/*": {"origins": ["https://projectsoundscape.net", "*"]}})
+    # CORS(app, resources={r"/*": {"origins": ["https://projectsoundscape.net", "*"]}})
+    CORS(app, resources={r"/*": {"origins": "*"}})
+
     app.run(debug=True, port=8080)

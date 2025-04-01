@@ -31,7 +31,7 @@ if __name__ == "__main__":
         percentage_divisor = 10.0
         percentage_cap = 0.99
         certainty = min(abs(score / percentage_divisor), percentage_cap)
-        label = "Deepfake" if score < 0 else "Real"
+        label = "Fake" if score < 0 else "Real"
 
         result = {
             "status": "success",
