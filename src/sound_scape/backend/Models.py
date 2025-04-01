@@ -1,13 +1,15 @@
+import yaml, torch, json, logging
+
 from .Evaluate import get_best_device, evaluate_nn
 from sound_scape.backend.Evaluate import DeepfakeClassificationModel
 from sound_scape.backend.Results import DfResultHandler
 from Base_Path import get_path_relative_base
 from sound_scape.backend.whisper_specrnet import WhisperSpecRNet, set_seed
-import yaml, torch
 from .xlsr_model import xlsr_model_eval
 from .vocoder_eval import vocoder_model
-import logging
 from numba import config
+from .CladModel import CladModel
+
 
 logging.getLogger('numba').setLevel(logging.WARNING)
 
@@ -132,17 +134,37 @@ class rawgat:
     def evaluate_full_results(self, file_path):
         return self.model.evaluate_file(file_path)
 
+class CLAD:
+    def __init__(self, model_path=None, device=None):
+        self.model = CladModel()
 
+    def evaluate(self, file_path, debug_print=False):
+        try:
+            raw_output = self.model.predict(file_path)
+
+            if not raw_output:
+                logging.error("CLAD subprocess returned no output.")
+                return [ 0, "Error"]
+
+            # Extract only the JSON part (last non-empty line)
+            json_str = [line for line in raw_output.strip().splitlines() if line][-1]
+            result = json.loads(json_str)
+
+            if result.get("status") == "success":
+                return [result["certainty"], result["label"]]
+            else:
+                return 0, "Error"
+
+        except Exception as e:
+            logging.exception(f"Failed running CLAD model: {e}")
+            return 0, "Error"
 
 if __name__ == '__main__':
-    num_df_found = 0
-    num_rl_found = 0
-
-    df_folder = ""
-    rl_folder = ""
-
-    df_files = []
-    rl_files = []
-
-    real_num_df = len(df_files)
-    real_num_rl = len(rl_files)
+    # print("Creating CLAD")
+    print()
+    print()
+    clad = CLAD()
+    path = "/Users/christiankilduff/Deepfake_Detection_Resources/SoundScape/src/DrakeDeepfake.mp3"
+    # print("Evaluating CLAD")
+    print(clad.evaluate(path))
+    print(clad.evaluate("/Users/christiankilduff/Deepfake_Detection_Resources/SoundScape/src/uploads/MarioDeepfake.mp3"))
