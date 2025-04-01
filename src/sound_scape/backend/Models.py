@@ -17,7 +17,8 @@ logging.getLogger('numba').setLevel(logging.WARNING)
 logging.basicConfig(level=logging.WARNING)
 
 class vocoder:
-    def __init__(self, device=None):
+    def __init__(self, device=None, name="vocoder"):
+        self.name = name
         self.device = device
         #if device is None:
             #self.device = get_best_device()
@@ -38,25 +39,28 @@ class vocoder:
         pred = None
         # Flipped
         if(binary[0] > binary[1]):
-            print("Real")
+            # print("Real")
             label = "Real"
-            pred = binary[0]
+            # pred = binary[0]
+            pred = multi[0]
         else:
-            print("Fake")
+            # print("Fake")
             label = "Fake"
-            pred = binary[1]
+            # pred = binary[1]
+            pred = multi[1]
         
-        print('Multi classification result : gt:{}, wavegrad:{}, diffwave:{}, parallel wave gan:{}, wavernn:{}, wavenet:{}, melgan:{}'.format(multi[0], multi[1], multi[2], multi[3], multi[4], multi[5], multi[6]))
+        # print('Multi classification result : gt:{}, wavegrad:{}, diffwave:{}, parallel wave gan:{}, wavernn:{}, wavenet:{}, melgan:{}'.format(multi[0], multi[1], multi[2], multi[3], multi[4], multi[5], multi[6]))
         # sum all the multi classification results
-        sum_multi = sum(multi)
-        print('Binary classification result : real:{}, fake:{}'.format(binary[0], binary[1]))
+        # sum_multi = sum(multi)
+        # print('Binary classification result : real:{}, fake:{}'.format(binary[0], binary[1]))
         
-        print(multi, binary)
+        # print(multi, binary)
         return pred, label
 
 
 class xlsr:
-    def __init__(self, device=None):
+    def __init__(self, device=None, name="xlsr"):
+        self.name = name
         self.device = device
         if not device:
             self.device = get_best_device()
@@ -67,7 +71,8 @@ class xlsr:
         return abs(pred/100), "Real" if pred > 0 else "Fake"
 
 class whisper_specrnet:
-    def __init__(self, device="", weights_path="", config_path="", threshold=.45, reval_threshold=0, no_sep_threshold=0):
+    def __init__(self, name="whisper_specrnet", device="", weights_path="", config_path="", threshold=.45, reval_threshold=0, no_sep_threshold=0):
+        self.name = name
         self.device = device
         self.weights_path = weights_path
         self.config_path = config_path
@@ -121,7 +126,8 @@ class whisper_specrnet:
 
 
 class rawgat:
-    def __init__(self, result_handler=None):
+    def __init__(self, result_handler=None, name="rawgat"):
+        self.name = name
         self.result_handler = result_handler
         if result_handler is None:
             self.result_handler = DfResultHandler(-3, "Fake", "Real", 10, .45)
@@ -135,7 +141,8 @@ class rawgat:
         return self.model.evaluate_file(file_path)
 
 class CLAD:
-    def __init__(self, model_path=None, device=None):
+    def __init__(self, model_path=None, device=None, name="CLAD"):
+        self.name = name
         self.model = CladModel()
 
     def evaluate(self, file_path, debug_print=False):

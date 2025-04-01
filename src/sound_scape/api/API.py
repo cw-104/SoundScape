@@ -53,10 +53,10 @@ def get_status():
         file_id = data['id']
     
     if not file_id:
-        return jsonify({'status': 'Error: No id provided'}), 400
+        return jsonify({'state': 'Error: No id provided'}), 400
 
     if not model_bindings.file_ids.exists(file_id):
-        return jsonify({'status': 'Does not exist', 'error': 'Invalid ID'}), 404
+        return jsonify({'state': 'Does not exist', 'error': 'Invalid ID'}), 404
 
     return jsonify(model_bindings.file_ids.get_status(file_id)), 200
 
@@ -90,10 +90,7 @@ def get_results2():
         }), 404
     
     results = model_bindings.file_ids.get_results(id)
-    return jsonify({
-        'status': 'finished',
-        'results': results
-    }), 200
+    return jsonify(results), 200
 
 import logging
 from numba import config

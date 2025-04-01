@@ -17,15 +17,17 @@ headers = {
 }
 
 
-from sound_scape.backend.Models import whisper_specrnet, rawgat, xlsr, vocoder
+from sound_scape.backend.Models import whisper_specrnet, rawgat, xlsr, vocoder, CLAD
 
 class ModelBindings:
     def __init__(self):
         self.whisper_model = whisper_specrnet()
         self.rawgat_model = rawgat()
-        self.vocoder_model = vocoder(device='mps')
-        self.xlsr_model = xlsr(device='mps')
+        self.vocoder_model = vocoder()
+        self.xlsr_model = xlsr()
+        self.CLAD = CLAD()
         self.file_processing_queue = Queue()
+        self.models = [self.whisper_model, self.rawgat_model, self.vocoder_model, self.xlsr_model, self.CLAD]
         self.processing_thread = None
 
         self.file_ids = FileIds()
@@ -44,26 +46,9 @@ class ModelBindings:
             self.processing_thread.start()
 
     def get_model_results(self, original_path, sep_path):
-        # Eval Whisper
-        wpred, wlabel = self.whisper_model.evaluate(original_path)
-        wpred_sep, wlabel_sep = self.whisper_model.evaluate(sep_path)
-        
-        # Eval RawGAT
-        rpred, rlabel = self.rawgat_model.evaluate(original_path)
-        rpred_sep, rlabel_sep= self.rawgat_model.evaluate(sep_path)
-
-        # Eval Vocoder
-        vpred, vlabel = self.vocoder_model.evaluate(original_path)
-        vpred_sep, vlabel_sep = self.vocoder_model.evaluate(sep_path)
-
-        # Eval XLSR
-        xpred, xlabel = self.xlsr_model.evaluate(original_path)
-        xpred_sep, xlabel_sep = self.xlsr_model.evaluate(sep_path)
-
-        # to json results
-        return {
-            'status': 'finished',
-            'whisper': {
+        """
+        RESULT EX: 
+        'whisper': {
             'unseparated_results': {
                 'prediction': wpred,
                 'label': wlabel,
@@ -72,41 +57,61 @@ class ModelBindings:
                 'prediction': wpred_sep,
                 'label': wlabel_sep,
             }
-            },
-            'rawgat': {
-            'unseparated_results': {
-                'prediction': rpred,
-                'label': rlabel,
-            },
-            'separated_results': {
-                'prediction': rpred_sep,
-                'label': rlabel_sep,
-            },
-            },
-            'xlsr': {
-            'unseparated_results': {
-                'prediction': xpred,
-                'label': xlabel,
-            },
-            'separated_results': {
-                'prediction': xpred_sep,
-                'label': xlabel_sep,
-            },
-            },
-            'vocoder': {
-            'unseparated_results': {
-                'prediction': vpred,
-                'label': vlabel,
-            },
-            'separated_results': {
-                'prediction': vpred_sep,
-                'label': vlabel_sep
-            }}}
+        }
+        """
+        
+        results_map = {}
+
+        for model in self.models:
+            pred, label = model.evaluate(original_path)
+            pred_sep, label_sep = model.evaluate(sep_path)
+            results_map[model.name] = {
+                'unseparated_results': {
+                    'prediction': pred,
+                    'label': label,
+                },
+                'separated_results': {
+                    'prediction': pred_sep,
+                    'label': label_sep,
+                }
+            }
+        
+
+        return results_map
 
 
-    def append_explain_results(self, json):
+    def combined_results(self, results):
+        # label = str "Real"/"Fake"
+        # whichever num of real or fake is higher
+
+        def most_label(res_class):
+            count_real = 0
+            count_fake = 0
+            for model in results:
+                if results[model][res_class]['label'] == 'Real':
+                    count_real += 1
+                else:
+                    count_fake += 1
+            return 'Real' if count_real > count_fake else 'Fake'
+        return {
+            'separated': {
+                'prediction': sum([results[model]['separated_results']['prediction'] for model in results]) / len(results),
+                'label': most_label('separated_results')
+            },
+            'unseparated': {
+                'prediction': sum([results[model]['unseparated_results']['prediction'] for model in results]) / len(results),
+                'label': most_label('unseparated_results')
+            },
+            'final': {
+                'prediction': sum([results[model]['separated_results']['prediction'] for model in results]) / len(results),
+                'label': most_label('separated_results')
+            }
+        }
+
+
+    def explain_results(self, results_json):
         data = {
-        "query": "We are using 5 models to predict the results of an audio file based on if it is a deepfake or authentic voice. We need you to explain to the user of our site the results of the model and what they mean. We are giving you the results and then want you to give a short explanation to the user as to why the answer is what it is based on the results. Here is the data: " + to_json(json)+ "Give a simple paragraph for the user explaining how the data results give the final outcome answer of real or fake. We need you to explain why our model came to this conclusion, do not give an indecisive answer.",
+        "query": "We are using 5 models to predict the results of an audio file based on if it is a deepfake or authentic voice. We need you to explain to the user of our site the results of the model and what they mean. We are giving you the results and then want you to give a short explanation to the user as to why the answer is what it is based on the results. Here is the data: " + to_json(results_json)+ "Give a simple paragraph for the user explaining how the data results give the final outcome answer of real or fake. We need you to explain why our model came to this conclusion, do not give an indecisive answer.",
 	    # "sessionId": "<SESSIONID_TEXT_DATA>",  # Optional: Specify sessionId from the previous message
         }
 
@@ -124,20 +129,17 @@ class ModelBindings:
             result = get_response.json()
     
             if result.get("completed"):
-                print(result)
+                # print(result)
                 break
             else:
                 print("results not arrived")
-                time.sleep(5) # Wait for 5 seconds before checking the result again
-        json['explaination'] = result['data']['output']
-        return json
+                time.sleep(2.5) # Wait for 5 seconds before checking the result again
+        return result['data']['output']
 
-    def append_identification_results(self, json):
+    def identify_artist(self, file_path):
         # pass vocal to match
         artist = "(placeholder) Taylor Swift"
-
-        json['identified-artist'] = artist
-        return json
+        return artist
 
     def process_file(self, id):
         if not self.file_ids.exists(id):
@@ -149,17 +151,25 @@ class ModelBindings:
         path = self.file_ids.get_path(id)
 
         # Separate the file
+        self.file_ids.update_substate(id, 'separating')
         sep_file = separate_file(path, os.path.join(UPLOADS_FOLDER, "separated-uploads"), mp3=True)
 
         # get model eval results
-        result_json = self.get_model_results(path, sep_file)
+        self.file_ids.update_substate(id, 'evaluating')
+        result_json = {}
+        result_json['model_results'] = self.get_model_results(path, sep_file)
+
+        # combined results
+        result_json['combined'] = self.combined_results(result_json['model_results'])
 
 
         # add ai explaination
-        result_json = self.append_explain_results(result_json)
+        self.file_ids.update_substate(id, 'explaining')
+        result_json['explaination'] = self.explain_results(result_json)
 
         # match the vocals to an artist
-        result_json = self.append_identification_results(result_json)
+        self.file_ids.update_substate(id, 'identifying')
+        result_json['artist_id'] = self.identify_artist(sep_file)
 
 
         self.file_ids.set_results(id, to_json(result_json))
@@ -180,7 +190,13 @@ class FileIds:
         self.file_ids = {}
 
     def update_state(self, id, state):
-        self.file_ids[id]['state'] = state
+        # overwrite status and clearing substate
+        self.file_ids[id]['status'] = {
+            'state': state
+        }
+
+    def update_substate(self, id, substate):
+        self.file_ids[id]['status']['substate'] = substate
 
     def get_path(self, id):
         return self.file_ids[id]['filename']
@@ -189,8 +205,10 @@ class FileIds:
     def add_file(self, id, filename):
         self.file_ids[id] = {
             'filename': filename,
-            'state': "uploaded"
+            'status': {
+                'state': 'uploaded'
             }
+        }
 
     
     def set_results(self, id, results):
@@ -202,7 +220,7 @@ class FileIds:
             return {
                 'state': 'id not found'
             }
-        return self.file_ids[id]['state']
+        return self.file_ids[id]['status']
 
     def has_results(self, id):
         return 'results' in self.file_ids[id]
