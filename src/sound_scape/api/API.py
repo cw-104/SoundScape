@@ -26,26 +26,7 @@ def recieve_file():
 
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        file_path = os.path.join(UPLOADS_FOLDER, filename)  
-        file.save(file_path)
-        # upload was successful process validity
-        return confirm_upload(file_path)
-    else:
-        return jsonify({'error': 'Invalid file type'}), 400
-
-@app.route('/uploadv2', methods=['POST'])
-def recieve_file2():
-    if not 'audio' in request.files:
-        return jsonify({'error': 'No file part'}), 400
-
-    file = request.files['audio']
-
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
-
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(UPLOADS_FOLDER, filename)  
+        file_path = os.path.join(UPLOADS_FOLDER, filename)
         file.save(file_path)
         # upload was successful process validity
         return confirm_upload(file_path)
@@ -67,26 +48,10 @@ def allowed_file(filename):
 
 @app.route('/status', methods=['POST'])
 def get_status():
-    if request.get_data() == b'':
-        return jsonify({'status': 'Error: No id provided'}), 400
-    id = request.get_data().decode('utf-8')
-
-    if not model_bindings.file_ids.exists(id):
-        return jsonify({
-            'status': 'Does not exist',
-            'error': 'Invalid ID'}), 404
-    return jsonify(model_bindings.file_ids.get_status(id)), 200
-
-@app.route('/statusv2', methods=['POST'])
-def get_status2():
-    # Try JSON first
-    data = request.get_json(silent=True)
-    if data and 'id' in data:
+    data = request.json
+    if 'id' in data:
         file_id = data['id']
-    else:
-        # Fallback to form or raw data
-        file_id = request.form.get('id') or request.get_data(as_text=True).strip()
-
+    
     if not file_id:
         return jsonify({'status': 'Error: No id provided'}), 400
 
@@ -126,7 +91,7 @@ def get_results2():
     
     results = model_bindings.file_ids.get_results(id)
     return jsonify({
-        'status': 'finished', 
+        'status': 'finished',
         'results': results
     }), 200
 
