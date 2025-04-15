@@ -6,9 +6,13 @@ from Base_Path import get_path_relative_base
 UPLOADS_FOLDER = get_path_relative_base("uploads")
 import requests
 import time
+from sound_scape.identify.identification import identifier
 
-AIXPLAIN_API_KEY = "d97f1786ec0701d8809259408d07e4f739f0794bd80a7c30c024004597aff085"
-AGENT_ID = "67acb51f56173fdefab4fc62"
+AIXPLAIN_API_KEY = "305948bf8f6fb9c3a45097960725ccfb46bc27608372934ebccaaef3894807f0"
+# AGENT_ID = "67acb51f56173fdefab4fc62"
+
+
+AGENT_ID = "67911beb6217a7d8cf00b496"
 POST_URL = f"https://platform-api.aixplain.com/sdk/agents/{AGENT_ID}/run"
 
 headers = {
@@ -31,6 +35,8 @@ class ModelBindings:
         self.processing_thread = None
 
         self.file_ids = FileIds()
+
+        self.identifier = identifier()
 
     def run_processing_thread(self):
         while not self.file_processing_queue.empty():
@@ -134,12 +140,15 @@ class ModelBindings:
             else:
                 print("results not arrived")
                 time.sleep(2.5) # Wait for 5 seconds before checking the result again
+                # return "Out of credits"
         return result['data']['output']
 
     def identify_artist(self, file_path):
         # pass vocal to match
-        artist = "Taylor Swift | 76% match"
-        return artist
+        # artist = "Taylor Swift | 76% match"
+
+        name, score = self.identifier.identify_artist(file_path)
+        return f"{name} | {int(score*100)}% match"
 
     def process_file(self, id):
         if not self.file_ids.exists(id):
@@ -147,17 +156,25 @@ class ModelBindings:
             return
         # set to processing state
         self.file_ids.update_state(id, 'processing')
+        result_json = {}
         # get path
         path = self.file_ids.get_path(id)
+
+        def identify(path):
+            nonlocal result_json
+            result_json['artist_id'] = self.identify_artist(path)
+        # identification_thread = threading.Thread(target=self.identify_artist, args=(path,)).start()
+        identification_thread = threading.Thread(target=identify, args=(path,))
+        identification_thread.start()
 
         # Separate the file
         self.file_ids.update_substate(id, 'separating')
         sep_file = separate_file(path, os.path.join(UPLOADS_FOLDER, "separated-uploads"), mp3=True)
-
+        print("\nseparated\n")
         # get model eval results
         self.file_ids.update_substate(id, 'evaluating')
-        result_json = {}
         result_json['model_results'] = self.get_model_results(path, sep_file)
+        print("\nevaluating\n")
 
         # combined results
         result_json['combined'] = self.combined_results(result_json['model_results'])
@@ -166,13 +183,18 @@ class ModelBindings:
         # add ai explaination
         self.file_ids.update_substate(id, 'explaining')
         result_json['explaination'] = self.explain_results(result_json)
+        print("\nexplaining\n")
 
         # match the vocals to an artist
         self.file_ids.update_substate(id, 'identifying')
-        result_json['artist_id'] = self.identify_artist(sep_file)
+        # result_json['artist_id'] = self.identify_artist(sep_file)
+        print("\nidentifying\n")
 
-
+        # wait for identification thread to finish and get return
+        identification_thread.join()
+        # result_json['artist_id'] = identification_thread.result
         self.file_ids.set_results(id, to_json(result_json))
+
 
 class FileIds:
     def __init__(self):
