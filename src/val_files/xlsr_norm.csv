@@ -326,4 +326,3 @@ xlsr, /Users/christiankilduff/Deepfake_Detection_Resources/To Test/xlsr/og_61_ep
 xlsr, /Users/christiankilduff/Deepfake_Detection_Resources/To Test/xlsr/og_61_epoch_147.pth, ../../soundscape-dataset/eval/fake/Tzanca Uraganu - More Than 100 (AI Cover).mp3, Fake, Fake, -0.8921232223510742, False
 xlsr, /Users/christiankilduff/Deepfake_Detection_Resources/To Test/xlsr/og_61_epoch_147.pth, ../../soundscape-dataset/eval/fake/BTS - ‘Seven’ AI cover lyrics (Eng) orignal Jungkook ft. Latto.mp3, Fake, Fake, -0.04115183651447296, False
 xlsr, /Users/christiankilduff/Deepfake_Detection_Resources/To Test/xlsr/og_61_epoch_147.pth, ../../soundscape-dataset/eval/fake/Taylor Swift - The Hills (A.I. Cover).mp3, Fake, Fake, -1.3473979234695435, False
-xlsr, /Users/christiankilduff/Deepfake_Detection_Resources/To Test/xlsr/og_58.75_epoch_121.pth, ../../soundscape-dataset/eval/bonafide/Kiss It Better.mp3, Fake, Real, -0.6449368596076965, False

@@ -234,10 +234,19 @@ def get_val_files(self, dataset_path="../../soundscape-dataset", isolated=False)
     return [os.path.join(real_path, x) for x in os.listdir(real_path) if x.endswith(".mp3")], [os.path.join(fake_path, x) for x in os.listdir(fake_path) if x.endswith(".mp3")]
 
 if __name__ == "__main__":
+
+    def get_pth_in_folder(folder_path):
+        """
+        Get all pth files in a folder
+        """
+        return [os.path.join(folder_path, x) for x in os.listdir(folder_path) if x.endswith(".pth")]
+
     model_paths = [
         "/Users/christiankilduff/Deepfake_Detection_Resources/To Test/xlsr/og_58.75_epoch_121.pth",
         "/Users/christiankilduff/Deepfake_Detection_Resources/To Test/xlsr/og_61_epoch_147.pth"
     ]
+    # folder_path = ""
+    # model_paths = get_pth_in_folder(folder_path)
 
     print("\n\n------------\n")
     for model_path in model_paths:
