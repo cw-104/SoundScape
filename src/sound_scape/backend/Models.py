@@ -28,6 +28,7 @@ class vocoder:
         self.device = device
         #debug check
         print(f"Vocoder initializing on device: {self.device}")
+        self.model_path = model_path
         if not model_path:
             self.model_path = get_path_relative_base("pretrained_models/vocoder/librifake_pretrained_lambda0.5_epoch_25.pth")
         self.yaml_path = get_path_relative_base("pretrained_models/vocoder/model_config_RawNet.yaml")
