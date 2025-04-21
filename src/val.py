@@ -50,6 +50,10 @@ def skip_lines(csv_file, model_path, real_files, fake_files, correct_label_col=4
                     num_fake_skipped += 1
 
         if num_real_skipped > 0 or num_fake_skipped > 0:
+            if num_real_skipped >= len(real_files):
+                real_files = []
+            if num_fake_skipped >= len(fake_files):
+                fake_files = []
             print(f"{Fore.YELLOW}Skipping {num_real_skipped} real files and {num_fake_skipped} fake files for model: " + model_path)
         else:
             print(f"{Fore.GREEN}Model not yet evaluated " + model_path)
@@ -249,7 +253,10 @@ if __name__ == "__main__":
     # model_paths = get_pth_in_folder(folder_path)
 
     print("\n\n------------\n")
+    i = 0
     for model_path in model_paths:
+        print()
+        print(f"{For.GREEN}{i}/{len(model_paths)}")
         print()
 
         print(f"{Fore.CYAN}Eval isolated on " + model_path)
