@@ -36,24 +36,20 @@ def skip_lines(csv_file, model_path, real_files, fake_files, correct_label_col=4
                 
                 # get the real and fake files
                 if "Real" in row[correct_label_col]:
-                    try:
-                        real_files.remove(row[file_path_col])
-                    except:
-                        pass
                     num_real_skipped += 1
                 elif "Fake" in row[correct_label_col]:
-                    try:
-                        fake_files.remove(row[file_path_col])
-                    except:
-                        pass
 
                     num_fake_skipped += 1
 
         if num_real_skipped > 0 or num_fake_skipped > 0:
-            if num_real_skipped >= len(real_files):
+            if num_real_skipped + 1 >= len(real_files):
                 real_files = []
-            if num_fake_skipped >= len(fake_files):
+            else:
+                real_files = real_files[num_real_skipped:]
+            if num_fake_skipped + 1 >= len(fake_files):
                 fake_files = []
+            else:
+                fake_files = fake_files[num_fake_skipped:]
             print(f"{Fore.YELLOW}Skipping {num_real_skipped} real files and {num_fake_skipped} fake files for model: " + model_path)
         else:
             print(f"{Fore.GREEN}Model not yet evaluated " + model_path)
