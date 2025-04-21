@@ -60,7 +60,7 @@ class vocoder_model:
         self.model =(self.model).to(device)
         
         self.model.load_state_dict(torch.load(model_path, map_location=device))
-        print('Model loaded : {}'.format(model_path))
+        # print('Model loaded : {}'.format(model_path))
   
         self.model.eval()
     
