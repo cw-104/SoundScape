@@ -27,7 +27,7 @@ class vocoder:
             device = 'mps' if torch.backends.mps.is_available() else get_best_device()
         self.device = device
         #debug check
-        print(f"Vocoder initializing on device: {self.device}")
+        # print(f"Vocoder initializing on device: {self.device}")
         self.model_path = model_path
         if not model_path:
             self.model_path = get_path_relative_base("pretrained_models/vocoder/librifake_pretrained_lambda0.5_epoch_25.pth")
@@ -117,7 +117,6 @@ class whisper_specrnet:
         
         model_name, model_parameters = self.config["model"]["name"], self.config["model"]["parameters"]
 
-        print(f"loading model...\n")
         self.model = WhisperSpecRNet(
             input_channels=self.config.get("input_channels", 1),
             freeze_encoder=self.config.get("freeze_encoder", False),
