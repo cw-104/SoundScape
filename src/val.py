@@ -153,7 +153,7 @@ def val_vocoder(model : vocoder, device, real_files=None, fake_files=None, auto_
     # header
     # model, file, label, correct_label, certainty, binary[0], binary[1], multi[0], multi[1], isolated
     # skip lines if model path already in csv
-    real_fake = skip_lines(csv_file, model.model_path, real_files, fake_files)
+    real_fake = skip_lines(csv_file, model, real_files, fake_files)
     if real_fake is None:
         return None
     real_files, fake_files = real_fake
@@ -193,7 +193,7 @@ def val_rawgat(model: rawgat, device,real_files=None, fake_files=None, auto_gen_
         real_files, fake_files = get_val_files(model, dataset_path="../../soundscape-dataset", isolated=isolated)
 
     # skip lines if model path already in csv
-    real_fake = skip_lines(csv_file, model.model_path, real_files, fake_files)
+    real_fake = skip_lines(csv_file, model, real_files, fake_files)
     if real_fake is None:
         return None
     real_files, fake_files = real_fake
