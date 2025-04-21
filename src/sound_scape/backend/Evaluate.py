@@ -76,7 +76,7 @@ class DeepfakeClassificationModel:
             self.model = RawGAT_ST(model_config, self.device)
             self.model.load_state_dict(torch.load(self.model_path, map_location=self.device, weights_only=True))
             self.model = self.model.to(self.device)
-            print(f"Loaded model from {self.model_path}")
+            # print(f"Loaded model from {self.model_path}")
             
 
 
@@ -173,7 +173,7 @@ def init_whisper_specrnet(device="", weights_path="", config_path="", threshold=
     config = yaml.safe_load(open(config_path, "r"))
     model_name, model_parameters = config["model"]["name"], config["model"]["parameters"]
 
-    print(f"loading model...\n")
+    # print(f"loading model...\n")
     model = WhisperSpecRNet(
         input_channels=config.get("input_channels", 1),
         freeze_encoder=config.get("freeze_encoder", False),
