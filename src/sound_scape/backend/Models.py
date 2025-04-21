@@ -153,6 +153,7 @@ class whisper_specrnet:
 class rawgat:
     def __init__(self, result_handler=None, name="rawgat", model_path=None, device=None):
         self.name = name
+        self.model_path = model_path
         self.result_handler = result_handler
         if result_handler is None:
             self.result_handler = DfResultHandler(-3, "Fake", "Real", 10, .45)
