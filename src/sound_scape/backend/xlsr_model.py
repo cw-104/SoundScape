@@ -24,7 +24,7 @@ import logging
 from Base_Path import get_path_relative_base
 
 xlsr_path = get_path_relative_base("pretrained_models/XLS-R/xlsr2_300m.pt")
-model_path = get_path_relative_base("pretrained_models/XLS-R/MMpaper_model.pth")
+xlsr_def_model_path = get_path_relative_base("pretrained_models/XLS-R/MMpaper_model.pth")
 
 
 __author__ = "Xin Wang"
@@ -214,7 +214,10 @@ class Model(nn.Module):
 
 
 class xlsr_model_eval():
-    def __init__(self, device):        
+    def __init__(self, device, path=None):
+        self.model_path = xlsr_def_model_path
+        if path is not None:
+            self.model_path = path
         logging.getLogger('numba').setLevel(logging.WARNING)
 
         print('setting seed...')
@@ -227,8 +230,8 @@ class xlsr_model_eval():
 
         model = nn.DataParallel(model).to(device)
         
-        model.load_state_dict(torch.load(model_path,map_location=device))
-        print('Model loaded : {}'.format(model_path))
+        model.load_state_dict(torch.load(self.model_path,map_location=device))
+        print('Model loaded : {}'.format(self.model_path))
 
         self.model = model
         self.device = device

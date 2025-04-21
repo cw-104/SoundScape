@@ -1,3 +1,4 @@
+from sound_scape.backend.RawGATmodel import RawGAT_ST
 import os, io, ffmpeg, yaml, torch
 
 from tqdm import tqdm
@@ -50,15 +51,21 @@ def pad(x, max_len=64600):
         return padded_x
 class DeepfakeClassificationModel:
 
-    def __init__(self, modeltype=Models.RAWGAT, result_handler=DfResultHandler(-1.72, "DeepFake", "Real", 10, .90)):
+    def __init__(self, modeltype=Models.RAWGAT, result_handler=DfResultHandler(-1.72, "DeepFake", "Real", 10, .90), device=None, model_path=None):
         '''
         Initializes the model
         '''
         self.result_handler=result_handler
-        self.device = get_best_device()
+
+        self.device = device
+        if not device:
+            self.device = get_best_device()
+        
         if modeltype == Models.RAWGAT:
-            from sound_scape.backend.RawGATmodel import RawGAT_ST
-            model_path = os.path.join(BASE_DIR, "pretrained_models/RawGAT/RawGAT.pth")
+            self.model_path = model_path
+            if self.model_path is None:
+                self.model_path = os.path.join(BASE_DIR, "pretrained_models/RawGAT/RawGAT.pth")
+            
             rawgat_config_path=os.path.join(BASE_DIR, "pretrained_models/RawGAT/model_config_RawGAT_ST.yaml")
             with open(rawgat_config_path, 'r') as f_yaml:
                 config = yaml.safe_load(f_yaml)  
@@ -67,9 +74,9 @@ class DeepfakeClassificationModel:
             model_config = config['model']
             # Instantiate the model with the correct configuration
             self.model = RawGAT_ST(model_config, self.device)
-            self.model.load_state_dict(torch.load(model_path, map_location=self.device, weights_only=True))
+            self.model.load_state_dict(torch.load(self.model_path, map_location=self.device, weights_only=True))
             self.model = self.model.to(self.device)
-            print(f"Loaded model from {model_path}")
+            print(f"Loaded model from {self.model_path}")
             
 
 

@@ -17,7 +17,7 @@ logging.getLogger('numba').setLevel(logging.WARNING)
 logging.basicConfig(level=logging.WARNING)
 
 class vocoder:
-    def __init__(self, device=None, name="vocoder"):
+    def __init__(self, device=None, name="vocoder", model_path=None):
         self.name = name
         self.device = device
         #if device is None:
@@ -28,7 +28,8 @@ class vocoder:
         self.device = device
         #debug check
         print(f"Vocoder initializing on device: {self.device}")
-        self.model_path = get_path_relative_base("pretrained_models/vocoder/librifake_pretrained_lambda0.5_epoch_25.pth")
+        if not model_path:
+            self.model_path = get_path_relative_base("pretrained_models/vocoder/librifake_pretrained_lambda0.5_epoch_25.pth")
         self.yaml_path = get_path_relative_base("pretrained_models/vocoder/model_config_RawNet.yaml")
         self.model = vocoder_model(self.model_path, device=device, yaml_path=self.yaml_path)
 
@@ -56,26 +57,48 @@ class vocoder:
         
         # print(multi, binary)
         return pred, label
+    def raw_eval(self, file_path):
+        multi, binary = self.model.eval(file_path)
+        label = None
+        pred = None
+        # Flipped
+        if(binary[0] > binary[1]):
+            # print("Real")
+            label = "Real"
+            # pred = binary[0]
+            pred = multi[0]
+        else:
+            # print("Fake")
+            label = "Fake"
+            # pred = binary[1]
+            pred = multi[1]
+        
+        return multi, binary, label, pred
 
 
 class xlsr:
-    def __init__(self, device=None, name="xlsr"):
+    def __init__(self, device=None, name="xlsr", model_path=None):
         self.name = name
         self.device = device
+        self.model_path = model_path
         if not device:
             self.device = get_best_device()
-        self.model = xlsr_model_eval(device=self.device)
+        self.model = xlsr_model_eval(device=self.device, path=model_path)
         
     def evaluate(self, file_path):
         pred = self.model.eval_file(file_path)[0]
         return abs(pred/100), "Real" if pred > 0 else "Fake"
+    
+    def raw_eval(self, file_path):
+        pred = self.model.eval_file(file_path)[0]
+        return pred, "Real" if pred > 0 else "Fake"
 
 class whisper_specrnet:
     def __init__(self, name="whisper_specrnet", device="", weights_path="", config_path="", threshold=.45, reval_threshold=0, no_sep_threshold=0):
         self.name = name
         self.device = device
         self.weights_path = weights_path
-        self.config_path = config_path
+        self.model_path = self.weights_path
         self.threshold = threshold
         self.reval_threshold = reval_threshold
         self.no_sep_threshold = no_sep_threshold
@@ -119,6 +142,8 @@ class whisper_specrnet:
         )
         return pred, self._label_to_str(label),
     
+    def raw_eval(self, file_path):
+        return self.evaluate(file_path)
 
     def _label_to_str(self, label):
         # LABEL 0 = FAKE 1 = REAL
@@ -126,19 +151,20 @@ class whisper_specrnet:
 
 
 class rawgat:
-    def __init__(self, result_handler=None, name="rawgat"):
+    def __init__(self, result_handler=None, name="rawgat", model_path=None, device=None):
         self.name = name
         self.result_handler = result_handler
         if result_handler is None:
             self.result_handler = DfResultHandler(-3, "Fake", "Real", 10, .45)
-        self.model = DeepfakeClassificationModel(result_handler=self.result_handler)
+        self.model = DeepfakeClassificationModel(result_handler=self.result_handler, model_path=model_path, device=device)
         
     def evaluate(self, file_path):
         res = self.model.evaluate_file(file_path)
         return res.percent_certainty, res.classification
     
-    def evaluate_full_results(self, file_path):
-        return self.model.evaluate_file(file_path)
+    def raw_eval(self, file_path):
+        res = self.model.evaluate_file(file_path)
+        return res.raw_value, res.classification
 
 class CLAD:
     def __init__(self, model_path=None, device=None, name="CLAD"):
