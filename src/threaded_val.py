@@ -219,7 +219,7 @@ def val_rawgat(model, device,real_files=None, fake_files=None, auto_gen_files=Tr
     
     # header
     # model, file, label, correct_label, raw, isolated
-    bar = tqdm(total=len(real_files) + len(fake_files), desc=bar_desc, unit="file", leave=False)
+    # bar = tqdm(total=len(real_files) + len(fake_files), desc=bar_desc, unit="file", leave=False)
     
     to_append = []
     results_real = model.raw_eval_multi(real_files)
@@ -227,15 +227,15 @@ def val_rawgat(model, device,real_files=None, fake_files=None, auto_gen_files=Tr
         raw, label = res.raw_value, res.classification
         # to_append.append(f"{model.name}, {model.model_path}, {file}, {label}, Real, {raw}, {isolated}\n")
         to_append.append([f"{model.name}", f"{model.model_path}", f"{file}", f"{label}", "Real", f"{raw}", f"{isolated}"])
-        bar.update(1)
-        bar.refresh()
+        # bar.update(1)
+        # bar.refresh()
     results_fake = model.raw_eval_multi(fake_files)
     for res in results_fake:
         raw, label = res.raw_value, res.classification
         to_append.append(f"{model.name}, {model.model_path}, {file}, {label}, Fake, {raw}, {isolated}\n")
         to_append.append([f"{model.name}", f"{model.model_path}", f"{file}", f"{label}", "Fake", f"{raw}", f"{isolated}"])
-        bar.update(1)
-        bar.refresh()
+        # bar.update(1)
+        # bar.refresh()
 
     # append to file
     with open(csv_file, 'a') as f:
