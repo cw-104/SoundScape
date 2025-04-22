@@ -37,7 +37,6 @@ def skip_lines(csv_file, model_path, real_files, fake_files, correct_label_col=4
         reader = csv.reader(f)
         for row in reader:
             if model_path.strip() in row[model_path_col].strip():
-                print(f"{Fore.RED}{model_path.strip()} in {row[model_path_col].strip()}")
                 # get the real and fake files
                 if "Real" in row[correct_label_col]:
                     num_real_skipped += 1
