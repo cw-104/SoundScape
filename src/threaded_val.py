@@ -332,18 +332,17 @@ if __name__ == "__main__":
         global total
         i, packed = packed
         name, model_path, device, isolated = packed
-        print(model_path)
         # print(f"evaling model {i} ({name}) path: {model_path} on device {device} isolated: {isolated}")
         isolated_txt = "isolated" if isolated else "not isolated"
         desc = f"Val {name} model {os.path.basename(model_path)} {isolated_txt} {i}/{total}"
         if "whisper" in name:
-            return val_whisper(model=model, device=device, isolated=isolated, bar_desc=desc)
+            return val_whisper(model=model_path, device=device, isolated=isolated, bar_desc=desc)
         elif "xlsr" in name:
-            return val_xlsr(model=model, device=device, isolated=isolated, bar_desc=desc)
+            return val_xlsr(model=model_path, device=device, isolated=isolated, bar_desc=desc)
         elif "rawgat" in name:
-            return val_rawgat(model=model, device=device, isolated=isolated, bar_desc=desc)
+            return val_rawgat(model=model_path, device=device, isolated=isolated, bar_desc=desc)
         elif "vocoder" in name:
-            return val_vocoder(model=model, device=device, isolated=isolated, bar_desc=desc)
+            return val_vocoder(model=model_path, device=device, isolated=isolated, bar_desc=desc)
         elif "clad" in name:
             return val_CLAD(model=model, device=device, isolated=isolated)
     
