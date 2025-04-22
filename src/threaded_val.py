@@ -328,9 +328,9 @@ if __name__ == "__main__":
 
     global total
     total = len(model_packs)
-    def val(i, packed):
+    def val(packed):
         global total
-        name, model_path, device, isolated = packed
+        name, model_path, device, isolated = i, packed = packed
         # print(f"evaling model {i} ({name}) path: {model_path} on device {device} isolated: {isolated}")
         isolated_txt = "isolated" if isolated else "not isolated"
         desc = f"Val {name} model {os.path.basename(model_path)} {isolated_txt} {i}/{total}"
@@ -347,4 +347,4 @@ if __name__ == "__main__":
     
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         # results = [executor.submit(model, i) for i, model in enumerate(model_paths)]
-        results = list(tqdm(executor.map(val, [(i, pack) for i, pack in enumerate(model_packs)]), total=len(model_packs), desc="Tasks Complete",position=max_workers+1))
+        results = list(tqdm(executmor.map(val, [(i, pack) for i, pack in enumerate(model_packs)]), total=len(model_packs), desc="Tasks Complete",position=max_workers+1))
