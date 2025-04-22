@@ -169,6 +169,8 @@ def val_vocoder(model, device, real_files=None, fake_files=None, auto_gen_files=
     if real_fake is None:
         return None
     real_files, fake_files = real_fake
+    if len(real_files) == 0 and len(fake_files) == 0:
+        return None
 
     model = vocoder(device=device, model_path=model)
     bar = tqdm(total=len(real_files) + len(fake_files), desc=bar_desc, unit="file", leave=False)
