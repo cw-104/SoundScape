@@ -321,6 +321,7 @@ if __name__ == "__main__":
     for folder, name in models:
         models = get_pth_in_folder(folder)
         for model in models:
+            print(model)
             # True = isolated
             model_packs.append([name, model, device, True])
             # False = not isolated
