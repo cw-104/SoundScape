@@ -93,13 +93,15 @@ def _basic_val(iso_csv, norm_csv, model, device, real_files=None, fake_files=Non
 
     for file in real_files:
         pred, label = model.raw_eval(file)
-        to_append.append(f"{model.name}, {model.model_path}, {file}, {label}, Real, {pred}, {isolated}\n")
+        # to_append.append(f"{model.name}, {model.model_path}, {file}, {label}, Real, {pred}, {isolated}\n")
+        to_append.append([f"{model.name}", f"{model.model_path}", f"{file}", f"{label}", "Real", f"{pred}", f"{isolated}"])
         bar.update(1)
         bar.refresh()
 
     for file in fake_files:
         pred, label = model.raw_eval(file)
-        to_append.append(f"{model.name}, {model.model_path}, {file}, {label}, Fake, {pred}, {isolated}\n")
+        # to_append.append(f"{model.name}, {model.model_path}, {file}, {label}, Fake, {pred}, {isolated}\n")
+        to_append.append([f"{model.name}", f"{model.model_path}", f"{file}", f"{label}", "Fake", f"{pred}", f"{isolated}"])
         bar.update(1)
         bar.refresh()
 
@@ -108,8 +110,10 @@ def _basic_val(iso_csv, norm_csv, model, device, real_files=None, fake_files=Non
         # write header if not exists
         if os.stat(csv_file).st_size == 0:
             f.write("model_name,model_path,file,label,correct_label,certainty,isolated\n")
-        for line in to_append:
-            f.write(line)
+        # for line in to_append:
+        #     # f.write(line)
+        csv_writer = csv.writer(f)
+        f.writerows(to_append)
     bar.close()
 
 def val_whisper(model, device, real_files=None, fake_files=None, auto_gen_files=True, isolated=False, bar_desc="Validating"):
@@ -173,13 +177,15 @@ def val_vocoder(model, device, real_files=None, fake_files=None, auto_gen_files=
 
     for file in real_files:
         multi, binary, label, pred = model.raw_eval(file)
-        to_append.append(f"{model.name}, {model.model_path},{file},{label},Real,{binary[0]},{binary[1]},{multi[0]},{multi[1]},{isolated}\n")
+        # to_append.append(f"{model.name}, {model.model_path},{file},{label},Real,{binary[0]},{binary[1]},{multi[0]},{multi[1]},{isolated}\n")
+        to_append.append([f"{model.name}", f"{model.model_path}", f"{file}", f"{label}", "Real", f"{binary[0]}", f"{binary[1]}", f"{multi[0]}", f"{multi[1]}", f"{isolated}"])
         bar.update(1)
         bar.refresh()
 
     for file in fake_files:
         multi, binary, label, pred = model.raw_eval(file)
-        to_append.append(f"{model.name},{model.model_path},{file},{label}, Fake,{binary[0]},{binary[1]},{multi[0]},{multi[1]},{isolated}\n")
+        # to_append.append(f"{model.name},{model.model_path},{file},{label}, Fake,{binary[0]},{binary[1]},{multi[0]},{multi[1]},{isolated}\n")
+        to_append.append([f"{model.name}", f"{model.model_path}", f"{file}", f"{label}", "Fake", f"{binary[0]}", f"{binary[1]}", f"{multi[0]}", f"{multi[1]}", f"{isolated}"])
         bar.update(1)
         bar.refresh()
     
@@ -187,8 +193,8 @@ def val_vocoder(model, device, real_files=None, fake_files=None, auto_gen_files=
         # write header if not exists
         if os.stat(csv_file).st_size == 0:
             f.write("model_name,model_path,file,label,correct_label,binary[0],binary[1],multi[0],multi[1],isolated\n")
-        for line in to_append:
-            f.write(line)
+        csv_writer = csv.writer(f)
+        f.writerows(to_append)
     bar.close()
 
 def val_rawgat(model, device,real_files=None, fake_files=None, auto_gen_files=True, isolated=False, bar_desc="Validating"):
@@ -218,12 +224,14 @@ def val_rawgat(model, device,real_files=None, fake_files=None, auto_gen_files=Tr
     to_append = []
     for file in real_files:
         raw, label = model.raw_eval(file)
-        to_append.append(f"{model.name}, {model.model_path}, {file}, {label}, Real, {raw}, {isolated}\n")
+        # to_append.append(f"{model.name}, {model.model_path}, {file}, {label}, Real, {raw}, {isolated}\n")
+        to_append.append([f"{model.name}", f"{model.model_path}", f"{file}", f"{label}", "Real", f"{raw}", f"{isolated}"])
         bar.update(1)
         bar.refresh()
     for file in fake_files:
         raw, label = model.raw_eval(file)
         to_append.append(f"{model.name}, {model.model_path}, {file}, {label}, Fake, {raw}, {isolated}\n")
+        to_append.append([f"{model.name}", f"{model.model_path}", f"{file}", f"{label}", "Fake", f"{raw}", f"{isolated}"])
         bar.update(1)
         bar.refresh()
 
@@ -232,8 +240,10 @@ def val_rawgat(model, device,real_files=None, fake_files=None, auto_gen_files=Tr
         # write header if not exists
         if os.stat(csv_file).st_size == 0:
             f.write("model_name,model_path,file,label,correct_label,raw,isolated\n")
-        for line in to_append:
-            f.write(line)
+        # for line in to_append:
+        #     f.write(line)
+        csv_writer = csv.writer(f)
+        f.writerows(to_append)
     bar.close()
 
 def get_val_files(self, dataset_path="../../soundscape-dataset", isolated=False):
