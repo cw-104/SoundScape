@@ -220,7 +220,7 @@ class xlsr_model_eval():
             self.model_path = path
         logging.getLogger('numba').setLevel(logging.WARNING)
 
-        print('setting seed...')
+        # print('setting seed...')
         #make experiment reproducible
         seed = 1234
         set_random_seed(1234)
