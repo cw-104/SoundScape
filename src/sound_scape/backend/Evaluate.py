@@ -99,7 +99,7 @@ class DeepfakeClassificationModel:
 
     def evaluate_multi_files(self, filepaths, print_r=False, progress_bar=False):
         transform = transforms.Compose([
-            lambda x: pad(x),  
+            lambda x: pad(x),
             lambda x: torch.Tensor(x)
         ])
         dataset = EvalDataset(filepaths, transform=transform)
@@ -117,7 +117,7 @@ class DeepfakeClassificationModel:
             for batch_idx, (batch_x, batch_y, batch_meta) in enumerate(tqdm(data_loader, desc="Evaluating Authenticity of Files", leave=False) if progress_bar else data_loader):
                 batch_x = batch_x.to(self.device)
                 output = self.model(batch_x, Freq_aug=False)
-                score = output[:, 1].item()  
+                score = output[:, 1].item()
 
                 if print_r:
                     # res = "✅" if score > min_real_score else "❌"
