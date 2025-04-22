@@ -224,16 +224,16 @@ def val_rawgat(model, device,real_files=None, fake_files=None, auto_gen_files=Tr
     to_append = []
     results_real = model.raw_eval_multi(real_files)
     for res in results_real:
-        raw, label, file = res.raw_value, res.classification, res.file_name
+        raw, label, filep = res.raw_value, res.classification, res.file_name
         # to_append.append(f"{model.name}, {model.model_path}, {file}, {label}, Real, {raw}, {isolated}\n")
         to_append.append([f"{model.name}", f"{model.model_path}", f"{file}", f"{label}", "Real", f"{raw}", f"{isolated}"])
         # bar.update(1)
         # bar.refresh()
     results_fake = model.raw_eval_multi(fake_files)
     for res in results_fake:
-        raw, labe, file = res.raw_value, res.classification, res.file_name
-        to_append.append(f"{model.name}, {model.model_path}, {file}, {label}, Fake, {raw}, {isolated}\n")
-        to_append.append([f"{model.name}", f"{model.model_path}", f"{file}", f"{label}", "Fake", f"{raw}", f"{isolated}"])
+        raw, labe, filep = res.raw_value, res.classification, res.file_name
+        # to_append.append(f"{model.name}, {model.model_path}, {file}, {label}, Fake, {raw}, {isolated}\n")
+        to_append.append([f"{model.name}", f"{model.model_path}", f"{filep}", f"{label}", "Fake", f"{raw}", f"{isolated}"])
         # bar.update(1)
         # bar.refresh()
 
