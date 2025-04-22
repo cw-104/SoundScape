@@ -113,7 +113,7 @@ def _basic_val(iso_csv, norm_csv, model, device, real_files=None, fake_files=Non
         # for line in to_append:
         #     # f.write(line)
         csv_writer = csv.writer(f)
-        f.writerows(to_append)
+        csv_writer.writerows(to_append)
     bar.close()
 
 def val_whisper(model, device, real_files=None, fake_files=None, auto_gen_files=True, isolated=False, bar_desc="Validating"):
@@ -194,7 +194,7 @@ def val_vocoder(model, device, real_files=None, fake_files=None, auto_gen_files=
         if os.stat(csv_file).st_size == 0:
             f.write("model_name,model_path,file,label,correct_label,binary[0],binary[1],multi[0],multi[1],isolated\n")
         csv_writer = csv.writer(f)
-        f.writerows(to_append)
+        csv_writer.writerows(to_append)
     bar.close()
 
 def val_rawgat(model, device,real_files=None, fake_files=None, auto_gen_files=True, isolated=False, bar_desc="Validating"):
@@ -243,7 +243,7 @@ def val_rawgat(model, device,real_files=None, fake_files=None, auto_gen_files=Tr
         # for line in to_append:
         #     f.write(line)
         csv_writer = csv.writer(f)
-        f.writerows(to_append)
+        csv_writer.writerows(to_append)
     bar.close()
 
 def get_val_files(self, dataset_path="../../soundscape-dataset", isolated=False):
