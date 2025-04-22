@@ -166,6 +166,9 @@ class rawgat:
     def raw_eval(self, file_path):
         res = self.model.evaluate_file(file_path)
         return res.raw_value, res.classification
+    def raw_eval_multi(self, file_paths):
+        results = self.model.evaluate_multi_files(file_paths, progress_bar=True)
+        return results
 
 class CLAD:
     def __init__(self, model_path=None, device=None, name="CLAD"):

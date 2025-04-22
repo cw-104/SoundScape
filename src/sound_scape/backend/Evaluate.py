@@ -79,13 +79,6 @@ class DeepfakeClassificationModel:
             # print(f"Loaded model from {self.model_path}")
             
 
-
-        
-            
-
-
-
-
     def evaluate_file(self, file_path):
         '''
         Method: 
@@ -119,10 +112,9 @@ class DeepfakeClassificationModel:
         # total count of files
         results = []
         self.model.eval()
-        if progress_bar:
-            print()
+
         with torch.no_grad():
-            for batch_idx, (batch_x, batch_y, batch_meta) in enumerate(tqdm(data_loader, desc="Evaluating Authenticity of Files") if progress_bar else data_loader):
+            for batch_idx, (batch_x, batch_y, batch_meta) in enumerate(tqdm(data_loader, desc="Evaluating Authenticity of Files", leave=False) if progress_bar else data_loader):
                 batch_x = batch_x.to(self.device)
                 output = self.model(batch_x, Freq_aug=False)
                 score = output[:, 1].item()  
