@@ -246,7 +246,7 @@ def val_rawgat(model, device,real_files=None, fake_files=None, auto_gen_files=Tr
         #     f.write(line)
         csv_writer = csv.writer(f)
         csv_writer.writerows(to_append)
-    bar.close()
+    # bar.close()
 
 def get_val_files(self, dataset_path="../../soundscape-dataset", isolated=False):
     """
