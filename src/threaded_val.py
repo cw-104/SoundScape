@@ -347,4 +347,4 @@ if __name__ == "__main__":
     
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         # results = [executor.submit(model, i) for i, model in enumerate(model_paths)]
-        results = list(tqdm(executor.map(val, [i, (name, model, device, isolated) in ((i, pack) for i, pack in enumerate(model_packs))]), total=len(model_packs), desc="Tasks Complete",position=max_workers+1))
+        results = list(tqdm(executor.map(val, [(i, pack) for i, pack in enumerate(model_packs)]), total=len(model_packs), desc="Tasks Complete",position=max_workers+1))
