@@ -150,3 +150,5 @@ typing_extensions
 flask
 flask_cors
 pydub
+webrtcvad
+tensorboardX

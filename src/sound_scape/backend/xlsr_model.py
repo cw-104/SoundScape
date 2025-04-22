@@ -226,7 +226,7 @@ class xlsr_model_eval():
         set_random_seed(1234)
 
         
-        model = Model(device)
+        model = Model(device).to(device)
 
         model = nn.DataParallel(model).to(device)
         
