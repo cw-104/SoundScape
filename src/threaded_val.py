@@ -320,7 +320,6 @@ if __name__ == "__main__":
     for folder, name in models:
         models = get_pth_in_folder(folder)
         for model in models:
-            print(model)
             # True = isolated
             model_packs.append([name, model, device, True])
             # False = not isolated
@@ -333,6 +332,7 @@ if __name__ == "__main__":
         global total
         i, packed = packed
         name, model_path, device, isolated = packed
+        print(model_path)
         # print(f"evaling model {i} ({name}) path: {model_path} on device {device} isolated: {isolated}")
         isolated_txt = "isolated" if isolated else "not isolated"
         desc = f"Val {name} model {os.path.basename(model_path)} {isolated_txt} {i}/{total}"
