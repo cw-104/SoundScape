@@ -494,7 +494,6 @@ class identifier:
         # top 3
         for i in range(3):
             artist = sorted_avgs[i]
-            print(f"{Fore.GREEN}{i}. {artist[0]} with score {artist[1]:.4f}")
     
         # Sort and get top artist
         # top_artist = max(artist_score_dict.items(), key=lambda x: x[1])
@@ -502,8 +501,6 @@ class identifier:
 
         top_artist = sorted_avgs[0]
 
-        print(f"{Fore.GREEN}Top match by averaged top-2-ref-audios: {top_artist[0]} with score {top_artist[1]:.4f}")
-        print("INFO: score is calculated by analyzing against 3 audio files per artist. We take the 2/3 highest scores of those and average those 50:50 to adjust for outliers for every artist")
 
         return top_artist[0], top_artist[1]
 

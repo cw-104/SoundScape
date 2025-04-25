@@ -454,7 +454,7 @@ def identify_and_analyze(input_file_path, encoder):
     print(f"Top 3: {speaker_avgs[0][0]}:{speaker_avgs[0][1]:.3f} {speaker_avgs[1][0]}:{speaker_avgs[1][1]:.3f} {speaker_avgs[2][0]}:{speaker_avgs[2][1]:.3f}")
     print(f"Best match: {speaker_avgs[0][0]} with a score of {speaker_avgs[0][1]:.3f}")
 
-device = device = "cpu" # this model requires a lot of vram which makes it impratical to run on our gpus even though we run the detection models on gpu
+device = "cpu" # this model requires a lot of vram which makes it impratical to run on our gpus even though we run the detection models on gpu
 print("---")
 print(f"Initializing VocieEncoder on {device}")
 # We can load this model into RAM to skip that time step in future

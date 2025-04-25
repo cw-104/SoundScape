@@ -25,13 +25,19 @@ from sound_scape.backend.Models import whisper_specrnet, rawgat, xlsr, vocoder, 
 
 class ModelBindings:
     def __init__(self):
-        self.whisper_model = whisper_specrnet()
-        self.rawgat_model = rawgat()
-        self.vocoder_model = vocoder()
-        self.xlsr_model = xlsr()
-        self.CLAD = CLAD()
+        self.vocoder_iso = vocoder(model_path=get_path_relative_base(os.path.join("trained_models", "iso_vocoder.pth")))
+        self.vocoder_og = vocoder(model_path=get_path_relative_base(os.path.join("trained_models", "og_vocoder.pth")))
+        self.CLAD = CLAD(model_path=get_path_relative_base(os.path.join("trained_models", "clad.pth")))
+        self.xlsr = xlsr(model_path=get_path_relative_base(os.path.join("trained_models", "xlsr.pth")))
+        self.rawgat_og = rawgat(model_path=get_path_relative_base(os.path.join("trained_models", "og_rawgat.pth")))
+        self.rawgat_iso = rawgat(model_path=get_path_relative_base(os.path.join("trained_models", "iso_rawgat.pth")))
+        self.whisper_iso = whisper_specrnet(model_path=get_path_relative_base(os.path.join("trained_models", "iso_whisper.pth")))
+        self.whisper_og = whisper_specrnet(model_path=get_path_relative_base(os.path.join("trained_models", "og_whisper.pth")))
+
+
         self.file_processing_queue = Queue()
-        self.models = [self.whisper_model, self.rawgat_model, self.vocoder_model, self.xlsr_model, self.CLAD]
+        self.iso_models = [self.vocoder_iso, self.rawgat_iso, self.xlsr, self.whisper_iso, self.CLAD]
+        self.og_models = [self.vocoder_og, self.rawgat_og, self.whisper_og, self.xlsr, self.CLAD]
         self.processing_thread = None
 
         self.file_ids = FileIds()
@@ -65,55 +71,84 @@ class ModelBindings:
             }
         }
         """
+
+        def process_real_label(model_name, pred, label):
+            """
+            Returns true if the model result is real false if not
+            """
+            # we use certainty value to shift towards real, meaning we cutoff certain values that if it were to guess fake, we change to real
+            if "whisper" in model_name.lower() and (pred > .99 or pred < .01):
+                if pred < 0.99 and pred > .01 and label == "Fake":
+                    return True
+                    label = "Real"
+                elif label == "Real":
+                    return True
+            elif "clad" in model_name.lower() and pred > .6 and label == "Real":
+                return True
+            elif "xlsr" in model_name.lower() and pred < .01:
+                return True
+            elif ("vocoder" in model_name.lower() or "rawgat" in model_name.lower()) and label == "Real":
+                True
+            return False
         
         results_map = {}
+        votes_real = 0
 
-        for model in self.models:
-            pred, label = model.evaluate(original_path)
-            pred_sep, label_sep = model.evaluate(sep_path)
-            results_map[model.name] = {
+        sum_real_cert = 0
+        sum_fake_cert = 0
+        for iso_model in self.iso_models:
+            pred, label = iso_model.evaluate(sep_path)
+            if process_real_label(iso_model.name, pred, label):
+                votes_real += 1
+                label = "Real"
+            else:
+                label = "Fake"
+
+            if label == "Real":
+                sum_real_cert += pred
+            else:
+                sum_fake_cert += pred
+            results_map[iso_model.name] = {
                 'unseparated_results': {
                     'prediction': pred,
                     'label': label,
                 },
                 'separated_results': {
-                    'prediction': pred_sep,
-                    'label': label_sep,
+                    'prediction': 0,
+                    'label': "None",
                 }
             }
-        
 
-        return results_map
+        for og_model in self.og_models:
+            pred, label = og_model.evaluate(original_path)
+            if process_real_label(og_model.name, pred, label):
+                votes_real += 1
+                label = "Real"
 
-
-    def combined_results(self, results):
-        # label = str "Real"/"Fake"
-        # whichever num of real or fake is higher
-
-        def most_label(res_class):
-            count_real = 0
-            count_fake = 0
-            for model in results:
-                if results[model][res_class]['label'] == 'Real':
-                    count_real += 1
-                else:
-                    count_fake += 1
-            return 'Real' if count_real > count_fake else 'Fake'
-        return {
-            'separated': {
-                'prediction': sum([results[model]['separated_results']['prediction'] for model in results]) / len(results),
-                'label': most_label('separated_results')
-            },
-            'unseparated': {
-                'prediction': sum([results[model]['unseparated_results']['prediction'] for model in results]) / len(results),
-                'label': most_label('unseparated_results')
-            },
-            'final': {
-                'prediction': sum([results[model]['separated_results']['prediction'] for model in results]) / len(results),
-                'label': most_label('separated_results')
+            
+            if label == "Real":
+                sum_real_cert += pred
+            else:
+                sum_fake_cert += pred
+            results_map[og_model.name]['separated_results'] = {
+                'prediction': pred,
+                'label': label,
             }
+        label = "Fake"
+        avg_pred = 0
+        if votes_real > 7:
+            label = "Real"
+            avg_pred = sum_real_cert / votes_real
+        else:
+            avg_pred = sum_fake_cert / (10 - votes_real)
+        
+        return results_map, {
+            "prediction": avg_pred,
+            "label": label,
         }
 
+
+    
 
     def explain_results(self, results_json):
         data = {
@@ -173,11 +208,8 @@ class ModelBindings:
         print("\nseparated\n")
         # get model eval results
         self.file_ids.update_substate(id, 'evaluating')
-        result_json['model_results'] = self.get_model_results(path, sep_file)
+        result_json['model_results'], result_json['combined'] = self.get_model_results(path, sep_file)
         print("\nevaluating\n")
-
-        # combined results
-        result_json['combined'] = self.combined_results(result_json['model_results'])
 
 
         # add ai explaination
@@ -236,6 +268,10 @@ class FileIds:
     def set_results(self, id, results):
         self.update_state(id, 'finished')
         self.file_ids[id]['results'] = results
+        self.delete_mp3_file(id)
+    
+    def delete_mp3_file(self, id):
+        print(f"I want to delete ", self.file_ids[id]['filename'])
 
     def get_status(self, id):
         if not self.exists(id):

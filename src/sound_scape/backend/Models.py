@@ -58,6 +58,8 @@ class vocoder:
         
         # print(multi, binary)
         return pred, label
+
+        
     def raw_eval(self, file_path):
         multi, binary = self.model.eval(file_path)
         label = None
@@ -88,17 +90,17 @@ class xlsr:
         
     def evaluate(self, file_path):
         pred = self.model.eval_file(file_path)[0]
-        return abs(pred/100), "Real" if pred > 0 else "Fake"
+        return abs(pred/100)* 10, "Real" if pred > 0 else "Fake"
     
     def raw_eval(self, file_path):
         pred = self.model.eval_file(file_path)[0]
         return pred, "Real" if pred > 0 else "Fake"
 
 class whisper_specrnet:
-    def __init__(self, name="whisper_specrnet", device="", weights_path="", config_path="", threshold=.45, reval_threshold=0, no_sep_threshold=0):
+    def __init__(self, name="whisper_specrnet", device="", model_path="", config_path="", threshold=.45, reval_threshold=0, no_sep_threshold=0):
         self.name = name
         self.device = device
-        self.weights_path = weights_path
+        self.weights_path = model_path
         self.model_path = self.weights_path
         self.threshold = threshold
         self.reval_threshold = reval_threshold
@@ -110,8 +112,9 @@ class whisper_specrnet:
         get_best_device()
         if config_path == "":
             self.config_path = get_path_relative_base("pretrained_models/whisper_specrnet/config.yaml")
-        if weights_path == "":
+        if model_path == "":
             self.weights_path = get_path_relative_base("pretrained_models/whisper_specrnet/weights.pth")
+            self.model_path = self.weights_path
         
         self.config = yaml.safe_load(open(self.config_path, "r"))
         
@@ -173,7 +176,7 @@ class rawgat:
 class CLAD:
     def __init__(self, model_path=None, device=None, name="CLAD"):
         self.name = name
-        self.model = CladModel()
+        self.model = CladModel(model_path=model_path)
 
     def evaluate(self, file_path, debug_print=False):
         try:
@@ -189,6 +192,26 @@ class CLAD:
 
             if result.get("status") == "success":
                 return [result["certainty"], result["label"]]
+            else:
+                return 0, "Error"
+
+        except Exception as e:
+            logging.exception(f"Failed running CLAD model: {e}")
+            return 0, "Error"
+    def raw_eval(self, file_path, debug_print=False):
+        try:
+            raw_output = self.model.predict(file_path)
+
+            if not raw_output:
+                logging.error("CLAD subprocess returned no output.")
+                return [ 0, "Error"]
+
+            # Extract only the JSON part (last non-empty line)
+            json_str = [line for line in raw_output.strip().splitlines() if line][-1]
+            result = json.loads(json_str)
+
+            if result.get("status") == "success":
+                return [result["certainty"], result["label"], result["score"]]
             else:
                 return 0, "Error"
 

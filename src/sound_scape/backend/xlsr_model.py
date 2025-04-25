@@ -231,7 +231,7 @@ class xlsr_model_eval():
         model = nn.DataParallel(model).to(device)
         
         model.load_state_dict(torch.load(self.model_path,map_location=device, weights_only=False))
-        print('Model loaded : {}'.format(self.model_path))
+        # print('Model loaded : {}'.format(self.model_path))
 
         self.model = model
         self.device = device
