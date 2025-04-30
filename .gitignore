@@ -32,3 +32,4 @@ src.zip
 src/idenification_refrences
 src/processed_refrences
 src/val_files
+src/trained_models/xlsr.pth

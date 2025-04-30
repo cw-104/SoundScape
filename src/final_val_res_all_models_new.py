@@ -20,6 +20,7 @@ def get_results(model_kinds=None):
             if model not in results:
                 results[model] = {
                     'og': {
+                        'model_path': model,
                         'raw': [],
                         'total-real': 0,
                         'correct-real': 0,
@@ -30,6 +31,7 @@ def get_results(model_kinds=None):
                         'accuracy': 0,
                     },
                     'iso': {
+                        'model_path': model,
                         'raw': [],
                         'total-real': 0,
                         'correct-real': 0,
@@ -148,46 +150,61 @@ if __name__ == "__main__":
         "accuracy-fake": 0,
         "accuracy": 0,
     }
-    votes_real = 0
+
+       
+    
+    def adjust_label_real(model, cert, label):
+        """
+        We make the bar for a model to classify as fake higher, this means that for a model to classify fake
+        we are more confident it is correct.
+
+        We want to reduce the number of false positives, so we make models lean towards real and only classify fake
+        with high confidence.
+        """
+        # whisper: lower certainty values do not tell us much, if its a very high or low cert, then we assume real
+        if "whisper" in model.lower():
+            if cert < 0.99 and cert > .01 and label == "Fake":
+                return True
+            elif label == "Real":
+                return True
+
+        # THIS CSV WAS CREATED BEFORE WE HALVED THE CERT VALUES OUTPUTTED BY CLAD, raw clad scores are in 100s, so we need to adjust to a 0-1 scale
+        # 1.8 IS CHANGED TO .45 (1.8/4) IN THE FINAL CODE TO ADJUST FOR BETTER READBALE CERT
+        # CLAD: cert tends to be based on analysis > .45= real < .45 = fake
+        # (CLAD cert is where we calc real fake, and it operates differently, high is real, low is fake)
+        elif "clad" in model.lower():
+            if cert > 1.8:
+                return True
+        # xlsr: if very low certainty, then we assume real (we also adjust cert to be on a better scale for xlsr: * 40)
+        elif "xlsr" in model.lower():
+            print(cert)
+            if cert < .01 or label == "Real":
+                return True
+        # rawgat: if very low certainty, then we assume real
+        elif "rawgat" in model.lower():
+            if cert < .2 or label == "Real":
+                return True
+        # leave vocoder, it does not have strong outliers, solid as is
+        elif "vocoder" in model.lower():
+            print(cert)
+            if label == "Real":
+                return True
+        return False # otherwise we think its Fake
+
     for filep, whisper_og_cert, whisper_og_label, correct_label in whisper_og['raw']:
         try:
-            whisper_iso_cert, whisper_iso_label = get_file_res_of(filep, whisper_iso)
-            rawgat_iso_cert, rawgat_iso_label = get_file_res_of(filep, rawgat_iso)
-            rawgat_og_cert, rawgat_og_label = get_file_res_of(filep, rawgat_og)
-            xlsr_og_cert, xlsr_og_label = get_file_res_of(filep, xlsr_og)
-            xlsr_iso_cert, xlsr_iso_label = get_file_res_of(filep, xlsr_iso)
-            vocoder_iso_cert, vocoder_iso_label = get_file_res_of(filep, vocoder_iso)
-            vocoder_og_cert, vocoder_og_label = get_file_res_of(filep, vocoder_og)
-            clad_og_cert, clad_og_label = get_file_res_of(filep, clad_og)
-            clad_iso_cert, clad_iso_label = get_file_res_of(filep, clad_iso)
+            models = [whisper_og, whisper_iso, rawgat_og, rawgat_iso, xlsr_og, xlsr_iso, vocoder_og, vocoder_iso, clad_og, clad_iso]
+            results = []
+            for model in models:
+                cert, label = get_file_res_of(filep, model)
+                results.append([model['model_path'], cert, label])
         except:
             continue
         
         votes_real = 0
-        # whisper
-        for cert, label in [(whisper_iso_cert, whisper_iso_label), (whisper_og_cert, whisper_og_label)]:
-            if cert < 0.99 and cert > .01 and label == "Fake":
-                votes_real += 1
-            elif label == "Real":
-                votes_real += 1
-
-        # CLAD
-        for cert, label in [(clad_iso_cert, clad_iso_label), (clad_og_cert, clad_og_label)]:
-            if cert > 1.8 and label == "Real":
-                votes_real += 1
-        
-        # xlsr
-        for cert, label in [(xlsr_iso_cert, xlsr_iso_label), (xlsr_og_cert, xlsr_og_label)]:
-            if cert < .01:
-                votes_real += 1
-        
-        for cert, label in [(rawgat_iso_cert, rawgat_iso_label), (rawgat_og_cert, rawgat_og_label)]:
-            if cert < .2 or label == "Real":
-                votes_real += 1
-        
-        # vocoder and rawgat
-        for cert, label in [(vocoder_iso_cert, vocoder_iso_label), (vocoder_og_cert, vocoder_og_label)]:
-            if label == "Real":
+        for result in results:
+            model, cert, label = result
+            if adjust_label_real(model, cert, label):
                 votes_real += 1
         
         guessed_label = "Fake"
@@ -211,5 +228,5 @@ if __name__ == "__main__":
     
     
     print(f"{Fore.BLUE}COMBINED RESULTS")
-    print(f"Accuracy Real({combined_results['correct-real']}/{combined_results['total-real']} correct): {Fore.GREEN}{combined_results['accuracy-real']*100:.2f}{Fore.RESET} | Accuracy Fake({combined_results['correct-fake']}/{combined_results['total-fake']} correct): {Fore.RED}{combined_results['accuracy-fake']*100:.2f}{Fore.RESET}")
-    print(f"{Fore.MAGENTA}Accuracy: {combined_results['accuracy']*100:.2f} | ({combined_results['accuracy-real']*100:.2f} + {combined_results['accuracy-fake']*100:.2f})/2")
+    print(f"Accuracy Real({combined_results['total-real']} files): {Fore.GREEN}{combined_results['accuracy-real']*100:.2f}{Fore.RESET} | Accuracy Fake({combined_results['total-fake']} files): {Fore.RED}{combined_results['accuracy-fake']*100:.2f}{Fore.RESET}")
+    print(f"{Fore.MAGENTA}Accuracy: {combined_results['accuracy']*100:.2f} ({combined_results['accuracy-real']*100:.2f} + {combined_results['accuracy-fake']*100:.2f})/2")

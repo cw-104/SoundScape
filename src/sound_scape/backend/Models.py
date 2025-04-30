@@ -90,7 +90,7 @@ class xlsr:
         
     def evaluate(self, file_path):
         pred = self.model.eval_file(file_path)[0]
-        return abs(pred/100)* 10, "Real" if pred > 0 else "Fake"
+        return abs(pred/100)* 10 * 50, "Real" if pred > 0 else "Fake"
     
     def raw_eval(self, file_path):
         pred = self.model.eval_file(file_path)[0]

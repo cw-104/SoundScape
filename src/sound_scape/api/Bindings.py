@@ -59,7 +59,7 @@ class ModelBindings:
 
     def get_model_results(self, original_path, sep_path):
         """
-        RESULT EX: 
+        RESULT EX:
         'whisper': {
             'unseparated_results': {
                 'prediction': wpred,
@@ -72,32 +72,45 @@ class ModelBindings:
         }
         """
 
+        
         def process_real_label(model_name, pred, label):
             """
+            We make the bar for a model to classify as fake higher, this means that for a model to classify fake
+            we are more confident it is correct.
+
+            We want to reduce the number of false positives, so we make models lean towards real and only classify fake
+            with high confidence.
+
             Returns true if the model result is real false if not
             """
-            # we use certainty value to shift towards real, meaning we cutoff certain values that if it were to guess fake, we change to real
-            if "whisper" in model_name.lower() and (pred > .99 or pred < .01):
+            # we use predicted certainty value to shift towards real, meaning we cut-off certain values that if it were to guess fake, we change to real
+            if "whisper" in model_name.lower() and (pred > .99 or pred < .01): # if low whisper pred count as fake
                 if pred < 0.99 and pred > .01 and label == "Fake":
                     return True
-                    label = "Real"
                 elif label == "Real":
                     return True
-            elif "clad" in model_name.lower() and pred > .6 and label == "Real":
-                return True
-            elif "xlsr" in model_name.lower() and pred < .01:
-                return True
-            elif ("vocoder" in model_name.lower() or "rawgat" in model_name.lower()) and label == "Real":
+            elif "clad" in model_name.lower(): # clad score tends to be > .45 real < .45 fake (CLAD cert is where we directly calc real fake not necessarily the outputted label, and it operates differently, high is real, low is fake)
+                if pred > .45:
+                    return True
+            elif "xlsr" in model_name.lower(): # if prediction is very low, count as Real
+                if label == "Real" or pred < .01:
+                    return True
+            elif "rawgat" in model_name.lower():
+                if pred < .2 or label == "Real":
+                    return True
+            # leave vocoder, it does not have strong outliers, solid as is
+            elif ("vocoder" in model_name.lower()) and label == "Real":
                 True
             return False
         
         results_map = {}
         votes_real = 0
 
-        sum_real_cert = 0
-        sum_fake_cert = 0
+        sum_real_pred = 0
+        sum_fake_pred = 0
         for iso_model in self.iso_models:
             pred, label = iso_model.evaluate(sep_path)
+            # lean label real, reduce false positives
             if process_real_label(iso_model.name, pred, label):
                 votes_real += 1
                 label = "Real"
@@ -105,9 +118,9 @@ class ModelBindings:
                 label = "Fake"
 
             if label == "Real":
-                sum_real_cert += pred
+                sum_real_pred += pred
             else:
-                sum_fake_cert += pred
+                sum_fake_pred += pred
             results_map[iso_model.name] = {
                 'unseparated_results': {
                     'prediction': pred,
@@ -127,9 +140,9 @@ class ModelBindings:
 
             
             if label == "Real":
-                sum_real_cert += pred
+                sum_real_pred += pred
             else:
-                sum_fake_cert += pred
+                sum_fake_pred += pred
             results_map[og_model.name]['separated_results'] = {
                 'prediction': pred,
                 'label': label,
@@ -138,10 +151,11 @@ class ModelBindings:
         avg_pred = 0
         if votes_real > 7:
             label = "Real"
-            avg_pred = sum_real_cert / votes_real
+            avg_pred = sum_real_pred / votes_real
         else:
-            avg_pred = sum_fake_cert / (10 - votes_real)
+            avg_pred = sum_fake_pred / (10 - votes_real)
         
+        # return all model results and the combined prediction score and label
         return results_map, {
             "prediction": avg_pred,
             "label": label,
