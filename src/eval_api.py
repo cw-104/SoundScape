@@ -16,7 +16,7 @@ class api_binding_thread:
         self._thread.start()
         self.results = []
         self._isolation_queue = Queue()
-        self.max_isolation_threads = 3
+        self.max_isolation_threads = 4
         self._isolation_thread = None
         self.n_complete = 0
 
@@ -205,12 +205,6 @@ def save_results():
     # save binding_thread results to a file
     with open("eval_api_results.txt", "w") as f:
         f.write(json.dumps(api_binding_thread.results))
-
-
-print("(Process started will open progress bar in 30 seconds)")
-# wait until 30 seconds for initializing b4 starting progress bar
-sleep(30)
-
 
 progress_bar = tqdm(total=total, desc="Classifying files", unit="file", position=1, leave=True) 
 # while not api_binding_thread._file_queue.empty():
