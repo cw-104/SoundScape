@@ -7,6 +7,7 @@ UPLOADS_FOLDER = get_path_relative_base("uploads")
 import requests
 import time
 from sound_scape.identify.identification import identifier
+import concurrent.futures
 
 AIXPLAIN_API_KEY = "305948bf8f6fb9c3a45097960725ccfb46bc27608372934ebccaaef3894807f0"
 # AGENT_ID = "67acb51f56173fdefab4fc62"
@@ -84,7 +85,7 @@ class ModelBindings:
             Returns true if the model result is real false if not
             """
             # we use predicted certainty value to shift towards real, meaning we cut-off certain values that if it were to guess fake, we change to real
-            if "whisper" in model_name.lower() and (pred > .99 or pred < .01): # if low whisper pred count as fake
+            if "whisper" in model_name.lower(): # if low whisper pred count as fake
                 if pred < 0.99 and pred > .01 and label == "Fake":
                     return True
                 elif label == "Real":
@@ -108,48 +109,91 @@ class ModelBindings:
 
         sum_real_pred = 0
         sum_fake_pred = 0
-        for iso_model in self.iso_models:
-            pred, label = iso_model.evaluate(sep_path)
-            # lean label real, reduce false positives
-            if process_real_label(iso_model.name, pred, label):
-                votes_real += 1
+
+        def _evaluate_model_helper(model, path, iso):
+            pred, label = model.evaluate(path)
+            # Lean label real, reduce false positives
+            if process_real_label(model.name, pred, label):
                 label = "Real"
             else:
                 label = "Fake"
 
-            if label == "Real":
-                sum_real_pred += pred
-            else:
-                sum_fake_pred += pred
-            results_map[iso_model.name] = {
-                'unseparated_results': {
+            
+            return model.name, pred, label, iso
+        
+        # Use ThreadPoolExecutor to evaluate models concurrently
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            futures = []
+            for model in self.iso_models:
+                futures.append(executor.submit(_evaluate_model_helper, model, sep_path, iso=True))
+            for model in self.og_models:
+                futures.append(executor.submit(_evaluate_model_helper, model, original_path, iso=False))
+
+            for future in concurrent.futures.as_completed(futures):
+                model_name, pred, label, iso = future.result()
+                sub_key = "unseparated_results" if not iso else "separated_results"
+
+                if label == "Real":
+                    votes_real += 1 # vote for real classification
+                    sum_real_pred += pred  # Update real predictions sum for avg
+                else:
+                    sum_fake_pred += pred  # Update fake predictions sum for avg
+
+                # need to add result keys (and model keys) if not there
+                if model_name not in results_map:
+                    results_map[model_name] = {
+                        'unseparated_results': {
+                        },
+                        'separated_results': {
+                        }
+                    }
+                results_map[model_name][sub_key] = {
                     'prediction': pred,
                     'label': label,
-                },
-                'separated_results': {
-                    'prediction': 0,
-                    'label': "None",
                 }
-            }
+        
+        # for iso_model in self.iso_models:
+        #     pred, label = iso_model.evaluate(sep_path)
+        #     # lean label real, reduce false positives
+        #     if process_real_label(iso_model.name, pred, label):
+        #         votes_real += 1
+        #         label = "Real"
+        #     else:
+        #         label = "Fake"
 
-        for og_model in self.og_models:
-            pred, label = og_model.evaluate(original_path)
-            if process_real_label(og_model.name, pred, label):
-                votes_real += 1
-                label = "Real"
+        #     if label == "Real":
+        #         sum_real_pred += pred
+        #     else:
+        #         sum_fake_pred += pred
+        #     results_map[iso_model.name] = {
+        #         'unseparated_results': {
+        #             'prediction': pred,
+        #             'label': label,
+        #         },
+        #         'separated_results': {
+        #             'prediction': 0,
+        #             'label': "None",
+        #         }
+        #     }
+
+        # for og_model in self.og_models:
+        #     pred, label = og_model.evaluate(original_path)
+        #     if process_real_label(og_model.name, pred, label):
+        #         votes_real += 1
+        #         label = "Real"
 
             
-            if label == "Real":
-                sum_real_pred += pred
-            else:
-                sum_fake_pred += pred
-            results_map[og_model.name]['separated_results'] = {
-                'prediction': pred,
-                'label': label,
-            }
+        #     if label == "Real":
+        #         sum_real_pred += pred
+        #     else:
+        #         sum_fake_pred += pred
+        #     results_map[og_model.name]['unseparated_results'] = {
+        #         'prediction': pred,
+        #         'label': label,
+        #     }
         label = "Fake"
         avg_pred = 0
-        if votes_real > 7:
+        if votes_real > 3:
             label = "Real"
             avg_pred = sum_real_pred / votes_real
         else:

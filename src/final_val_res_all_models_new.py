@@ -152,7 +152,7 @@ if __name__ == "__main__":
     }
 
        
-    
+    min_real = 7
     def adjust_label_real(model, cert, label):
         """
         We make the bar for a model to classify as fake higher, this means that for a model to classify fake
@@ -163,7 +163,9 @@ if __name__ == "__main__":
         """
         # whisper: lower certainty values do not tell us much, if its a very high or low cert, then we assume real
         if "whisper" in model.lower():
-            if cert < 0.99 and cert > .01 and label == "Fake":
+            # return label == "Real"
+            # return label == "Real"
+            if cert < 0.5:
                 return True
             elif label == "Real":
                 return True
@@ -177,7 +179,6 @@ if __name__ == "__main__":
                 return True
         # xlsr: if very low certainty, then we assume real (we also adjust cert to be on a better scale for xlsr: * 40)
         elif "xlsr" in model.lower():
-            print(cert)
             if cert < .01 or label == "Real":
                 return True
         # rawgat: if very low certainty, then we assume real
@@ -186,7 +187,6 @@ if __name__ == "__main__":
                 return True
         # leave vocoder, it does not have strong outliers, solid as is
         elif "vocoder" in model.lower():
-            print(cert)
             if label == "Real":
                 return True
         return False # otherwise we think its Fake
@@ -208,7 +208,7 @@ if __name__ == "__main__":
                 votes_real += 1
         
         guessed_label = "Fake"
-        if votes_real > 7:
+        if votes_real > min_real:
             guessed_label = "Real"
 
         # check correct
