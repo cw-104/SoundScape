@@ -14,7 +14,7 @@ from sound_scape.backend.whisper_specrnet import WhisperSpecRNet, set_seed
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 
 class Models(IntEnum):
-    SOUNDSCAPE = 0    
+    SOUNDSCAPE = 0
     RAWGAT = 1
 
 def get_best_device():

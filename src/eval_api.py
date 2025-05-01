@@ -15,7 +15,40 @@ class api_binding_thread:
         self._thread = Thread(target=self._run)
         self._thread.start()
         self.results = []
-        # self.model_results = []
+        self._isolation_queue = Queue()
+        self.max_isolation_threads = 3
+        self._isolation_thread = None
+        self.complete = False
+        self.n_complete = 0
+
+    # isolation thread manager
+    def _iso_thread_run(self):
+        # worker task thread
+        def sep_worker(filep, folder_to_sep_to, correct_label):
+            # separate the file
+            iso_file = separate_file(filep, folder_to_sep_to, mp3=True)
+            # add to the queue
+            self._file_queue.put({
+                'file': filep,
+                'separated_file': iso_file,
+                'folder_to_sep_to': folder_to_sep_to,
+                'correct_label': correct_label,
+            })
+
+        worker_threads = []
+        while not self._isolation_queue.empty():
+            while len(worker_threads) < self.max_isolation_threads:
+                params = self._isolation_queue.get()
+                filep = params['file']
+                folder_to_sep_to = params['folder_to_sep_to']
+                correct_label = params['correct_label']
+                worker_thread = Thread(target=sep_worker, args=(filep, folder_to_sep_to, correct_label))
+                worker_thread.start()
+                worker_threads.append(worker_thread)
+            # remove finished threads from list
+            worker_threads = [t for t in worker_threads if t.is_alive()]
+            sleep(1)
+
     def _run(self):
         print("starting api eval thread")
         self._bindings = ModelBindings()
@@ -40,12 +73,26 @@ class api_binding_thread:
             folder_to_sep_to = os.path.join(folder_to_sep_to, "Real-iso")
         elif correct_label == "Fake":
             folder_to_sep_to = os.path.join(folder_to_sep_to, "Fake-iso")
-        self._file_queue.put({
-            'file': filep,
-            'separated_file': iso_file,
-            'folder_to_sep_to': folder_to_sep_to,
-            'correct_label': correct_label,
-        })
+        if not iso_file:
+            self._file_queue.put({
+                'file': filep,
+                'separated_file': iso_file,
+                'folder_to_sep_to': folder_to_sep_to,
+                'correct_label': correct_label,
+            })
+        else:
+            # isolate in real time
+            self._isolation_queue.put({
+                'file': filep,
+                # 'separated_file': iso_file,
+                'folder_to_sep_to': folder_to_sep_to,
+                'correct_label': correct_label,
+            })
+            # If isolation management thread not active, create the thread
+            if self._isolation_thread == None or not self._isolation_thread.is_alive():
+                self._isolation_thread = Thread(target=self._iso_thread_run)
+                self._isolation_thread.start()
+
 
     def _evaluate(self, filep, correct_label, iso_file=None, folder_to_sep_to="eval-separated"):
         # Call the evaluate method on the bindings object
@@ -92,6 +139,7 @@ if __name__ == "__main__":
     args.add_argument("--eval_dataset_path", type=str, default="../../soundscape-dataset/eval/")
     args.add_argument("--real_time_isolate_files", action="store_true", default=False)
     args.add_argument("--folder_to_separate_to", type=str, default="eval-separated")
+    # TODO add help print
     args = args.parse_args()
     eval_dataset_path = args.eval_dataset_path
     use_dataset_iso = not args.real_time_isolate_files
@@ -150,10 +198,7 @@ if __name__ == "__main__":
             api_binding_thread.queue_eval(filep=filep, correct_label="fake", folder_to_sep_to=sep_folder)
             
 total = len(real_files) + len(fake_files)
-# wait untile initialized b4 starting progress bar
-while total - api_binding_thread._file_queue.qsize() == 0:
-    sleep(1)
-sleep(3)
+
 
 def save_results():
     # save binding_thread results to a file
@@ -161,11 +206,15 @@ def save_results():
         f.write(json.dumps(api_binding_thread.results))
 
 
+print("(Process started will open progress bar in 30 seconds)")
+# wait until 30 seconds for initializing b4 starting progress bar
+sleep(30)
 
 
 progress_bar = tqdm(total=total, desc="Classifying files", unit="file", position=1, leave=True) 
 last_n = 0
-while not api_binding_thread._file_queue.empty():
+# while not api_binding_thread._file_queue.empty():
+while not api_binding_thread._isolation_queue.empty() and not api_binding_thread._file_queue.empty():
     sleep(1)
     # wait for the thread to finish
     n = total - api_binding_thread._file_queue.qsize()
@@ -173,7 +222,7 @@ while not api_binding_thread._file_queue.empty():
     progress_bar.refresh()
     # if last_n != n:
     #     save_results()
-    last_n = n
+    last_n = api_binding_thread.n_complete
 
 print("Sleeping for 2.5 min as last file might not be finished")
 sleep(60 * 2.5)
