@@ -65,6 +65,7 @@ class api_binding_thread:
                 _, combined_res = self._evaluate(filep=eval_params['file'], correct_label=eval_params['correct_label'], iso_file=eval_params['separated_file'], folder_to_sep_to=eval_params['folder_to_sep_to'])
                 self.results.append(combined_res)
                 # self.model_results.append(model_res)
+                print("Evaled", eval_params['separated_file'])
                 self.n_complete += 1
             sleep(.01)
 
