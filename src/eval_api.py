@@ -18,7 +18,6 @@ class api_binding_thread:
         self._isolation_queue = Queue()
         self.max_isolation_threads = 3
         self._isolation_thread = None
-        self.complete = False
         self.n_complete = 0
 
     # isolation thread manager
@@ -66,6 +65,7 @@ class api_binding_thread:
                 _, combined_res = self._evaluate(filep=eval_params['file'], correct_label=eval_params['correct_label'], iso_file=eval_params['separated_file'], folder_to_sep_to=eval_params['folder_to_sep_to'])
                 self.results.append(combined_res)
                 # self.model_results.append(model_res)
+                self.n_complete += 1
             sleep(.01)
 
     def queue_eval(self, filep, correct_label, iso_file=None, folder_to_sep_to="eval-separated"):
@@ -213,7 +213,7 @@ sleep(30)
 
 progress_bar = tqdm(total=total, desc="Classifying files", unit="file", position=1, leave=True) 
 # while not api_binding_thread._file_queue.empty():
-while not api_binding_thread._isolation_queue.empty() and not api_binding_thread._file_queue.empty():
+while api_binding_thread.n_complete < total:
     sleep(1)
     # wait for the thread to finish
     progress_bar.n = api_binding_thread.n_complete
