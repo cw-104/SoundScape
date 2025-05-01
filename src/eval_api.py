@@ -73,7 +73,7 @@ class api_binding_thread:
             folder_to_sep_to = os.path.join(folder_to_sep_to, "Real-iso")
         elif correct_label == "Fake":
             folder_to_sep_to = os.path.join(folder_to_sep_to, "Fake-iso")
-        if not iso_file:
+        if iso_file:
             self._file_queue.put({
                 'file': filep,
                 'separated_file': iso_file,
@@ -96,9 +96,9 @@ class api_binding_thread:
 
     def _evaluate(self, filep, correct_label, iso_file=None, folder_to_sep_to="eval-separated"):
         # Call the evaluate method on the bindings object
-        if not iso_file:
+        # if not iso_file:
             # Separate the file if not precomputed
-            iso_file = separate_file(filep, folder_to_sep_to, mp3=True)
+            # iso_file = separate_file(filep, folder_to_sep_to, mp3=True)
         # get model eval results
         model_res, combined_results = self._bindings.get_model_results(filep, iso_file)
         with open("api_debug_all_results.txt", "a") as f:
@@ -212,17 +212,12 @@ sleep(30)
 
 
 progress_bar = tqdm(total=total, desc="Classifying files", unit="file", position=1, leave=True) 
-last_n = 0
 # while not api_binding_thread._file_queue.empty():
 while not api_binding_thread._isolation_queue.empty() and not api_binding_thread._file_queue.empty():
     sleep(1)
     # wait for the thread to finish
-    n = total - api_binding_thread._file_queue.qsize()
-    progress_bar.n = n
+    progress_bar.n = api_binding_thread.n_complete
     progress_bar.refresh()
-    # if last_n != n:
-    #     save_results()
-    last_n = api_binding_thread.n_complete
 
 print("Sleeping for 2.5 min as last file might not be finished")
 sleep(60 * 2.5)
