@@ -60,6 +60,10 @@ https://dl.fbaipublicfiles.com/fairseq/wav2vec/xlsr2_300m.pt
 
 this needs to be put into src/pretrained_models/XLS-R/xlsr2_300m.pt
 
+3. install fairsec
+```
+git clone https://github.com/pytorch/fairseq && pip install fairseq/ && rm -rf fairseq
+```
 ## Identification
 
 you need to download the identification references from
