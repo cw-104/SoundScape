@@ -1,5 +1,6 @@
 import json
 from colorama import Fore, init
+import sys
 
 init(autoreset=True)
 
@@ -16,6 +17,7 @@ def process_real_label(model_name, pred, label, iso):
     """
     # we use predicted certainty value to shift towards real, meaning we cut-off certain values that if it were to guess fake, we change to real
     if "whisper" in model_name.lower():  # if low whisper pred count as fake
+        
         if iso:
             pred *= 10
         if pred > 0.99 or pred < 0.01:
@@ -27,12 +29,33 @@ def process_real_label(model_name, pred, label, iso):
         if pred > 0.5:
             return True
     elif "xlsr" in model_name.lower():  # if prediction is very low, count as Real
+        return label == "Real"
         if not iso:
             pred *= 10
         if pred < 0.8:
             return True
 
     elif "rawgat" in model_name.lower():
+        if not iso:
+            return pred > 0
+        if iso:
+            # label for non-iso might be flipped? so < 0 = Real
+            # return pred < 0
+            return pred > 0
+            
+        """
+        RAW VALUES - to +, no shifting
+        pred = raw value
+
+        === Rawgat label for iso seems to be flipped ===
+        if iso:
+            # label for non-iso might be flipped? so < 0 = Real
+            return pred < 1
+        rawgat iso:
+            Real: 47/60 = 0.7833333333333333
+            Fake: 23/55 = 0.41818181818181815
+            Accuracy: 0.6007575757575757
+        """
 
         """
         === r4api_debug_all_results.txt and r4eval_api_results.txt ===
@@ -79,14 +102,31 @@ def process_real_label(model_name, pred, label, iso):
             if pred < 0.45:
                 return False
             return label == "Real"
-        if iso and pred < 0.3:
+        if iso and pred < 0.25:
             return True
     # leave vocoder, it does not have strong outliers, solid as is
 
     # This is for if(multi[0] > multi[1]): "Real" > if use this, needs to be flipped
     elif "vocoder" in model.lower():
+        return label != "Real"
+
         """
-            if(binary[1] > binary[0]):
+        == if(binary[1] > binary[0]): ==
+        
+        return label != "Real"
+
+        results
+        --------
+        vocoder og:
+            Real: 49/60 = 0.8166666666666667
+            Fake: 24/55 = 0.43636363636363634
+            Accuracy: 0.6265151515151515
+        vocoder iso:
+            Real: 45/60 = 0.75
+            Fake: 17/55 = 0.3090909090909091
+            Accuracy: 0.5295454545454545
+
+            
         """
         """
         === r4api_debug_all_results.txt and r4eval_api_results.txt ===
@@ -127,15 +167,7 @@ def process_real_label(model_name, pred, label, iso):
             Fake: 12/55 = 0.21818181818181817
             Accuracy: 0.5590909090909091
         """
-        if not iso:
-            label = "Fake" if label == "Real" else "Real"  # Flip to multi[1] > multi[0]
-            return label == "Real"
-        if iso:
-            if pred > 0.7:
-                return False
-            return label == "Real"
 
-    return False
 
 
 model_results = None
@@ -156,9 +188,8 @@ acc_res = {
         "total-fake": 0,
     }
 }
+
 min_real = 5
-
-
 def print_res_of(model, acc_map):
     print(
         f"Real: {acc_map['correct-real']}/{acc_map['total-real']} = {acc_map['correct-real']/acc_map['total-real']}"
@@ -255,7 +286,11 @@ total_real = 0
 correct_fake = 0
 total_fake = 0
 
-min_real = 6
+if len(sys.argv) > 1:
+    min_real = int(sys.argv[1])
+else:
+    min_real = 6
+print(f"Using min_real: {min_real}")
 for i, res in enumerate(all_results):
     votes_real = 0
     correct_label = model_results[i]["correct_label"]
@@ -319,12 +354,12 @@ for i, res in enumerate(all_results):
         total_real += 1
         if guessed_label == correct_label:
             correct_real += 1
+        else:
+            print(f"{res['filep']}")
     elif correct_label == "Fake":
         total_fake += 1
         if guessed_label == correct_label:
             correct_fake += 1
-        # else:
-        #     print(f"{res['filep']}")
 print(f"{Fore.GREEN}Modified:")
 print(f"Real: {correct_real}/{total_real} = {correct_real/total_real}")
 print(f"Fake: {correct_fake}/{total_fake} = {correct_fake/total_fake}")

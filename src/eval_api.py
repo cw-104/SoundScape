@@ -161,7 +161,7 @@ if __name__ == "__main__":
     print("Eval dataset path: ", eval_dataset_path)
     print("Use precomputed isolated files: ", use_dataset_iso)
     print("Folder to separate to: ", sep_folder)
-    if not os.path.exists(eval_dataset_path):
+    if not os.path.exists(sep_folder):
         os.mkdir(sep_folder)
 
     # "bonafide"
