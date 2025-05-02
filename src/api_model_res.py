@@ -28,7 +28,46 @@ def process_real_label(model_name, pred, label, iso):
                 pred *= 10
             if pred < .8:
                 return True
+
         elif "rawgat" in model_name.lower():
+
+            """
+            === r4api_debug_all_results.txt and r4eval_api_results.txt ===
+            res = self.model.evaluate_file(file_path)
+            return min(.95,res.percent_certainty), res.classification
+            elif "rawgat" in model_name.lower():
+                if not iso:
+                    if pred < .45:
+                        return False
+                    return label == "Real"
+                if iso and pred < .3:
+                    return True
+            results
+            --------
+            rawgat og:
+                Real: 43/60 = 0.7166666666666667
+                Fake: 22/55 = 0.4
+                Accuracy: 0.5583333333333333
+            rawgat iso:
+                Real: 14/60 = 0.23333333333333334
+                Fake: 48/55 = 0.8727272727272727
+                Accuracy: 0.553030303030303
+
+            ==
+            SIMPLE FLIP
+            ==
+            return label != "Real"
+            results
+            --------
+            rawgat og:
+            Real: 0/60 = 0.0
+            Fake: 54/55 = 0.9818181818181818
+            Accuracy: 0.4909090909090909
+                rawgat iso:
+            Real: 32/60 = 0.5333333333333333
+            Fake: 28/55 = 0.509090909090909
+            Accuracy: 0.5212121212121212
+            """
             if not iso:
                 if pred < .45:
                     return False
@@ -40,7 +79,24 @@ def process_real_label(model_name, pred, label, iso):
         # This is for if(multi[0] > multi[1]): "Real" > if use this, needs to be flipped
         elif "vocoder" in model.lower():
             label = "Fake" if label == "Real" else "Real" # Flip to multi[1] > multi[0]
-            return label
+            # return label == "Fake"
+            """
+            === r4api_debug_all_results.txt and r4eval_api_results.txt ===
+            FLIP -- MULTI -- multi[1] > multi[0] = REAL
+            label = "Fake" if label == "Real" else "Real" # Flip to multi[1] > multi[0]
+            return label == "Real"
+
+            results
+            --------
+            vocoder og:
+                Real: 49/60 = 0.8166666666666667
+                Fake: 24/55 = 0.43636363636363634
+                Accuracy: 0.6265151515151515
+            vocoder iso:
+                Real: 0/60 = 0.0
+                Fake: 55/55 = 1.0
+                Accuracy: 0.5
+            """
             if not iso:
                 return label != "Real"
             if iso:
