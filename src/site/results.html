@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SoundScape</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/lumen/bootstrap.min.css"
+    />
+
+    <link rel="stylesheet" href="css/global.css" />
+    <script src="js/global.js" defer></script>
+  </head>
+  <body>
+    <div id="navbar-container"></div>
+    <div class="container mt-4">
+      <!-- Dismissiable alert about AI accuracy -->
+      <div class="alert alert-dismissible alert-warning">
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+        ></button>
+        <p class="mb-0">
+          Results are never perfect, we provide an estimate of our certainty.
+          Our service is a tool to aid in detection, not a guarentee.
+          <a href="about" class="alert-link">Learn More</a>.
+        </p>
+      </div>
+      <!--  result card -->
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card mb-3" id="result-card">
+            <div class="card-header">Results</div>
+            <div class="card-body">
+              <h4 class="card-title" id="result-title">Processing...</h4>
+              <p class="card-text" id="result-body">
+                Waiting for final results
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card mb-3" id="explaination-card">
+            <div class="card-header">Explanation</div>
+            <div class="card-body">
+              <h4 class="card-title" id="result-title">How Do We Know This?</h4>
+              <div id="explaination-body">Processing...</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card mb-3" id="identity-card">
+            <div class="card-header">Identification</div>
+            <div class="card-body">
+              <h4 class="card-title" id="result-title">
+                This Artist is Most Likely:
+              </h4>
+              <div id="identification-body">Processing...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <a href="upload" class="btn btn-secondary">Upload New File</a>
+      </div>
+
+      <div class="accordion" id="more">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              id="advanced-results-button"
+              data-bs-toggle="collapse"
+              data-bs-target="#advanced-results"
+              aria-expanded="false"
+              aria-controls="advanced-results"
+            >
+              Advanced Results
+            </button>
+          </h2>
+          <div
+            id="advanced-results"
+            class="accordion-collapse collapse"
+            aria-labelledby="headingOne"
+            data-bs-parent="#accordionExample"
+          >
+            <div class="accordion-body" , id="advanced-results-body"></div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingTwo">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#how-results"
+              aria-expanded="false"
+              aria-controls="how-results"
+            >
+              How did we get these results?
+            </button>
+          </h2>
+          <div
+            id="how-results"
+            class="accordion-collapse collapse"
+            aria-labelledby="headingTwo"
+            data-bs-parent="#accordionExample"
+          >
+            <div class="accordion-body text-light-emphasis">
+              <strong>Methods</strong>
+              <br />
+              <br />
+
+              We Utilize multiple models that together give us a better result
+              more resistant to false positives. We weight finetuned variants of
+              each model based on their strengths. The goal of our algorithm is
+              to lean towards a file being authentic, each model will give a
+              vote towards whether it thinks a file is real or not. The models
+              are adjust based on certainty metrics that are outputted alongside
+              the guessed label to make higher the bar of certainty towards a
+              file being fake
+              <br />
+              <br />
+              Confidence is calculated by averaging scores given to us by each
+              model and converted into a metric of low medium and high.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingThree">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#learn-more"
+              aria-expanded="false"
+              aria-controls="learn-more"
+            >
+              Learn more
+            </button>
+          </h2>
+          <div
+            id="learn-more"
+            class="accordion-collapse collapse"
+            aria-labelledby="headingThree"
+            data-bs-parent="#accordionExample"
+          >
+            <div class="accordion-body">
+              <a href="about" class="btn btn-primary">About</a>
+              <a href="credits" class="btn btn-primary">Credits</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/results.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

@@ -82,8 +82,6 @@ def process_real_label(model_name, pred, label, iso):
 
         # This is for if(multi[0] > multi[1]): "Real" > if use this, needs to be flipped
         elif "vocoder" in model.lower():
-            label = "Fake" if label == "Real" else "Real" # Flip to multi[1] > multi[0]
-            # return label == "Fake"
             """
             === r4api_debug_all_results.txt and r4eval_api_results.txt ===
             
@@ -102,14 +100,33 @@ def process_real_label(model_name, pred, label, iso):
                 Real: 0/60 = 0.0
                 Fake: 55/55 = 1.0
                 Accuracy: 0.5
-            """
+
+            ===
             if not iso:
-                return label != "Real"
+                label = "Fake" if label == "Real" else "Real" # Flip to multi[1] > multi[0]
+                return label == "Real"
+
+            results
+            --------
             if iso:
-                if pred < .7:
+                if pred > .7:
                     return False
                 return label == "Real"
+            vocoder og:
+                Real: 49/60 = 0.8166666666666667
+                Fake: 24/55 = 0.43636363636363634
+                Accuracy: 0.6265151515151515
+            vocoder iso:
+                Real: 54/60 = 0.9
+                Fake: 12/55 = 0.21818181818181817
+                Accuracy: 0.5590909090909091
+            """
             if not iso:
+                label = "Fake" if label == "Real" else "Real" # Flip to multi[1] > multi[0]
+                return label == "Real"
+            if iso:
+                if pred > .7:
+                    return False
                 return label == "Real"
 
         return False
@@ -215,7 +232,7 @@ total_real = 0
 correct_fake = 0
 total_fake = 0
 
-min_real = 5
+min_real = 6
 for i, res in enumerate(all_results):
     votes_real = 0
     correct_label = model_results[i]['correct_label']

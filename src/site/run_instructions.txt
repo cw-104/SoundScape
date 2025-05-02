@@ -1,0 +1,17 @@
+npx http-server -p <port>
+<port> being port of the site over localhost
+
+i.e.
+
+npx http-server -p 8000
+
+
+IMPORTANT
+---------
+
+if you plan to run the api server on a port other than 8080 or an ip other than localhost then you need to change
+js/global.js : line 1
+
+let url = "http://127.0.0.1:8080"
+
+to correct ip and port. Again default in API server is http://127.0.0.1:8080
