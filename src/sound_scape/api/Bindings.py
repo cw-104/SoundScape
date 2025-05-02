@@ -133,7 +133,7 @@ class ModelBindings:
             # Lean label real, reduce false positives
             is_real, adj_pred = process_real_label(model.name, pred, label)
 
-            return model.name, adj_pred, "Real" if is_real else "Fake", iso
+            return model.name, abs(max(0, min(.95, adj_pred))), "Real" if is_real else "Fake", iso
         
         # Use ThreadPoolExecutor to evaluate models concurrently
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
