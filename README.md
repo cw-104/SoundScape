@@ -54,9 +54,13 @@ Most of the models are in the github, but there are a few you need to download
 - waiting for google drive upload
 This needs to be moved into src/trained_models
 
-2. 
+2. XLSR Wav2Vec dependency
+you need to download xlsr2_300m.pt which is from wav2vec for xlsr to work
+https://dl.fbaipublicfiles.com/fairseq/wav2vec/xlsr2_300m.pt
 
-## Mdentification
+this needs to be put into src/pretrained_models/XLS-R/xlsr2_300m.pt
+
+## Identification
 
 you need to download the identification references from
 - waiting for google drive upload
