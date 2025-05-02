@@ -4,7 +4,7 @@
 
 # How to run:
 
-(Installation was tested on macos and linux fedora using python3.9, if you have a different OS additional steps or changing dependencies may be required)
+(Installation was tested on macos and linux ubuntu using python3.9, if you have a different OS additional steps or changing dependencies may be required)
 
 ## Requirements
 
