@@ -119,6 +119,7 @@ class ModelBindings:
                     if pred < .6:
                         return True
                     return label == "Real", (pred - .6) * 2
+            return False, pred
 
 
         
