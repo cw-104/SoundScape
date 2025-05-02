@@ -302,10 +302,7 @@ class FileIds:
     def set_results(self, id, results):
         self.update_state(id, 'finished')
         self.file_ids[id]['results'] = results
-        self.delete_mp3_file(id)
-    
-    def delete_mp3_file(self, id):
-        print(f"I want to delete ", self.file_ids[id]['filename'])
+
 
     def get_status(self, id):
         if not self.exists(id):
