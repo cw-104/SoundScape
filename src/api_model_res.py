@@ -86,7 +86,9 @@ def process_real_label(model_name, pred, label, iso):
             # return label == "Fake"
             """
             === r4api_debug_all_results.txt and r4eval_api_results.txt ===
-            FLIP -- MULTI -- multi[1] > multi[0] = REAL
+            
+            FLIP -- MULTI -- multi[1] > multi[0] = REAL 
+            pred = multi[0/1]
             label = "Fake" if label == "Real" else "Real" # Flip to multi[1] > multi[0]
             return label == "Real"
 

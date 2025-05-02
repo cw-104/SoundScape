@@ -62,23 +62,23 @@ class vocoder:
         return pred, label
 
         
-    def raw_eval(self, file_path):
-        multi, binary = self.model.eval(file_path)
-        label = None
-        pred = None
-        # Flipped
-        if(binary[0] > binary[1]):
-            # print("Real")
-            label = "Real"
-            # pred = binary[0]
-            pred = multi[0]
-        else:
-            # print("Fake")
-            label = "Fake"
-            # pred = binary[1]
-            pred = multi[1]
+    # def raw_eval(self, file_path):
+    #     multi, binary = self.model.eval(file_path)
+    #     label = None
+    #     pred = None
+    #     # Flipped
+    #     if(binary[0] > binary[1]):
+    #         # print("Real")
+    #         label = "Real"
+    #         pred = binary[0]
+    #         # pred = multi[0]
+    #     else:
+    #         # print("Fake")
+    #         label = "Fake"
+    #         pred = binary[1]
+    #         # pred = multi[1]
         
-        return multi, binary, label, pred
+    #     return multi, binary, label, pred
 
 
 class xlsr:
