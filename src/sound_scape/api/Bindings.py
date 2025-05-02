@@ -84,14 +84,15 @@ class ModelBindings:
 
             Returns true if the model result is real false if not
             """
+            return "Real" == label
             # we use predicted certainty value to shift towards real, meaning we cut-off certain values that if it were to guess fake, we change to real
             if "whisper" in model_name.lower(): # if low whisper pred count as fake
                 if pred < 0.99 and pred > .01 and label == "Fake":
                     return True
                 elif label == "Real":
                     return True
-            elif "clad" in model_name.lower(): # clad score tends to be > .45 real < .45 fake (CLAD cert is where we directly calc real fake not necessarily the outputted label, and it operates differently, high is real, low is fake)
-                if pred > .45:
+            elif "clad" in model_name.lower(): # clad score tends to be > .5 real < .5 fake (CLAD cert is where we directly calc real fake not necessarily the outputted label, and it operates differently, high is real, low is fake)
+                if pred > .5:
                     return True
             elif "xlsr" in model_name.lower(): # if prediction is very low, count as Real
                 if label == "Real" or pred < .01:

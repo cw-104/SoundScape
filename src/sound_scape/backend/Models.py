@@ -39,8 +39,8 @@ class vocoder:
 
         label = None
         pred = None
-        # Flipped
-        if(binary[0] > binary[1]):
+
+        if(multi[0] > multi[1]):
             # print("Real")
             label = "Real"
             # pred = binary[0]
@@ -90,7 +90,7 @@ class xlsr:
         
     def evaluate(self, file_path):
         pred = self.model.eval_file(file_path)[0]
-        return abs(pred/100)* 10 * 50, "Real" if pred > 0 else "Fake"
+        return abs(pred/100)* 50, "Real" if pred > 0 else "Fake"
     
     def raw_eval(self, file_path):
         pred = self.model.eval_file(file_path)[0]
@@ -164,7 +164,7 @@ class rawgat:
         
     def evaluate(self, file_path):
         res = self.model.evaluate_file(file_path)
-        return res.percent_certainty, res.classification
+        return min(.95,res.percent_certainty), res.classification
     
     def raw_eval(self, file_path):
         res = self.model.evaluate_file(file_path)
