@@ -62,10 +62,12 @@ this needs to be put into src/pretrained_models/XLS-R/xlsr2_300m.pt
 
 3. install fairsec
 ```
+git clone https://github.com/pytorch/fairseq
 pip install "pip<24.1" 
 pip install "omegaconf<2.1"
-git clone https://github.com/pytorch/fairseq && pip install fairseq/ && rm -rf fairseq
+pip install fairseq/ && rm -rf fairseq
 ```
+fairseq may require some dependency resolution, typically the above resolutions works, but may vary
 ## Identification
 
 you need to download the identification references from
