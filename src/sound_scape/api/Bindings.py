@@ -74,7 +74,7 @@ class ModelBindings:
         """
 
         
-        def process_real_label(model_name, pred, label):
+        def process_real_label(model_name, pred, label, iso):
             """
             We make the bar for a model to classify as fake higher, this means that for a model to classify fake
             we are more confident it is correct.
@@ -132,7 +132,7 @@ class ModelBindings:
         def _evaluate_model_helper(model, path, iso):
             pred, label = model.evaluate(path)
             # Lean label real, reduce false positives
-            is_real, adj_pred = process_real_label(model.name, pred, label)
+            is_real, adj_pred = process_real_label(model.name, pred, label, iso)
 
             return model.name, abs(max(0, min(.95, adj_pred))), "Real" if is_real else "Fake", iso
         
