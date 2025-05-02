@@ -105,9 +105,17 @@ cd src/site
 npx http-server -p 8000
 ```
 
+# Eval and Accuracy
+
 Eval dataset non-isolated files located here
 https://drive.google.com/file/d/17KnCrLA3uc2j8hMCDx0r5UcwxkTkOmLR/view?usp=sharing
 
+```
+Our accuracy after combining models
+Real: 50/60 = 0.83
+Fake: 33/54 = 0.61
+Accuracy: 0.72
+```
 Deepfake detection targetted at detecting deepfake songs and music of popular artists.
 
 # Open source projects utilized
