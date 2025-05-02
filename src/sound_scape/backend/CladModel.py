@@ -4,7 +4,7 @@ import sys
 from Base_Path import get_path_relative_base
 
 class CladModel:
-    def __init__(self, debug_print=False):
+    def __init__(self, debug_print=False, model_path=None):
         # self.venv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../CLAD/venv"))
         self.venv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), get_path_relative_base("CLAD/venv")))
         # self.clad_script = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../CLAD/run_clad.py"))
@@ -22,7 +22,7 @@ class CladModel:
                 pythonpath = os.path.abspath(os.path.join(os.path.dirname(__file__), get_path_relative_base(".")))
                 cmd = f'PYTHONPATH={pythonpath} {venv_python} {self.clad_script} {input_audio_path}'
             else:
-                cmd = f'python {self.clad_script} {input_audio_path}'
+                cmd = f'python {self.clad_script} "{input_audio_path}"'
             if self.debug_print:
                 print(f"Executing CLAD subprocess: {cmd}")
 

@@ -71,8 +71,7 @@ def separate_file(input_file, output_dir, model='htdemucs', mp3=False, mp3_rate=
         cmd += [f"--two-stems={two_stems}"]
 
     # Run the demucs command
-    p = sp.Popen(cmd + [input_file], stdout=sp.PIPE, stderr=sp.PIPE)    
-    print("Running demucs command... ")
+    p = sp.Popen(cmd + [input_file], stdout=sp.PIPE, stderr=sp.PIPE)
     copy_process_streams(p)
     p.wait()
 

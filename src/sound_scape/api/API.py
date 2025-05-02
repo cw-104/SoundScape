@@ -108,4 +108,4 @@ def start_api():
     # CORS(app, resources={r"/*": {"origins": ["https://projectsoundscape.net", "*"]}})
     CORS(app, resources={r"/*": {"origins": "*"}})
 
-    app.run(debug=True, port=8080)
+    app.run(debug=False, port=8080)

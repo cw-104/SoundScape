@@ -2,6 +2,7 @@ SoundFakeModel/processed_train_dataset_wav2vec_SVDD/
 SoundFakeModel/processed_dev_dataset_wav2vec_SVDD/
 SoundFakeModel/logmel_dev/
 SoundFakeModel/logmel_train/
+__pycache__
 
 SoundFakeModel/__pycache__/
 SoundFakeModel/.DS_Store
@@ -26,4 +27,9 @@ src/pretrained_models/XLS-R/epoch_1_58.pth
 mvenv
 venv
 ClAD/venv
-src.zip 
+src.zip
+
+src/idenification_refrences
+src/processed_refrences
+src/val_files
+src/trained_models/xlsr.pth

@@ -1,3 +1,4 @@
+from sound_scape.backend.RawGATmodel import RawGAT_ST
 import os, io, ffmpeg, yaml, torch
 
 from tqdm import tqdm
@@ -13,7 +14,7 @@ from sound_scape.backend.whisper_specrnet import WhisperSpecRNet, set_seed
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 
 class Models(IntEnum):
-    SOUNDSCAPE = 0    
+    SOUNDSCAPE = 0
     RAWGAT = 1
 
 def get_best_device():
@@ -50,38 +51,37 @@ def pad(x, max_len=64600):
         return padded_x
 class DeepfakeClassificationModel:
 
-    def __init__(self, modeltype=Models.RAWGAT, result_handler=DfResultHandler(-1.72, "DeepFake", "Real", 10, .90)):
+    def __init__(self, modeltype=Models.RAWGAT, result_handler=DfResultHandler(-1.72, "DeepFake", "Real", 10, .90), device=None, model_path=None):
         '''
         Initializes the model
         '''
         self.result_handler=result_handler
-        self.device = get_best_device()
+
+        self.device = device
+        if not device:
+            self.device = get_best_device()
+        
         if modeltype == Models.RAWGAT:
-            from sound_scape.backend.RawGATmodel import RawGAT_ST
-            model_path = os.path.join(BASE_DIR, "pretrained_models/RawGAT/RawGAT.pth")
+            self.model_path = model_path
+            if self.model_path is None:
+                self.model_path = os.path.join(BASE_DIR, "pretrained_models/RawGAT/RawGAT.pth")
+            
             rawgat_config_path=os.path.join(BASE_DIR, "pretrained_models/RawGAT/model_config_RawGAT_ST.yaml")
             with open(rawgat_config_path, 'r') as f_yaml:
-                config = yaml.safe_load(f_yaml)  
+                config = yaml.safe_load(f_yaml)
         
             # Extract only the model-related part of the configuration
             model_config = config['model']
             # Instantiate the model with the correct configuration
             self.model = RawGAT_ST(model_config, self.device)
-            self.model.load_state_dict(torch.load(model_path, map_location=self.device, weights_only=True))
+            self.model.load_state_dict(torch.load(self.model_path, map_location=self.device, weights_only=True))
             self.model = self.model.to(self.device)
-            print(f"Loaded model from {model_path}")
+            # print(f"Loaded model from {self.model_path}")
             
-
-
-        
-            
-
-
-
 
     def evaluate_file(self, file_path):
         '''
-        Method: 
+        Method:
         Evaluates a single audio file for deepfake classification
         
         ------------
@@ -99,7 +99,7 @@ class DeepfakeClassificationModel:
 
     def evaluate_multi_files(self, filepaths, print_r=False, progress_bar=False):
         transform = transforms.Compose([
-            lambda x: pad(x),  
+            lambda x: pad(x),
             lambda x: torch.Tensor(x)
         ])
         dataset = EvalDataset(filepaths, transform=transform)
@@ -112,13 +112,12 @@ class DeepfakeClassificationModel:
         # total count of files
         results = []
         self.model.eval()
-        if progress_bar:
-            print()
+
         with torch.no_grad():
-            for batch_idx, (batch_x, batch_y, batch_meta) in enumerate(tqdm(data_loader, desc="Evaluating Authenticity of Files") if progress_bar else data_loader):
+            for batch_idx, (batch_x, batch_y, batch_meta) in enumerate(tqdm(data_loader, desc="Evaluating Authenticity of Files", leave=False) if progress_bar else data_loader):
                 batch_x = batch_x.to(self.device)
                 output = self.model(batch_x, Freq_aug=False)
-                score = output[:, 1].item()  
+                score = output[:, 1].item()
 
                 if print_r:
                     # res = "✅" if score > min_real_score else "❌"
@@ -166,7 +165,7 @@ def init_whisper_specrnet(device="", weights_path="", config_path="", threshold=
     config = yaml.safe_load(open(config_path, "r"))
     model_name, model_parameters = config["model"]["name"], config["model"]["parameters"]
 
-    print(f"loading model...\n")
+    # print(f"loading model...\n")
     model = WhisperSpecRNet(
         input_channels=config.get("input_channels", 1),
         freeze_encoder=config.get("freeze_encoder", False),

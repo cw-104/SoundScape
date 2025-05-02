@@ -45,8 +45,8 @@ class DfResultHandler:
             .percent_certainty {float} how sure the model is of its result
             '''
             
-            self.classification = classification          
-            self.raw_value = raw_value              
+            self.classification = classification
+            self.raw_value = raw_value
             self.shifted_value = shifted_value
             self.percent_certainty = percent_certainty
             self.is_lower_class = is_lower_class

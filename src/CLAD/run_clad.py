@@ -26,11 +26,13 @@ if __name__ == "__main__":
         duration_sec = len(audio) / 1000.0  # pydub duration is in milliseconds
 
         # ✅ Fake logic: longer than 5 seconds is considered 'Real', shorter is 'Deepfake'
-        score = duration_sec - 5  # Negative means Deepfake, positive means Real
+        score = duration_sec - 5  # Negative means Deepfake, positive means Real (we adjust to a scale of 0-1, higher = real)
 
-        percentage_divisor = 10.0
+        percentage_divisor = 100.0 * 4 # will be a score in 100s we want to convert to a reasonable decimal range
         percentage_cap = 0.99
-        certainty = min(abs(score / percentage_divisor), percentage_cap)
+        # certainty = min(abs(score / percentage_divisor), percentage_cap)
+        certainty = score / percentage_divisor
+        certainty = min(abs(certainty), percentage_cap)  # Cap the certainty to a maximum of 0.99
         label = "Fake" if score < 0 else "Real"
 
         result = {
