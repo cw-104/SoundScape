@@ -285,7 +285,6 @@ for i, res in enumerate(all_results):
             if label == "Real":
                 votes_real+=1
             iso = False
-    
     # print(votes_real)
     if votes_real >= min_real:
         guessed_label = "Real"
@@ -300,8 +299,6 @@ for i, res in enumerate(all_results):
         total_fake+=1
         if guessed_label == correct_label:
             correct_fake+=1
-        # else:
-        #     print(f"{res['filep']}")
 print(f"{Fore.GREEN}Modified:")
 print(f"Real: {correct_real}/{total_real} = {correct_real/total_real}")
 print(f"Fake: {correct_fake}/{total_fake} = {correct_fake/total_fake}")
