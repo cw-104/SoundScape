@@ -47,7 +47,6 @@ class vocoder:
         label = None
         pred = None
 
-        # TODO pick between multi and binary and whether should have 1 > 0 or 0 > 1
         # if(multi[0] > multi[1]):
         if binary[0] > binary[1]:
             # print("Real")
@@ -195,7 +194,6 @@ class rawgat:
 
     def evaluate(self, file_path):
         res = self.model.evaluate_file(file_path)
-        # TODO choose best shift value (if any)
         return res.raw_value, res.classification
         # return min(.95,res.percent_certainty), res.classification
 
