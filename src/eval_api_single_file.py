@@ -3,16 +3,7 @@ from argparse import ArgumentParser
 from colorama import init, Fore
 from sound_scape.api.Bindings import ModelBindings
 from sound_scape.backend.Isolate import separate_file
-"""
-CORRECT
-py eval_api_single_file.py --file "/Users/christiankilduff/Downloads/new_audip/real/SZA - Snooze (Lyrics) [CBx6e9cZlBQ].mp3" --correct_label "Real"
 
-CORRECT
-py eval_api_single_file.py --file "/Users/christiankilduff/Downloads/new_audip/real/SZA - Nobody Gets Me (Lyrics) [tOTr9CCutiE].mp3" --correct_label "Real"
-
-
-REMOVE LIVE PERFORMANCES FROM REAL EVAL
-"""
 init(autoreset=True)
 
 

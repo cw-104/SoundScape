@@ -1,23 +1,38 @@
 ---
-
 # SoundScape
-
 ---
 
-Deepfake detection targetted at detecting deepfake songs and music of popular artists.
+# How to run:
 
-# Documentation
+(Installation was tested on macos and linux fedora using python3.9, if you have a different OS additional steps or changing dependencies may be required)
 
-## Command Line Interface
-How to use command line interface
+## Requirements
 
-```bash
-py cli.py -h
-ex:
-py cli.py --sep --fuke path/to/audio
+- Install python3.9
+
+1. clone the repo
+2. cd SoundScape
+3. create a venv for python3.9
+
+```
+python3.9 -m venv env
 ```
 
-arg: what to put
+4. activate venv
+
+```
+source env/bin/activate
+```
+
+5. install dependencies
+
+```
+pip install -r requirements.txt
+
+
+
+
+Deepfake detection targetted at detecting deepfake songs and music of popular artists.
 
 
 # Open source projects utilized
@@ -54,14 +69,15 @@ Initial model adapated from RawGAT code
 
 @INPROCEEDINGS{Jung2021AASIST,
   author={Jung, Jee-weon and Heo, Hee-Soo and Tak, Hemlata and Shim, Hye-jin and Chung, Joon Son and Lee, Bong-Jin and Yu, Ha-Jin and Evans, Nicholas},
-  booktitle={arXiv preprint arXiv:2110.01200}, 
-  title={AASIST: Audio Anti-Spoofing using Integrated Spectro-Temporal Graph Attention Networks}, 
+  booktitle={arXiv preprint arXiv:2110.01200},
+  title={AASIST: Audio Anti-Spoofing using Integrated Spectro-Temporal Graph Attention Networks},
   year={2021}
 
 @INPROCEEDINGS{Tak2021End,
   author={Tak, Hemlata and Patino, Jose and Todisco, Massimiliano and Nautsch, Andreas and Evans, Nicholas and Larcher, Anthony},
-  booktitle={Proc. ICASSP}, 
-  title={End-to-End anti-spoofing with RawNet2}, 
+  booktitle={Proc. ICASSP},
+  title={End-to-End anti-spoofing with RawNet2},
   year={2021},
   pages={6369-6373}
 }
+```
