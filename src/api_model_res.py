@@ -97,13 +97,13 @@ total_real = 0
 correct_fake = 0
 total_fake = 0
 
-min_real = 1
+min_real = 8
 for i, res in enumerate(all_results):
     votes_real = 0
     correct_label = model_results[i]['correct_label']
 
     for model in res:
-        if "rawgat" not in model.lower(): continue
+        # if "rawgat" not in model.lower(): continue
         if model == "filep": continue
         iso = True
         sep_label = res[model]["separated_results"]['label']
@@ -111,20 +111,22 @@ for i, res in enumerate(all_results):
         og_label = res[model]["unseparated_results"]['label']
         og_pred = res[model]["unseparated_results"]['prediction']
         for label, pred in ((sep_label, sep_pred), (og_label, og_pred)):
-            # if "whisper" in model.lower():
-            #     if not iso and pred < .25:
-            #         label = "Fake"
-            # if "clad" in model.lower():
-            #     if pred > .5:
-            #         label = "Real"
+            if "whisper" in model.lower():
+                if not iso and pred < .25:
+                    label = "Fake"
+            if "clad" in model.lower():
+                if pred > .5:
+                    label = "Real"
 
-            # if "vocoder" in model.lower():
-            #     if pred > .2:
-            #         label = "Real"
-            if not iso:
-                iso = False
-                continue
 
+            if "rawgat" in model.lower():
+                if not iso and pred < 0.025:
+                    label = "Fake"
+                if iso:
+                    if pred > .15:
+                        label = "Real"
+                    else:
+                        label = "Fake"
 
             if "vocoder" in model.lower():
                 if iso and pred > .2:
