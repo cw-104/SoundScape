@@ -106,17 +106,15 @@ Vocal isolation model to separate backing tracks
 
 [demucs github](https://github.com/charzy/Demucs-v4-)
 
-## Whisper-SpectRnet -- primary model
+## Whisper-SpectRnet
 
-The primary model we are using for deepfake detection
 
 [whisper-specRnet Github](https://github.com/piotrkawa/deepfake-whisper-features/tree/main?tab=readme-ov-file)
 
 [Supporting Paper](https://www.isca-archive.org/interspeech_2023/kawa23b_interspeech.pdf)
 
-## RawGAT-ST -- backup model
+## RawGAT-ST
 
-Initial model adapated from RawGAT code
 
 [RawGAT-ST-code Github](https://github.com/eurecom-asp/RawGAT-ST-antispoofing)
 
