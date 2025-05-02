@@ -1,4 +1,5 @@
 accelerate
+colorama
 aiohappyeyeballs
 aiohttp
 aiosignal
