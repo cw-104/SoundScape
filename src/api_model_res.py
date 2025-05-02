@@ -33,8 +33,12 @@ def process_real_label(model_name, pred, label, iso):
 
             """
             === r4api_debug_all_results.txt and r4eval_api_results.txt ===
+            ___________
+            USING -- self.result_handler = DfResultHandler(-3, "Fake", "Real", 10, .45)
             res = self.model.evaluate_file(file_path)
             return min(.95,res.percent_certainty), res.classification
+            ––––––––––––
+            
             elif "rawgat" in model_name.lower():
                 if not iso:
                     if pred < .45:
