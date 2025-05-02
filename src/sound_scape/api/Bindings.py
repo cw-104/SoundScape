@@ -112,7 +112,7 @@ class ModelBindings:
                     # label for non-iso seems to be flipped and high certainty best and we make high bar for fake
                     return pred < 5, abs(pred - 5) / 10
                     
-            elif "vocoder" in model.lower():
+            elif "vocoder" in model_name.lower():
                 if not iso:
                     return label == "Real", pred
                 if iso:
