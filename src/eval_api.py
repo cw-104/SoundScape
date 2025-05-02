@@ -171,8 +171,8 @@ if __name__ == "__main__":
     # "fake-isolated"
 
 
-    real_files = os.listdir(os.path.join(eval_dataset_path, "bonafide"))
-    fake_files = os.listdir(os.path.join(eval_dataset_path, "fake"))
+    real_files = [x for x in os.listdir(os.path.join(eval_dataset_path, "bonafide")) if x.endswith(".mp3")]
+    fake_files = [x for x in os.listdir(os.path.join(eval_dataset_path, "fake")) if x.endswith(".mp3")]
 
 
     
@@ -180,9 +180,9 @@ if __name__ == "__main__":
     api_binding_thread = api_binding_thread()
 
     if use_dataset_iso:
-        real_iso_files = os.listdir(os.path.join(eval_dataset_path, "bonafide-isolated"))
+        real_iso_files = [x for x in os.listdir(os.path.join(eval_dataset_path, "bonafide-isolated")) if x.endswith(".mp3")]
         real_files = get_matching_files(real_files, real_iso_files)
-        fake_iso_files = os.listdir(os.path.join(eval_dataset_path, "fake-isolated"))
+        fake_iso_files = [x for x in os.listdir(os.path.join(eval_dataset_path, "fake-isolated")) if x.endswith(".mp3")]
         fake_files = get_matching_files(fake_files, fake_iso_files)
 
         for og_real, iso_real in real_files:
