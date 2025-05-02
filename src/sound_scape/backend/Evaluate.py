@@ -68,7 +68,7 @@ class DeepfakeClassificationModel:
             
             rawgat_config_path=os.path.join(BASE_DIR, "pretrained_models/RawGAT/model_config_RawGAT_ST.yaml")
             with open(rawgat_config_path, 'r') as f_yaml:
-                config = yaml.safe_load(f_yaml)  
+                config = yaml.safe_load(f_yaml)
         
             # Extract only the model-related part of the configuration
             model_config = config['model']
@@ -81,7 +81,7 @@ class DeepfakeClassificationModel:
 
     def evaluate_file(self, file_path):
         '''
-        Method: 
+        Method:
         Evaluates a single audio file for deepfake classification
         
         ------------

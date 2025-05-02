@@ -40,6 +40,7 @@ def process_real_label(model_name, pred, label, iso):
         # This is for if(multi[0] > multi[1]): "Real" > if use this, needs to be flipped
         elif "vocoder" in model.lower():
             label = "Fake" if label == "Real" else "Real" # Flip to multi[1] > multi[0]
+            return label
             if not iso:
                 return label != "Real"
             if iso:
