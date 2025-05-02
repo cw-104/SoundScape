@@ -26,10 +26,6 @@ source env/bin/activate
 
 5. install dependencies
 
-```
-pip install -r requirements.txt
-```
-
 Per your operating system install
 bzip2 libgmp-dev libblas-dev libffi-dev libgfortran5 libsqlite3-dev libz-dev libmpc-dev libmpfr-dev libncurses5-dev libopenblas-dev libssl-dev libreadline-dev tk-dev xz-utils
 
@@ -45,8 +41,19 @@ Linux - apt
 sudo apt install bzip2 libgmp-dev libblas-dev libffi-dev libgfortran5 libsqlite3-dev libz-dev libmpc-dev libmpfr-dev libncurses5-dev libopenblas-dev libssl-dev libreadline-dev tk-dev xz-utils libsox-dev
 ```
 
-Eval dataset non-isolated files located here
-https://drive.google.com/file/d/17KnCrLA3uc2j8hMCDx0r5UcwxkTkOmLR/view?usp=sharing
+```
+pip install -r requirements.txt
+```
+
+## identification
+
+you need to download the identification references from
+
+<still in upload>
+
+These should be in a folder
+src/idenification_refrences
+(inside the idenification_refrences/ folder should be folders of each artist name if you have an additional nested folder for some reason that must be removed)
 
 ## Run
 
@@ -63,6 +70,9 @@ WEBSITE
 cd src/site
 npx http-server -p 8000
 ```
+
+Eval dataset non-isolated files located here
+https://drive.google.com/file/d/17KnCrLA3uc2j8hMCDx0r5UcwxkTkOmLR/view?usp=sharing
 
 Deepfake detection targetted at detecting deepfake songs and music of popular artists.
 

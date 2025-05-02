@@ -117,7 +117,7 @@ class ModelBindings:
                     return label == "Real", pred
                 if iso:
                     if pred < .6:
-                        return True
+                        return True, pred
                     return label == "Real", (pred - .6) * 2
             return False, pred
 
