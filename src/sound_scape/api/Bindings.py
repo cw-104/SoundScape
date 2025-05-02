@@ -84,26 +84,43 @@ class ModelBindings:
 
             Returns true if the model result is real false if not
             """
-            return "Real" == label
-            # we use predicted certainty value to shift towards real, meaning we cut-off certain values that if it were to guess fake, we change to real
-            if "whisper" in model_name.lower(): # if low whisper pred count as fake
-                if pred < 0.99 and pred > .01 and label == "Fake":
-                    return True
-                elif label == "Real":
-                    return True
-            elif "clad" in model_name.lower(): # clad score tends to be > .5 real < .5 fake (CLAD cert is where we directly calc real fake not necessarily the outputted label, and it operates differently, high is real, low is fake)
-                if pred > .5:
-                    return True
-            elif "xlsr" in model_name.lower(): # if prediction is very low, count as Real
-                if label == "Real" or pred < .01:
-                    return True
+            # we want to prioritize getting reals correct and lower false negatives, so we to shift towards real based on cert, meaning we cut-off certain values that if it were to guess fake, we change to real
+
+            if "whisper" in model_name.lower():  # if low whisper pred count as fake
+                if iso:
+                    pred *= 10 # iso lowers pred a lot
+                if pred > 0.99 or pred < 0.01: # if conf extermely high or low result should be assumed real
+                    return True, pred
+                return label == "Real", pred
+            elif (
+                "clad" in model_name.lower()
+            ):  # clad score tends to be > .5 real < .5 fake (CLAD cert is where we directly calc real fake not necessarily the outputted label, and it operates differently, high is real, low is fake)
+                if pred > 0.5:
+                    return True, pred
+            elif "xlsr" in model_name.lower():  # if prediction is very low, count as Real
+                if not iso:
+                    pred *= 10 # iso lowers pred a lot more than og
+                if pred < 0.9:
+                    return True, pred
+                return label == "Real", pred - .9 * 10
+
             elif "rawgat" in model_name.lower():
-                if pred < .2 or label == "Real":
-                    return True
-            # leave vocoder, it does not have strong outliers, solid as is
-            elif ("vocoder" in model_name.lower()) and label == "Real":
-                True
-            return False
+                # (rawgat pred is range - to + not restricted between -1 and 1 so we divide pred)
+                if not iso:
+                    return pred > 0, abs(pred) / 10 # pretty good rates at just > 0
+                if iso:
+                    # label for non-iso seems to be flipped and high certainty best and we make high bar for fake
+                    return pred < 5, abs(pred - 5) / 10
+                    
+            elif "vocoder" in model.lower():
+                if not iso:
+                    return label == "Real", pred
+                if iso:
+                    if pred < .6:
+                        return True
+                    return label == "Real", (pred - .6) * 2
+
+
         
         results_map = {}
         votes_real = 0
@@ -114,13 +131,9 @@ class ModelBindings:
         def _evaluate_model_helper(model, path, iso):
             pred, label = model.evaluate(path)
             # Lean label real, reduce false positives
-            if process_real_label(model.name, pred, label):
-                label = "Real"
-            else:
-                label = "Fake"
+            is_real, adj_pred = process_real_label(model.name, pred, label)
 
-            
-            return model.name, pred, label, iso
+            return model.name, adj_pred, "Real" if is_real else "Fake", iso
         
         # Use ThreadPoolExecutor to evaluate models concurrently
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
@@ -153,48 +166,10 @@ class ModelBindings:
                     'label': label,
                 }
         
-        # for iso_model in self.iso_models:
-        #     pred, label = iso_model.evaluate(sep_path)
-        #     # lean label real, reduce false positives
-        #     if process_real_label(iso_model.name, pred, label):
-        #         votes_real += 1
-        #         label = "Real"
-        #     else:
-        #         label = "Fake"
-
-        #     if label == "Real":
-        #         sum_real_pred += pred
-        #     else:
-        #         sum_fake_pred += pred
-        #     results_map[iso_model.name] = {
-        #         'unseparated_results': {
-        #             'prediction': pred,
-        #             'label': label,
-        #         },
-        #         'separated_results': {
-        #             'prediction': 0,
-        #             'label': "None",
-        #         }
-        #     }
-
-        # for og_model in self.og_models:
-        #     pred, label = og_model.evaluate(original_path)
-        #     if process_real_label(og_model.name, pred, label):
-        #         votes_real += 1
-        #         label = "Real"
-
-            
-        #     if label == "Real":
-        #         sum_real_pred += pred
-        #     else:
-        #         sum_fake_pred += pred
-        #     results_map[og_model.name]['unseparated_results'] = {
-        #         'prediction': pred,
-        #         'label': label,
-        #     }
         label = "Fake"
         avg_pred = 0
-        if votes_real > 4:
+        votes_fake = 10 - votes_real
+        if votes_real > 7: # this is a high value for votes_real, but since we favor real so much a few votes goes a long way
             label = "Real"
             avg_pred = sum_real_pred / votes_real
         else:
@@ -207,7 +182,6 @@ class ModelBindings:
         }
 
 
-    
 
     def explain_results(self, results_json):
         data = {
