@@ -40,16 +40,17 @@ class vocoder:
         label = None
         pred = None
 
-        if(multi[0] > multi[1]):
+        # if(multi[0] > multi[1]):
+        if(binary[1] > binary[0])
             # print("Real")
             label = "Real"
-            # pred = binary[0]
-            pred = multi[0]
+            pred = binary[0]
+            # pred = multi[0]
         else:
             # print("Fake")
             label = "Fake"
-            # pred = binary[1]
-            pred = multi[1]
+            pred = binary[1]
+            # pred = multi[1]
         
         # print('Multi classification result : gt:{}, wavegrad:{}, diffwave:{}, parallel wave gan:{}, wavernn:{}, wavenet:{}, melgan:{}'.format(multi[0], multi[1], multi[2], multi[3], multi[4], multi[5], multi[6]))
         # sum all the multi classification results

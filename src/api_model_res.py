@@ -2,6 +2,57 @@ import json
 from colorama import Fore, init
 init(autoreset=True)
 
+
+def process_real_label(model_name, pred, label, iso):
+        """
+        We make the bar for a model to classify as fake higher, this means that for a model to classify fake
+        we are more confident it is correct.
+
+        We want to reduce the number of false positives, so we make models lean towards real and only classify fake
+        with high confidence.
+
+        Returns true if the model result is real false if not
+        """
+        # we use predicted certainty value to shift towards real, meaning we cut-off certain values that if it were to guess fake, we change to real
+        if "whisper" in model_name.lower(): # if low whisper pred count as fake
+            if iso:
+                pred *= 10
+            if pred > .99 or pred < .01:
+                return True
+            return label == "Real"
+        elif "clad" in model_name.lower(): # clad score tends to be > .5 real < .5 fake (CLAD cert is where we directly calc real fake not necessarily the outputted label, and it operates differently, high is real, low is fake)
+            if pred > .5:
+                return True
+        elif "xlsr" in model_name.lower(): # if prediction is very low, count as Real
+            if not iso:
+                pred *= 10
+            if pred < .8:
+                return True
+        elif "rawgat" in model_name.lower():
+            if not iso:
+                if pred < .45:
+                    return False
+                return label == "Real"
+            if iso and pred < .3:
+                return True
+        # leave vocoder, it does not have strong outliers, solid as is
+
+        # This is for if(multi[0] > multi[1]): "Real" > if use this, needs to be flipped
+        elif "vocoder" in model.lower():
+            label = "Fake" if label == "Real" else "Real" # Flip to multi[1] > multi[0]
+            if not iso:
+                return label != "Real"
+            if iso:
+                if pred < .7:
+                    return False
+                return label == "Real"
+            if not iso:
+                return label == "Real"
+
+        return False
+            
+
+
 model_results = None
 with open("eval_api_results.txt", "r") as f:
     model_results = json.loads(f.read())
@@ -52,10 +103,16 @@ for i, res in enumerate(all_results):
         og_pred = res[model]["unseparated_results"]['prediction']
         for label, pred in ((sep_label, sep_pred), (og_label, og_pred)):
             
-            if label == "Real":
+            # if label == "Real":
+            #     votes_real+=1
+            if process_real_label(model, pred, label, iso):
+                label = "Real"
                 votes_real+=1
+            else:
+                label = "Fake"
 
             sub_key = 'iso' if iso else 'og'
+            iso = False
             if correct_label == "Real":
                 acc_res[model][sub_key]['total-real']+=1
                 if label == correct_label:
@@ -64,7 +121,6 @@ for i, res in enumerate(all_results):
                 acc_res[model][sub_key]['total-fake']+=1
                 if label == correct_label:
                     acc_res[model][sub_key]['correct-fake']+=1
-            iso = False
     if votes_real >= min_real:
         guessed_label = "Real"
     else:
@@ -91,19 +147,18 @@ print(f"Fake: {acc_res['combined']['correct-fake']}/{acc_res['combined']['total-
 print(f"Accuracy: {(acc_res['combined']['correct-real']/acc_res['combined']['total-real'] + acc_res['combined']['correct-fake']/acc_res['combined']['total-fake']) / 2}")
 print()
 
-
 correct_real = 0
 total_real = 0
 correct_fake = 0
 total_fake = 0
 
-min_real = 8
+min_real = 5
 for i, res in enumerate(all_results):
     votes_real = 0
     correct_label = model_results[i]['correct_label']
 
     for model in res:
-        # if "rawgat" not in model.lower(): continue
+        # if "xlsr" not in model.lower(): continue
         if model == "filep": continue
         iso = True
         sep_label = res[model]["separated_results"]['label']
@@ -111,34 +166,41 @@ for i, res in enumerate(all_results):
         og_label = res[model]["unseparated_results"]['label']
         og_pred = res[model]["unseparated_results"]['prediction']
         for label, pred in ((sep_label, sep_pred), (og_label, og_pred)):
-            if "whisper" in model.lower():
-                if not iso and pred < .25:
-                    label = "Fake"
-            if "clad" in model.lower():
-                if pred > .5:
-                    label = "Real"
+            if process_real_label(model, pred, label, iso):
+                label = "Real"
+            else:
+                label = "Fake"
+            # if "whisper" in model.lower():
+            #     if not iso and pred < .25:
+            #         label = "Fake"
+            # if "clad" in model.lower():
+            #     if pred > .5:
+            #         label = "Real"
 
 
-            if "rawgat" in model.lower():
-                if not iso and pred < 0.025:
-                    label = "Fake"
-                if iso:
-                    if pred > .15:
-                        label = "Real"
-                    else:
-                        label = "Fake"
+            # if "rawgat" in model.lower():
+            #     if not iso and pred < 0.025:
+            #         label = "Fake"
+            #     if iso:
+            #         if pred > .15:
+            #             label = "Real"
+            #         else:
+            #             label = "Fake"
 
-            if "vocoder" in model.lower():
-                if iso and pred > .2:
-                    label = "Real"
-                if not iso and pred > .25:
-                    label = "Real"
+            # if "vocoder" in model.lower():
+            #     if iso and pred > .2:
+            #         label = "Real"
+            #     if not iso and pred > .25:
+            #         label = "Real"
 
-            if "xlsr" in model.lower():
-                if not iso and pred < 1:
-                    label = "Real"
-                if iso and pred < 1.25: # .5 for new bindings
-                    label = "Real"
+            # if "xlsr" in model.lower():
+            #     if not iso and pred < 0.25:
+            #         label = "Fake"
+
+                # if not iso and pred < 1:
+                #     label = "Real"
+                # if iso and pred < 1.25: # .5 for new bindings
+                #     label = "Real"
 
             if label == "Real":
                 votes_real+=1
