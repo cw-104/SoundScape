@@ -68,6 +68,18 @@ pip install "omegaconf<2.1"
 pip install fairseq/ && rm -rf fairseq
 ```
 fairseq may require some dependency resolution, typically the above resolutions works, but may vary
+
+If it says
+```
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+s3prl 0.4.17 requires omegaconf>=2.1.1, but you have omegaconf 2.0.6 which is incompatible.
+```
+Based on our testing, you should still be able to run with
+
+```
+py start_api.py
+```
+
 ## Identification
 
 you need to download the identification references from
