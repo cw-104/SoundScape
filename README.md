@@ -51,7 +51,7 @@ pip install -r requirements.txt
 Most of the models are in the github, but there are a few you need to download
 
 1. Trained XLSR
-<url>
+- waiting for google drive upload
 This needs to be moved into src/trained_models
 
 2. 
@@ -59,8 +59,7 @@ This needs to be moved into src/trained_models
 ## Mdentification
 
 you need to download the identification references from
-
-<still in upload>
+- waiting for google drive upload
 
 These should be in a folder
 src/idenification_refrences
