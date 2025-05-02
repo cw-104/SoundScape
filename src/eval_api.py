@@ -24,8 +24,19 @@ class api_binding_thread:
     def _iso_thread_run(self):
         # worker task thread
         def sep_worker(filep, folder_to_sep_to, correct_label):
-            # separate the file
-            iso_file = separate_file(filep, folder_to_sep_to, mp3=True)
+            # check if file already in folder
+            not_in_folder = True
+            for p in os.listdir(folder_to_sep_to):
+                if clean_basename(p) in clean_basename(filep):
+                    print("File already isolated")
+                    iso_file = os.path.join(folder_to_sep_to, p)
+                    not_in_folder = False
+
+            
+            if not_in_folder:
+                # separate the file
+                iso_file = separate_file(filep, folder_to_sep_to, mp3=True)
+            
             # add to the queue
             self._file_queue.put({
                 'file': filep,
@@ -102,6 +113,7 @@ class api_binding_thread:
             # iso_file = separate_file(filep, folder_to_sep_to, mp3=True)
         # get model eval results
         model_res, combined_results = self._bindings.get_model_results(filep, iso_file)
+        model_res['filep'] = filep
         with open("api_debug_all_results.txt", "a") as f:
             f.write(json.dumps(model_res))
             f.write("\n")
@@ -196,7 +208,7 @@ if __name__ == "__main__":
         for fake_file in fake_files:
             filep = os.path.join(eval_dataset_path, "fake", fake_file)
             # labels are "Real" and "Fake" (bonafide is only in dataset naming)
-            api_binding_thread.queue_eval(filep=filep, correct_label="fake", folder_to_sep_to=sep_folder)
+            api_binding_thread.queue_eval(filep=filep, correct_label="Fake", folder_to_sep_to=sep_folder)
             
 total = len(real_files) + len(fake_files)
 

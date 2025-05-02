@@ -193,7 +193,7 @@ class ModelBindings:
         #     }
         label = "Fake"
         avg_pred = 0
-        if votes_real > 3:
+        if votes_real > 4:
             label = "Real"
             avg_pred = sum_real_pred / votes_real
         else:
