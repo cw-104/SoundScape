@@ -45,7 +45,18 @@ sudo apt install bzip2 libgmp-dev libblas-dev libffi-dev libgfortran5 libsqlite3
 pip install -r requirements.txt
 ```
 
-## identification
+
+## Models
+
+Most of the models are in the github, but there are a few you need to download
+
+1. Trained XLSR
+<url>
+This needs to be moved into src/trained_models
+
+2. 
+
+## Mdentification
 
 you need to download the identification references from
 
@@ -120,7 +131,3 @@ title={End-to-End anti-spoofing with RawNet2},
 year={2021},
 pages={6369-6373}
 }
-
-```
-
-```
