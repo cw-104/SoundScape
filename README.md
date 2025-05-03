@@ -51,7 +51,7 @@ pip install -r requirements.txt
 Most of the models are in the github, but there are a few you need to download
 
 1. Trained XLSR
-- waiting for google drive upload
+https://drive.google.com/file/d/1PNF-lJgL2wRDSSXa6Hg2W_dyF0S7TLAn/view?usp=sharing
 This needs to be moved into src/trained_models
 
 2. XLSR Wav2Vec dependency
