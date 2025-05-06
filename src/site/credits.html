@@ -1,110 +1,143 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Credits</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/lumen/bootstrap.min.css"
-    />
 
-    <link rel="stylesheet" href="css/global.css" />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Credits</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/lumen/bootstrap.min.css" />
 
-  <body>
-    <div class="container mt-4">
-      <div class="card">
-        <div class="card-header">Credits</div>
-        <div class="card-body">
-          <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item" role="presentation">
-              <!-- defining tabs -->
+  <link rel="stylesheet" href="css/global.css" />
+</head>
 
-              <!-- models tab -->
-              <a
-                class="nav-link active"
-                data-bs-toggle="tab"
-                href="#models"
-                aria-selected="true"
-                role="tab"
-                >Models</a
-              >
-            </li>
-            <!-- isolation tab -->
-            <li class="nav-item" role="presentation">
-              <a
-                class="nav-link"
-                data-bs-toggle="tab"
-                href="#isolation"
-                aria-selected="false"
-                role="tab"
-                tabindex="-1"
-                >Vocal Isolation</a
-              >
-            </li>
-            <!-- aixplain tab -->
-            <li class="nav-item" role="presentation">
-              <a
-                class="nav-link"
-                data-bs-toggle="tab"
-                href="#aixplain"
-                aria-selected="false"
-                role="tab"
-                tabindex="-1"
-                >aiXplain</a
-              >
-            </li>
+<body>
+  <div class="container mt-4">
+    <div class="card">
+      <div class="card-header">Credits</div>
+      <div class="card-body">
+        <ul class="nav nav-tabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <!-- defining tabs -->
 
-            <!-- official citations tab -->
-            <li class="nav-item" role="presentation">
-              <a
-                class="nav-link"
-                data-bs-toggle="tab"
-                href="#official-citations"
-                aria-selected="false"
-                role="tab"
-                tabindex="-1"
-                >Official Citations</a
-              >
-            </li>
-          </ul>
+            <!-- models tab -->
+            <a class="nav-link active" data-bs-toggle="tab" href="#models" aria-selected="true" role="tab">Models</a>
+          </li>
+          <!-- isolation tab -->
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" data-bs-toggle="tab" href="#isolation" aria-selected="false" role="tab"
+              tabindex="-1">Vocal Isolation</a>
+          </li>
+          <!-- aixplain tab -->
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" data-bs-toggle="tab" href="#aixplain" aria-selected="false" role="tab"
+              tabindex="-1">aiXplain</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" data-bs-toggle="tab" href="#resemblyzer" aria-selected="false" role="tab"
+              tabindex="-1">Resemblyzer</a>
+          </li>
 
-          <!-- pages -->
+          <!-- official citations tab -->
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" data-bs-toggle="tab" href="#official-citations" aria-selected="false" role="tab"
+              tabindex="-1">Official Citations</a>
+          </li>
+        </ul>
 
-          <!-- models  -->
-          <div id="tabs" class="tab-content">
-            <div class="tab-pane fade active show" id="models" role="tabpanel">
-              <div id="model-card-container"></div>
+        <!-- pages -->
+
+        <!-- models  -->
+        <div id="tabs" class="tab-content">
+          <div class="tab-pane fade active show" id="models" role="tabpanel">
+            <div id="model-card-container"></div>
+          </div>
+          <!-- isolation -->
+          <div class="tab-pane fade" id="isolation" role="tabpanel">
+            <div id="isolation-card-container"></div>
+          </div>
+          <!-- aixplain -->
+          <div class="tab-pane fade" id="aixplain" role="tabpanel">
+            <div id="aixplain-container">
+              <div class="card border-secondary mb-3">
+                <div class="card-body">
+                  <h4 class="card-title">aiXplain</h4>
+                  <p class="card-text text-body-secondary">
+                  <p class="card-text text-body-secondary">
+                    An llm host we are using to generate understandable explaination of our output.
+                  </p>
+                  </p>
+                  <h6>Abstract</h6>
+                  <p class="card-text text-primary-emphasis">
+                    Production-ready AI Agents
+                    Trusted outcomes, adaptable behavior, scalable deployment.
+                    <br><br><a href="https://aixplain.com/resources/faq/">What is aiXplain?</a>
+                    <br>A: aiXplain is a no-code/low-code AI IDE (Integrated Development Environment) with a
+                    marketplace, enabling users to quickly develop, manage, benchmark, deploy, and experiment with AI
+                    assets.
+                  </p>
+
+                </div>
+                <div class="card-footer text-muted">
+                  <a href="https://aixplain.com/" class="card-link">Site</a>
+                </div>
+
+              </div>
             </div>
-            <!-- isolation -->
-            <div class="tab-pane fade" id="isolation" role="tabpanel">
-              <div id="isolation-card-container"></div>
-            </div>
-            <!-- aixplain -->
-            <div class="tab-pane fade" id="aixplain" role="tabpanel">
-              <div id="aixplain-container"></div>
-            </div>
+          </div>
 
-            <!-- official citations -->
+          <!-- resemblyzer -->
+          <div class="tab-pane fade" id="resemblyzer" role="tabpanel">
+            <div id="resemblyzer-container">
+              <div class="card border-secondary mb-3">
+                <div class="card-body">
+                  <h4 class="card-title">Resemblyzer</h4>
+                  <h6 class="card-subtitle mb-2 text-muted">
+                    ${authors}
+                    <br>
+                  </h6>
+                  <p class="card-text text-body-secondary">
+                    A vocal identification tool that we use to identify the best matching artist of the current top 50 artists. The coders and the author of the paper below are different entities. The code was based on the research below
+                  </p>
+                  <h6>Source Paper Abstract</h6>
+                  <p class="card-text text-primary-emphasis">
+                    In this paper, we propose a new loss function called generalized
+end-to-end (GE2E) loss, which makes the training of speaker ver-
+ification models more efficient than our previous tuple-based end-
+to-end (TE2E) loss function. Unlike TE2E, the GE2E loss function
+updates the network in a way that emphasizes examples that are dif-
+ficult to verify at each step of the training process. Additionally,
+the GE2E loss does not require an initial stage of example selec-
+tion. With these properties, our model with the new loss function
+decreases speaker verification EER by more than 10%, while reduc-
+ing the training time by 60% at the same time. We also introduce the
+MultiReader technique, which allows us to do domain adaptation —
+training a more accurate model that supports multiple keywords (i.e.,
+“OK Google” and “Hey Google”) as well as multiple dialects.
+                  </p>
 
-            <div class="tab-pane fade" id="official-citations" role="tabpanel">
-              <div id="official-citations-container"></div>
+                </div>
+                <div class="card-footer text-muted">
+                  <a href="https://arxiv.org/pdf/1710.10467" class="card-link">Their Code is Based on this Paper</a>
+                  <a href="https://github.com/resemble-ai/Resemblyzer" class="card-link">Source</a>
+                </div>
+              </div>
             </div>
+          </div>
+
+          <!-- official citations -->
+
+          <div class="tab-pane fade" id="official-citations" role="tabpanel">
+            <div id="official-citations-container"></div>
           </div>
         </div>
       </div>
     </div>
-  </body>
-  <script src="js/global.js" defer></script>
+  </div>
+</body>
+<script src="js/global.js" defer></script>
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    defer
-  ></script>
-  <script src="js/credits.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+<script src="js/credits.js" defer></script>
+
 </html>
