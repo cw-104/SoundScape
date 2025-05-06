@@ -105,34 +105,9 @@ function init() {
     "A natural question arising in Music Source Separation (MSS) is whether long range contextual information is useful, or whether local acoustic features are sufficient. In other fields, attention based Transformers have shown their ability to integrate information over long sequences. In this work, we introduce Hybrid Transformer Demucs (HT Demucs), an hybrid temporal/spectral bi-U-Net based on Hybrid Demucs, where the innermost layers are replaced by a cross-domain Transformer Encoder, using self-attention within one domain, and cross-attention across domains. While it performs poorly when trained only on MUSDB, we show that it outperforms Hybrid Demucs (trained on the same data) by 0.45 dB of SDR when using 800 extra training songs. Using sparse attention kernels to extend its receptive field, and per source fine-tuning, we achieve state-of-the-art results on MUSDB with extra training data, with 9.20 dB of SDR. "
   );
 
-  const aixplain_container = (document.getElementById(
-    "aixplain-container"
-  ).innerHTML = `
-          <div class="card border-secondary mb-3">
-              <div class="card-body">
-                  <h4 class="card-title">aiXplain</h4>
-                  <h6 class="card-subtitle mb-2 text-muted">
-                    <br>
-                  </h6>
-                  <p class="card-text text-body-secondary">
-                  An llm host we are using to generate understandable explaination of our output.
-                  
-                  See https://aixplain.com/
-                  </p>
-
-              </div>
-                <div class="card-footer text-muted">
-                  <a href="https://scholar.google.com/" class="card-link">Paper</a>
-                  <a href="https://github.com/aixplain/NoRefER" class="card-link">Source</a>
-                  <a href="https://huggingface.co/aixplain/NoRefER" class="card-link">Hugging Face</a>
-              </div>
-            </div>
-                `);
-
   const official_citations_container = document.getElementById(
     "official-citations-container"
   );
-
   function add_official_citation(title, text) {
     let card_html = `
         <div class="card text-white bg-primary mb-3">

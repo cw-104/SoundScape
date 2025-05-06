@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home</title>
+    <title>About Us</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -139,10 +139,29 @@
               <div class="card-body">
                 <h5 class="card-title">Detection Techniques</h5>
                 <p class="card-text">
-                  (placeholder) We utilize advanced machine learning algorithms
-                  to analyze audio analyze deepfake detection. Our methods focus
-                  on identifying inconsistencies and anomalies that indicate
-                  manipulation.
+                  We utilize advanced machine learning algorithms to analyze
+                  audio analyze deepfake detection. We utilize 5 models (which
+                  you can find in our <a href="Credits.html">credits page</a>)
+                  which each pass over a given audio file in both its original
+                  form, as well an isolated sample of only vocals from the file.
+                  For some of our models we have even trained twice, we use a
+                  variant trained on original audio when we pass over the
+                  original, and a model trained on isolated audio when we do the
+                  vocal pass. The combination of these models allows us to
+                  properly "fact check" results. Instead of relying on one model
+                  to be perfect, we use multiple models that we finetune to
+                  their best forms then weight them as part of a larger set.
+                </p>
+
+                <p>
+                  We also care a lot about the problem of false positves, this
+                  means Real audio classified incorrectly as Fake. This is a big
+                  danger in AI as it leads to overuse of AI. Overuse of AI has
+                  lead to implementation of AI in places that are at best
+                  unnecessary and decreasing quality and suppliying misleading
+                  information. We want to give the best results we can while
+                  minimizing the risk of calling real sample fake, undermining
+                  artists.
                 </p>
               </div>
             </div>
@@ -152,11 +171,18 @@
               <div class="card-body">
                 <h5 class="card-title">Model Training</h5>
                 <p class="card-text">
-                  Utilizing well-researched and high performance
-                  <a href="credits">models</a>, we have trained our system on
-                  well both well established research datasets as well as data
-                  collected from real current deepfakes to improve accuracy and
-                  results. Our results are included below
+                  We implemented well-researched and high performance
+                  <a href="credits">models</a>, finetuned on a dataset of our
+                  creation with much more relevant and diverse samples. Further
+                  we trained each model twice, on isolated vocals and on
+                  original audio resulting in two variants of each model. 3/5 of
+                  our models showed improvement in their respective trained
+                  category allowing us to use those specified trained variants
+                  on the proper state of the audio (vocals / original – backing
+                  track and all). Two of our models performed strongly when
+                  applied to both vocals and original, and the two separate
+                  trains did not show signifcant differences leading us to use
+                  the one best model for both audio forms.
                 </p>
               </div>
             </div>
@@ -218,16 +244,19 @@
       <section class="my-5">
         <h2 class="text-center mb-4 text-light">Results</h2>
         <div class="text-center">
-          <p>(insert result-graph)</p>
           <p>
-            rate of over 95% in identifying deepfakes across various datasets.
+            In our evaluation we detect about 72% of deepfakes correctly, and
+            83% of Real Audio correctly Classified. & 61% of Deepfake Audio
+            correctly classified.
+          </p>
+
+          <p>
+            It is important to us that we classify reals as correctly as
+            possible. False positives are audio sample that we classify as
+            DeepFake, but they are actually Real.
           </p>
         </div>
       </section>
-
-      <footer class="text-center my-5">
-        <p>&copy; 2023 SoundScape Team. All rights reserved.</p>
-      </footer>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI & Accuracy</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/lumen/bootstrap.min.css"
+    />
+
+    <link rel="stylesheet" href="css/global.css" />
+    <script src="js/global.js" defer></script>
+
+    <style>
+      .method-card {
+        min-height: 150px;
+      }
+      .result-graph {
+        max-width: 100%;
+        height: auto;
+      }
+      .member {
+        text-align: center;
+        margin-bottom: 30px;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="text-center py-5">
+        <h1 class="display-6">AI and It's Accuracy</h1>
+        <p class="lead">
+          What are the caveats of our models?<br />How accurate is AI?<br />Why
+          is this important?
+        </p>
+      </header>
+    </div>
+
+    <section class="my-5">
+      <h2 class="text-center text-light">
+        What are the caveats of our models?
+      </h2>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card mb-4">
+            <div class="card-body">
+              <h5 class="card-title text-light">Language</h5>
+              <p class="card-text info-cards">
+                Our model is trained on english audio only, this means that non
+                English audio will produce unreliable results. It is only
+                recommended to use our sevice for songs in English.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card mb-4">
+            <div class="card-body">
+              <h5 class="card-title text-light">Trained on Music</h5>
+              <p class="card-text info-cards">
+                Our system is focused on deepfake music. As such our models have
+                not been evaluated on accuracy against spoken DeepFakes. It is
+                not recommended to use this software to detect spoken audio. The
+                quality of spoken DeepFake detection models is far higher, and
+                it is an area that massive tech companies have invested more
+                resources than we could match in solving. Our focus is on music
+                where fewer good solutions exist.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card mb-4">
+            <div class="card-body">
+              <h5 class="card-title text-light">General AI Caveat</h5>
+              <p class="card-text info-cards">
+                No AI is perfect, we worked hard to make a system that is as
+                accurate as possible. We strived to improve accuracy in an area
+                of DeepFake detection that is under-research and with poor
+                real-world results. Our performance is a great improvement, but
+                nonetheless our results are never perfect. This is a tool to
+                aide in detection and should not be treated as a whole solution.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="container">
+      <section class="my-5">
+        <h2 class="text-center mb-4 text-light">How accurate is AI?</h2>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card method-card mb-6">
+              <div class="card-body">
+                <h5 class="card-title">Detection Techniques</h5>
+                <p class="card-text">
+                  No AI model is perfect. Right now the AI space is booming and
+                  we are seeing every company rush to implement AI into their
+                  products in some shape or form. Often this leads to useful
+                  results, but we also are seeing how overuse of AI is degrading
+                  the quality of existing products.
+                  <br /><br>
+                  We include this page for transparency which we feel is lacking
+                  in this space. Knowing that any AI software will not be
+                  perfect, results from AI should always be fact checked. AI
+                  currently cannot replace the efforts and need of humans within
+                  almost any process.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card method-card mb-6">
+              <div class="card-body">
+                <h5 class="card-title">Resources</h5>
+                <a
+                  href="https://sloanreview.mit.edu/article/in-ai-we-trust-too-much/"
+                  >In AI We Trust — Too Much?</a
+                >
+                <br />
+                <a
+                  href="https://www.scientificamerican.com/article/yes-ai-models-can-get-worse-over-time/"
+                  >Yes, AI Models Can Get Worse over Time</a
+                >
+                <br />
+                <a
+                  href="https://uxdesignlab.com/ai-isnt-perfect-heres-why-it-fails-and-how-to-fix-it/"
+                >
+                  AI Isn’t Perfect: Here’s Why It Fails and How to Fix It
+                </a>
+
+                <p class="card-text"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="my-5">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="card text-center" style="border: none">
+                <div class="card-body">
+                  <h4 class="card-title">
+                   Why Is This Important?
+                  </h4>
+                  <br />
+                  <br />
+                  <p class="card-text">
+                    AI is not perfect. We believe this needs to be more transparent to users in every application and industry. AI can be extremely useful, but it also can and has caused massive issues. AI is a tool, not a replacement for real research and work. We want users to approach AI with and understanding of the shortcomings, risks and understanding that AI information needs to be fact checked. AI is not a replacement for human work, it is a tool to aide and hopefully improve our work.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

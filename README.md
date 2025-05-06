@@ -45,35 +45,38 @@ sudo apt install bzip2 libgmp-dev libblas-dev libffi-dev libgfortran5 libsqlite3
 pip install -r requirements.txt
 ```
 
-
 ## Models
 
 Most of the models are in the github, but there are a few you need to download
 
 1. Trained XLSR
-https://drive.google.com/file/d/1PNF-lJgL2wRDSSXa6Hg2W_dyF0S7TLAn/view?usp=sharing
-This needs to be moved into src/trained_models
+   https://drive.google.com/file/d/1PNF-lJgL2wRDSSXa6Hg2W_dyF0S7TLAn/view?usp=sharing
+   This needs to be moved into src/trained_models
 
 2. XLSR Wav2Vec dependency
-you need to download xlsr2_300m.pt which is from wav2vec for xlsr to work
-https://dl.fbaipublicfiles.com/fairseq/wav2vec/xlsr2_300m.pt
+   you need to download xlsr2_300m.pt which is from wav2vec for xlsr to work
+   https://dl.fbaipublicfiles.com/fairseq/wav2vec/xlsr2_300m.pt
 
 this needs to be put into src/pretrained_models/XLS-R/xlsr2_300m.pt
 
 3. install fairsec
+
 ```
 git clone https://github.com/pytorch/fairseq
-pip install "pip<24.1" 
+pip install "pip<24.1"
 pip install "omegaconf<2.1"
 pip install fairseq/ && rm -rf fairseq
 ```
+
 fairseq may require some dependency resolution, typically the above resolutions works, but may vary
 
 If it says
+
 ```
 ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
 s3prl 0.4.17 requires omegaconf>=2.1.1, but you have omegaconf 2.0.6 which is incompatible.
 ```
+
 Based on our testing, you should still be able to run with
 
 ```
@@ -116,6 +119,7 @@ Real: 50/60 = 0.83
 Fake: 33/54 = 0.61
 Accuracy: 0.72
 ```
+
 Deepfake detection targetted at detecting deepfake songs and music of popular artists.
 
 # Open source projects utilized
@@ -128,13 +132,11 @@ Vocal isolation model to separate backing tracks
 
 ## Whisper-SpectRnet
 
-
 [whisper-specRnet Github](https://github.com/piotrkawa/deepfake-whisper-features/tree/main?tab=readme-ov-file)
 
 [Supporting Paper](https://www.isca-archive.org/interspeech_2023/kawa23b_interspeech.pdf)
 
 ## RawGAT-ST
-
 
 [RawGAT-ST-code Github](https://github.com/eurecom-asp/RawGAT-ST-antispoofing)
 
